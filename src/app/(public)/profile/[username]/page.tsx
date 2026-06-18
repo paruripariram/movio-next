@@ -1,0 +1,61 @@
+'use client'
+
+import { useAuthContext } from "@/context/AuthContext";
+import { useCollectionContext } from "@/context/CollectionContext";
+import { signOut } from "firebase/auth";
+import { auth } from "@/config/firebase";
+
+function Profile() {
+    const { user, isLoading } = useAuthContext();
+    const { collectionArr, isLoadingCollection } = useCollectionContext();
+    const watchedMedia = collectionArr.filter(
+        (item) => item.status === "watched",
+    );
+
+    async function handleLogout() {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
+    }
+
+    return (
+        <div className="flex flex-col gap-6">
+            {isLoading && (
+                <h1 className="text-gray-500 text-4xl px-6">
+                    Authenticating...
+                </h1>
+            )}
+            {!isLoading && user && (
+                <h1 className="text-gray-500 text-4xl">
+                    {" "}
+                    {user.displayName || user.email}
+                </h1>
+            )}
+            {isLoadingCollection && (
+                <p className="text-gray-500 text-lg">
+                    Loading your collection...
+                </p>
+            )}
+            {!isLoadingCollection && watchedMedia.length === 0 && (
+                <p className="text-gray-500 text-lg px-6">
+                    You have no watched media items yet.
+                </p>
+            )}
+            {!isLoadingCollection && watchedMedia.length > 0 && (
+                <p className="text-gray-500 text-lg px-6">
+                    You have {watchedMedia.length} watched media items.
+                </p>
+            )}
+            <button
+                className="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded w-25 transition duration-200"
+                onClick={handleLogout}
+            >
+                Logout
+            </button>
+        </div>
+    );
+}
+
+export default Profile;
