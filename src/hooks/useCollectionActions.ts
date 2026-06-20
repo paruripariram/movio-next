@@ -1,10 +1,13 @@
-'use client'
+"use client";
 
 import { useEffect, useState } from "react";
 import type { MovieDetails, TVDetails } from "../types";
 import type { firebaseUser } from "../types/firebaseUser";
-import { db } from "@/config/firebase";
-import { doc, setDoc, deleteDoc, onSnapshot } from "firebase/firestore";
+import {
+    addToCollection,
+    checkMediaStatus,
+    removeFromCollection,
+} from "@/services/database/firebase/collectionService";
 
 export default function useCollectionActions(
     type: "movie" | "tv",
@@ -23,25 +26,7 @@ export default function useCollectionActions(
             return;
         }
 
-        const docRef = doc(
-            db,
-            "users",
-            userId,
-            "collection",
-            `${type}-${mediaId}`,
-        );
-        const unsubscribe = onSnapshot(docRef, (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                if (data.status === "watched" || data.status === "wishlist") {
-                    setStatus(data.status);
-                } else {
-                    setStatus(null);
-                }
-            } else {
-                setStatus(null);
-            }
-        });
+        const unsubscribe = checkMediaStatus(userId, type, mediaId, setStatus);
         return () => unsubscribe();
     }, [userId, mediaId, type]);
 
@@ -68,16 +53,7 @@ export default function useCollectionActions(
         };
 
         try {
-            await setDoc(
-                doc(
-                    db,
-                    "users",
-                    user.uid,
-                    "collection",
-                    `${type}-${details.id}`,
-                ),
-                movieData,
-            );
+            await addToCollection(user.uid, type, details.id, movieData);
             return true;
         } catch (error) {
             if (error instanceof Error) {
@@ -101,15 +77,7 @@ export default function useCollectionActions(
         setStatus(null);
 
         try {
-            await deleteDoc(
-                doc(
-                    db,
-                    "users",
-                    user.uid,
-                    "collection",
-                    `${type}-${details.id}`,
-                ),
-            );
+            await removeFromCollection(user.uid, type, details.id);
             return true;
         } catch (error) {
             if (error instanceof Error) {

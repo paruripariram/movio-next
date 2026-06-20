@@ -1,20 +1,17 @@
-'use client'
+"use client";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuthContext } from "@/context/AuthContext";
 import Card from "@/components/Card";
 import { useCollectionContext } from "@/context/CollectionContext";
-import { APP_ROUTES } from "@/config/routes";
 import { useRouter } from "next/navigation";
+import detailsRouter from "@/helpers/detailsRouter";
 
 function Collection() {
     const { isLoading } = useAuthContext();
     const { collectionArr, isLoadingCollection } = useCollectionContext();
 
     const router = useRouter();
-    function detailsRouter(id: number, type: "movie" | "tv") {
-        router.push(APP_ROUTES.DETAILS.path(type, id));
-    }
 
     const viewKey =
         isLoading || isLoadingCollection
@@ -48,7 +45,9 @@ function Collection() {
                             key={item.id}
                             item={item}
                             genres={item.genres}
-                            onClick={() => detailsRouter(item.id, item.type)}
+                            onClick={() =>
+                                detailsRouter(router, item.id, item.type)
+                            }
                         />
                     ))}
                 </motion.div>

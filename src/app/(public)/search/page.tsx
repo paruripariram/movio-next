@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Card from "@/components/Card";
 import SearchInput from "@/components/SearchInput";
@@ -7,7 +7,7 @@ import { useGenresContext } from "@/context/GenresContext";
 import Toggler from "@/components/Toggler";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import GenreCheckbox from "@/components/GenreCheckbox";
-import { APP_ROUTES } from "@/config/routes";
+import detailsRouter from "@/helpers/detailsRouter";
 
 function Search() {
     // const [searchQuery, setSearchQuery] = useState("");
@@ -46,7 +46,7 @@ function Search() {
         });
 
         const searchStr = currentParams.toString();
-        const  newSearchStr = searchStr ? `?${searchStr}` : "";
+        const newSearchStr = searchStr ? `?${searchStr}` : "";
 
         router.push(`${pathname}${newSearchStr}`, {
             scroll: false,
@@ -95,10 +95,6 @@ function Search() {
         nextParams.set("with_genres", newGenres.join(","));
         setSearchParams(nextParams);
     }
-
-    function detailsRouter(id: number, type: "movie" | "tv") {
-            router.push(APP_ROUTES.DETAILS.path(type, id));
-        }
 
     return (
         <>
@@ -205,7 +201,13 @@ function Search() {
                                             item={item}
                                             genres={itemGenres}
                                             onClick={() =>
-                                                detailsRouter(item.id, currentType as "movie" | "tv")
+                                                detailsRouter(
+                                                    router,
+                                                    item.id,
+                                                    currentType as
+                                                        | "movie"
+                                                        | "tv",
+                                                )
                                             }
                                         />
                                     );

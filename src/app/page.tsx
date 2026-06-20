@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Card from "@/components/Card";
 import useNowPlaying from "@/hooks/useNowPlaying";
@@ -8,7 +8,7 @@ import { useCollectionContext } from "@/context/CollectionContext";
 import { useRef } from "react";
 import { CircleArrowLeft, CircleArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { APP_ROUTES } from "@/config/routes";
+import detailsRouter from "@/helpers/detailsRouter";
 
 function Home() {
     const { nowPlaying, isLoadingNowPlaying } = useNowPlaying();
@@ -17,9 +17,6 @@ function Home() {
         useRecommendation(collectionArr);
     const { genresMap } = useGenresContext();
     const router = useRouter();
-    function detailsRouter(id: number, type: "movie" | "tv") {
-        router.push(APP_ROUTES.DETAILS.path(type, id));
-    }
 
     const nowRef = useRef<HTMLDivElement | null>(null);
     const recRef = useRef<HTMLDivElement | null>(null);
@@ -85,6 +82,7 @@ function Home() {
                                                 genres={itemGenres}
                                                 onClick={() =>
                                                     detailsRouter(
+                                                        router,
                                                         item.id,
                                                         "movie",
                                                     )
@@ -151,6 +149,7 @@ function Home() {
                                                     genres={itemGenres}
                                                     onClick={() =>
                                                         detailsRouter(
+                                                            router,
                                                             item.id,
                                                             item.media_type,
                                                         )
