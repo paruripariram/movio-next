@@ -4,11 +4,15 @@ import { useEffect, useState } from "react";
 import type { collectionItem, SearchResult } from "../types";
 import { useGenresContext } from "../context/GenresContext";
 import { search } from "@/services/tmdb/movieService";
+import { useCollectionContext } from "@/context/CollectionContext";
+import { useAuthContext } from "@/context/AuthContext";
 
-function useRecommendation(collectionArr: collectionItem[]) {
+function useRecommendation() {
+    const { user, isLoading } = useAuthContext();
+    const { collectionArr, isLoadingCollection } = useCollectionContext();
     const [recommendations, setRecommendations] = useState<SearchResult[]>([]);
     const [isLoadingRecommendations, setIsLoadingRecommendations] =
-        useState(false);
+        useState(true);
     const { genresMap } = useGenresContext();
 
     type MovieResult = Omit<
@@ -21,7 +25,12 @@ function useRecommendation(collectionArr: collectionItem[]) {
     >;
 
     useEffect(() => {
-        if (!genresMap.movieGenres || !genresMap.tvGenres) {
+        if (
+            isLoadingCollection ||
+            isLoading ||
+            !genresMap.movieGenres ||
+            !genresMap.tvGenres
+        ) {
             return;
         }
 
@@ -36,6 +45,7 @@ function useRecommendation(collectionArr: collectionItem[]) {
         const fetchRecommendations = async (signal: AbortSignal) => {
             try {
                 setIsLoadingRecommendations(true);
+
                 if (collectionArr.length === 0) {
                     const data = await search({ query: "", signal });
                     setRecommendations(data.results);
@@ -132,7 +142,7 @@ function useRecommendation(collectionArr: collectionItem[]) {
         return () => {
             abortController.abort();
         };
-    }, [collectionArr, genresMap]);
+    }, [collectionArr, genresMap, isLoadingCollection, isLoading]);
     return { recommendations, isLoadingRecommendations };
 }
 

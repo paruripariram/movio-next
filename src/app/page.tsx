@@ -4,7 +4,6 @@ import Card from "@/components/Card";
 import useNowPlaying from "@/hooks/useNowPlaying";
 import useRecommendation from "@/hooks/useRecommendation";
 import { useGenresContext } from "@/context/GenresContext";
-import { useCollectionContext } from "@/context/CollectionContext";
 import { useRef } from "react";
 import { CircleArrowLeft, CircleArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -12,9 +11,7 @@ import detailsRouter from "@/helpers/detailsRouter";
 
 function Home() {
     const { nowPlaying, isLoadingNowPlaying } = useNowPlaying();
-    const { collectionArr } = useCollectionContext();
-    const { recommendations, isLoadingRecommendations } =
-        useRecommendation(collectionArr);
+    const { recommendations, isLoadingRecommendations } = useRecommendation();
     const { genresMap } = useGenresContext();
     const router = useRouter();
 
