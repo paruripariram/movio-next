@@ -8,6 +8,7 @@ import {
     checkMediaStatus,
     removeFromCollection,
 } from "@/services/database/firebase/collectionService";
+import { handleError } from "@/helpers/errorHandler";
 
 export default function useCollectionActions(
     type: "movie" | "tv",
@@ -17,6 +18,7 @@ export default function useCollectionActions(
     type CollectionStatus = "watched" | "wishlist";
     const [status, setStatus] = useState<CollectionStatus | null>(null);
     const [isPending, setIsPending] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const userId = user?.uid;
     const mediaId = details?.id;
@@ -56,9 +58,7 @@ export default function useCollectionActions(
             await addToCollection(user.uid, type, details.id, movieData);
             return true;
         } catch (error) {
-            if (error instanceof Error) {
-                console.error("Error adding to collection: ", error.message);
-            }
+            handleError(error, "Error adding to collection:", setError);
             setStatus(previousStatus);
             return false;
         } finally {
@@ -80,12 +80,7 @@ export default function useCollectionActions(
             await removeFromCollection(user.uid, type, details.id);
             return true;
         } catch (error) {
-            if (error instanceof Error) {
-                console.error(
-                    "Error removing from collection: ",
-                    error.message,
-                );
-            }
+            handleError(error, "Error removing from collection:", setError);
             setStatus(previousStatus);
             return false;
         } finally {
@@ -95,6 +90,7 @@ export default function useCollectionActions(
     return {
         status,
         isPending,
+        error,
         handleAddToCollection,
         handleRemoveFromCollection,
     };

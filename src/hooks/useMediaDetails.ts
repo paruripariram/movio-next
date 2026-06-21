@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { MovieDetails, TVDetails } from "../types";
 import { getMediaDetails } from "@/services/tmdb/movieService";
-import axios from "axios";
+import { handleError } from "@/helpers/errorHandler";
 
 export default function useMediaDetails(id: string, type: "movie" | "tv") {
     const [details, setDetails] = useState<MovieDetails | TVDetails | null>(
@@ -31,14 +31,7 @@ export default function useMediaDetails(id: string, type: "movie" | "tv") {
                 const data = await getMediaDetails(id, type, signal);
                 setDetails(data);
             } catch (error) {
-                if (axios.isCancel(error)) {
-                    console.log("Request canceled");
-                    return;
-                } else if (error instanceof Error) {
-                    setError(error.message);
-                } else {
-                    setError("An unknown error occurred");
-                }
+                handleError(error, "Error fetching media details:", setError);
             } finally {
                 setLoading(false);
             }

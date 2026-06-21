@@ -1,13 +1,14 @@
-'use client'
+"use client";
 
 import { useState } from "react";
 import { loginUser, registerUser } from "@/services/auth/auth";
 import type { authForm } from "../types";
 import { useRouter } from "next/navigation";
 import { APP_ROUTES } from "@/config/routes";
+import { handleError } from "@/helpers/errorHandler";
 
 export default function useAuth() {
-    const router = useRouter()
+    const router = useRouter();
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -43,16 +44,11 @@ export default function useAuth() {
         setError(null);
         try {
             await loginUser(formData.email, formData.password);
-            router.push(APP_ROUTES.HOME.path);;
+            router.push(APP_ROUTES.HOME.path);
             return true;
         } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message);
-                return false;
-            } else {
-                setError("Failed to login user");
-                return false;
-            }
+            handleError(error, "Failed to login user", setError);
+            return false;
         } finally {
             setLoading(false);
         }

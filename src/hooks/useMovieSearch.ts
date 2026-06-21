@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { SearchResult } from "../types";
 import { search } from "@/services/tmdb/movieService";
-import axios from "axios";
+import { handleError } from "@/helpers/errorHandler";
 
 export default function useMovieSearch(
     searchQuery: string,
@@ -50,7 +50,6 @@ export default function useMovieSearch(
             setIsLoading(true);
             try {
                 const query = searchQuery.trim();
-                // if (query || genres) {
                 const data = await search({
                     query,
                     page,
@@ -66,33 +65,14 @@ export default function useMovieSearch(
                 }
                 setHasMore(page < data.total_pages);
                 setError(null);
-
-                // }else {
-                //     setSearchResults([]);
-                // }
             } catch (error) {
-                if (axios.isCancel(error)) {
-                    console.log("Request canceled");
-                    return;
-                }
-                console.error("Error fetching search results:", error);
-                setError(
-                    "Failed to load search results. Please try again later.",
-                );
+                handleError(error, "Error fetching search results:", setError);
             } finally {
                 setIsLoading(false);
             }
         }
 
         let debounceTimeout: ReturnType<typeof setTimeout>;
-        // if (searchQuery.trim() === "" && !genres) {
-        //     setSearchResults([]);
-        //     setHasMore(false);
-        //     setIsLoading(false);
-        //     setError(null);
-        //     setIsDebouncing(false);
-        //     return;
-        // }
 
         const abortController = new AbortController();
         const signal = abortController.signal;

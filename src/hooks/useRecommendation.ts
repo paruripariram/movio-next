@@ -6,9 +6,11 @@ import { useGenresContext } from "../context/GenresContext";
 import { search } from "@/services/tmdb/movieService";
 import { useCollectionContext } from "@/context/CollectionContext";
 import { useAuthContext } from "@/context/AuthContext";
+import { handleError } from "@/helpers/errorHandler";
 
-function useRecommendation() {
-    const { user, isLoading } = useAuthContext();
+export default function useRecommendation() {
+    const [error, setError] = useState<string | null>(null);
+    const { isLoading } = useAuthContext();
     const { collectionArr, isLoadingCollection } = useCollectionContext();
     const [recommendations, setRecommendations] = useState<SearchResult[]>([]);
     const [isLoadingRecommendations, setIsLoadingRecommendations] =
@@ -117,21 +119,7 @@ function useRecommendation() {
                     .slice(0, 20);
                 setRecommendations(combinedResults);
             } catch (error) {
-                if (
-                    error instanceof DOMException &&
-                    error.name === "AbortError"
-                ) {
-                    return;
-                }
-                if (error instanceof Error && error.message === "canceled") {
-                    return;
-                }
-                if (error instanceof Error) {
-                    console.error(
-                        "Error fetching recommendations: ",
-                        error.message,
-                    );
-                }
+                handleError(error, "Error fetching recommendations:", setError);
             } finally {
                 setIsLoadingRecommendations(false);
             }
@@ -143,7 +131,5 @@ function useRecommendation() {
             abortController.abort();
         };
     }, [collectionArr, genresMap, isLoadingCollection, isLoading]);
-    return { recommendations, isLoadingRecommendations };
+    return { recommendations, isLoadingRecommendations, error };
 }
-
-export default useRecommendation;

@@ -3,10 +3,14 @@
 import { useEffect, useState } from "react";
 import type { collectionItem } from "@/types/collection";
 import { getCollection } from "@/services/database/firebase/collectionService";
+import { handleError } from "@/helpers/errorHandler";
 
 export default function useCollection(userId: string | undefined) {
-    const [collectionArr, setCollectionArr] = useState<collectionItem[]>([]);
-    const [loadedUserId, setLoadedUserId] = useState<string | undefined>(undefined);
+    const [error, setError] = useState<string | null>(null);
+    const [rawCollectionArr, setRawCollectionArr] = useState<collectionItem[]>([]);
+    const [loadedUserId, setLoadedUserId] = useState<string | undefined>(
+        undefined,
+    );
 
     useEffect(() => {
         if (!userId) {
@@ -16,18 +20,20 @@ export default function useCollection(userId: string | undefined) {
         const unsubscribe = getCollection(
             userId,
             (items) => {
-                setCollectionArr(items);
+                setRawCollectionArr(items);
                 setLoadedUserId(userId);
             },
             (error) => {
-                console.error("Error fetching collection: ", error.message);
+                handleError(error, "Error fetching collection:", setError);
                 setLoadedUserId(userId);
             },
         );
         return () => unsubscribe();
     }, [userId]);
 
+    const collectionArr = userId ? rawCollectionArr : [];
+    const currentError = userId ? error : null;
     const isLoadingCollection = !!userId && loadedUserId !== userId;
 
-    return { collectionArr, isLoadingCollection };
+    return { collectionArr, isLoadingCollection, error: currentError };
 }
