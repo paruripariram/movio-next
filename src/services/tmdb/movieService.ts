@@ -47,7 +47,7 @@ export const getTvGenres = async () => {
 export const getMediaDetails = async (
     id: string,
     type: "movie" | "tv",
-    signal: AbortSignal,
+    signal?: AbortSignal,
 ) => {
     const response = await tmdbApi.get(`/${type}/${id}`, {
         params: { append_to_response: "credits" },
