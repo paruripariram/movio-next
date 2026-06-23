@@ -8,6 +8,7 @@ import { useRef } from "react";
 import { CircleArrowLeft, CircleArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import detailsRouter from "@/helpers/detailsRouter";
+import Loader from "@/components/Loader";
 
 function Home() {
     const { nowPlaying, isLoadingNowPlaying } = useNowPlaying();
@@ -45,7 +46,9 @@ function Home() {
                         <p>Нет фильмов в прокате</p>
                     )}
                     {isLoadingNowPlaying && (
-                        <p>Загрузка фильмов в прокате...</p>
+                        <Loader size="small">
+                            Загрузка фильмов в прокате...
+                        </Loader>
                     )}
                     {nowPlaying.length > 0 && !isLoadingNowPlaying && (
                         <p className="text-gray-500 text-3xl px-6">
@@ -110,7 +113,7 @@ function Home() {
                     {recommendations.length === 0 &&
                         !isLoadingRecommendations && <p>Нет рекомендаций</p>}
                     {isLoadingRecommendations && (
-                        <p>Загрузка рекомендаций...</p>
+                        <Loader size="small">Загрузка рекомендаций...</Loader>
                     )}
                     {recommendations.length > 0 &&
                         !isLoadingRecommendations && (

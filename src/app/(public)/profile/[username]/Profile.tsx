@@ -4,6 +4,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import { useCollectionContext } from "@/context/CollectionContext";
 import { signOut } from "firebase/auth";
 import { auth } from "@/config/firebase";
+import Loader from "@/components/Loader";
 
 function Profile() {
     const { user, isLoading } = useAuthContext();
@@ -23,9 +24,7 @@ function Profile() {
     return (
         <div className="flex flex-col gap-6">
             {isLoading && (
-                <h1 className="text-gray-500 text-4xl px-6">
-                    Authenticating...
-                </h1>
+                <Loader size="large">Аутентификация...</Loader>
             )}
             {!isLoading && user && (
                 <h1 className="text-gray-500 text-4xl">
@@ -34,9 +33,9 @@ function Profile() {
                 </h1>
             )}
             {isLoadingCollection && (
-                <p className="text-gray-500 text-lg">
-                    Loading your collection...
-                </p>
+                <Loader size="medium">
+                    Загрузка вашей коллекции...
+                </Loader>
             )}
             {!isLoadingCollection && watchedMedia.length === 0 && (
                 <p className="text-gray-500 text-lg px-6">

@@ -6,6 +6,7 @@ import Card from "@/components/Card";
 import { useCollectionContext } from "@/context/CollectionContext";
 import { useRouter } from "next/navigation";
 import detailsRouter from "@/helpers/detailsRouter";
+import Loader from "@/components/Loader";
 
 export default function Collection() {
     const { isLoading } = useAuthContext();
@@ -21,7 +22,9 @@ export default function Collection() {
               : "filled";
     return (
         <div className="flex-1 min-w-0 flex flex-col">
-            {(isLoading || isLoadingCollection) && <p>Loading...</p>}
+            {(isLoading || isLoadingCollection) && (
+                <Loader size="large">Загрузка коллекции...</Loader>
+            )}
             {collectionArr.length === 0 &&
                 !isLoadingCollection &&
                 !isLoading && (

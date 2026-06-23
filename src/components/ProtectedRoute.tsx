@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useAuthContext } from "../context/AuthContext";
 import { APP_ROUTES } from "@/config/routes";
 import { useEffect } from "react";
+import Loader from "./Loader";
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -20,12 +21,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
     }, [user, isLoading, router]);
 
     if (isLoading) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-500"></div>
-                <p className="text-sm text-gray-500 mt-2">Please, wait...</p>
-            </div>
-        );
+        return <Loader size="large">Пожалуйста, подождите</Loader>;
     }
     if (user) {
         return <>{children}</>;

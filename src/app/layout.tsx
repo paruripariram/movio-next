@@ -29,7 +29,7 @@ export default function RootLayout({
                     <GenresProvider>
                         <CollectionProvider>
                             <Navbar />
-                            <div className="flex-1 min-w-0 ml-70 p-13">{children}</div>
+                            <div className="flex-1 min-w-0 ml-70 p-13 min-h-screen flex flex-col">{children}</div>
                         </CollectionProvider>
                     </GenresProvider>
                 </AuthProvider>

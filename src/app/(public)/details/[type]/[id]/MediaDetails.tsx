@@ -9,6 +9,7 @@ import useCollectionActions from "@/hooks/useCollectionActions";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { APP_ROUTES } from "@/config/routes";
+import Loader from "@/components/Loader";
 
 export default function MediaDetails() {
     const { user, isLoading } = useAuthContext();
@@ -33,7 +34,7 @@ export default function MediaDetails() {
 
     return (
         <>
-            {loading && <p>Loading...</p>}
+            {loading && <Loader size="large">Загрузка деталей...</Loader>}
             {error && <p>Error: {error}</p>}
             {details && (
                 <div>

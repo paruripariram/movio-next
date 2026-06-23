@@ -8,17 +8,9 @@ import Toggler from "@/components/Toggler";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import GenreCheckbox from "@/components/GenreCheckbox";
 import detailsRouter from "@/helpers/detailsRouter";
+import Loader from "@/components/Loader";
 
 function Search() {
-    // const [searchQuery, setSearchQuery] = useState("");
-
-    // const [searchParams, setSearchParams] = useSearchParams({
-    //             type: "movie",
-    //             with_text_query: "",
-    //             with_genres: "",
-
-    //         });
-
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
@@ -175,14 +167,7 @@ function Search() {
                                         .
                                     </p>
                                 )}
-                            {isFirstPageLoading && (
-                                <div className="flex flex-col items-center justify-center min-h-40 col-span-full">
-                                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-500"></div>
-                                    <p className="text-sm text-gray-500 mt-2">
-                                        Please, wait...
-                                    </p>
-                                </div>
-                            )}
+                            {isFirstPageLoading && <Loader>Загрузка результатов...</Loader>}
                             {searchResults.length > 0 &&
                                 !isFirstPageLoading &&
                                 searchResults.map((item) => {
