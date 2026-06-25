@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import { AuthProvider } from "@/context/AuthProvider";
 import { GenresProvider } from "@/context/GenresProvider";
 import { CollectionProvider } from "@/context/CollectionProvider";
+import { Toaster } from "sonner";
 
 const roboto = Roboto({
     variable: "--font-roboto",
@@ -30,6 +31,7 @@ export default function RootLayout({
                         <CollectionProvider>
                             <Navbar />
                             <div className="flex-1 min-w-0 ml-70 p-13 min-h-screen flex flex-col">{children}</div>
+                            <Toaster position="top-center" richColors closeButton/>
                         </CollectionProvider>
                     </GenresProvider>
                 </AuthProvider>

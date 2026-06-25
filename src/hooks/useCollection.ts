@@ -6,7 +6,7 @@ import { getCollection } from "@/services/database/firebase/collectionService";
 import { handleError } from "@/helpers/errorHandler";
 
 export default function useCollection(userId: string | undefined) {
-    const [error, setError] = useState<string | null>(null);
+    const [criticalError, setCriticalError] = useState<string | null>(null);
     const [rawCollectionArr, setRawCollectionArr] = useState<collectionItem[]>([]);
     const [loadedUserId, setLoadedUserId] = useState<string | undefined>(
         undefined,
@@ -22,18 +22,20 @@ export default function useCollection(userId: string | undefined) {
             (items) => {
                 setRawCollectionArr(items);
                 setLoadedUserId(userId);
+                setCriticalError(null);
             },
             (error) => {
-                handleError(error, "Error fetching collection:", setError);
+                const isCanceled = handleError(error, "Ошибка загрузки коллекции");
                 setLoadedUserId(userId);
+                if(isCanceled) return;
+                setCriticalError(error instanceof Error ? error.message : "Ошибка загрузки коллекции");
             },
         );
         return () => unsubscribe();
     }, [userId]);
 
     const collectionArr = userId ? rawCollectionArr : [];
-    const currentError = userId ? error : null;
     const isLoadingCollection = !!userId && loadedUserId !== userId;
 
-    return { collectionArr, isLoadingCollection, error: currentError };
+    return { collectionArr, isLoadingCollection, criticalError };
 }

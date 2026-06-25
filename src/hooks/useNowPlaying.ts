@@ -16,7 +16,7 @@ export default function useNowPlaying() {
                 const data = await getNowPlaying();
                 setNowPlaying(data.results);
             } catch (error) {
-                handleError(error, "Error fetching now playing movies:", setError);
+                handleError(error, "Error fetching now playing movies:", {setErrorCallback: setError});
             } finally {
                 setIsLoadingNowPlaying(false);
             }

@@ -58,7 +58,7 @@ export default function useCollectionActions(
             await addToCollection(user.uid, type, details.id, movieData);
             return true;
         } catch (error) {
-            handleError(error, "Error adding to collection:", setError);
+            handleError(error, "Error adding to collection:", {setErrorCallback: setError});
             setStatus(previousStatus);
             return false;
         } finally {
@@ -80,7 +80,7 @@ export default function useCollectionActions(
             await removeFromCollection(user.uid, type, details.id);
             return true;
         } catch (error) {
-            handleError(error, "Error removing from collection:", setError);
+            handleError(error, "Error removing from collection:", {setErrorCallback: setError});
             setStatus(previousStatus);
             return false;
         } finally {

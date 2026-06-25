@@ -14,7 +14,10 @@ import Loader from "@/components/Loader";
 export default function MediaDetails() {
     const { user, isLoading } = useAuthContext();
     const { id, type } = useParams() as { id: string; type: "movie" | "tv" };
-    const { details, loading, error } = useMediaDetails(id, type);
+    const { details, loading, criticalError } = useMediaDetails(id, type);
+
+    if (criticalError) throw criticalError;
+
     const router = useRouter();
 
     const {
@@ -35,7 +38,6 @@ export default function MediaDetails() {
     return (
         <>
             {loading && <Loader size="large">Загрузка деталей...</Loader>}
-            {error && <p>Error: {error}</p>}
             {details && (
                 <div>
                     <div className="relative -mx-13 -mt-13 overflow-hidden ">

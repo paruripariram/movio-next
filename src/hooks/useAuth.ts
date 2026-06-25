@@ -47,7 +47,7 @@ export default function useAuth() {
             router.push(APP_ROUTES.HOME.path);
             return true;
         } catch (error) {
-            handleError(error, "Failed to login user", setError);
+            handleError(error, "Failed to login user", {setErrorCallback: setError});;
             return false;
         } finally {
             setLoading(false);

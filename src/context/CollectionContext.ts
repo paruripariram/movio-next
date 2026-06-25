@@ -7,6 +7,7 @@ import type { collectionItem } from '../types';
 export interface CollectionContextType {
     collectionArr: collectionItem[];
     isLoadingCollection: boolean;
+    criticalError: unknown | null;
 }
 
 export const CollectionContext = createContext<CollectionContextType | undefined>(undefined)

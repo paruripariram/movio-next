@@ -11,7 +11,7 @@ import { handleError } from "@/helpers/errorHandler";
 export default function useRecommendation() {
     const [error, setError] = useState<string | null>(null);
     const { isLoading } = useAuthContext();
-    const { collectionArr, isLoadingCollection } = useCollectionContext();
+    const { collectionArr, isLoadingCollection, criticalError } = useCollectionContext();
     const [recommendations, setRecommendations] = useState<SearchResult[]>([]);
     const [isLoadingRecommendations, setIsLoadingRecommendations] =
         useState(true);
@@ -28,7 +28,7 @@ export default function useRecommendation() {
 
     useEffect(() => {
         if (
-            isLoadingCollection ||
+            isLoadingCollection && criticalError ||
             isLoading ||
             !genresMap.movieGenres ||
             !genresMap.tvGenres
@@ -48,7 +48,7 @@ export default function useRecommendation() {
             try {
                 setIsLoadingRecommendations(true);
 
-                if (collectionArr.length === 0) {
+                if (collectionArr.length === 0 || criticalError) {
                     const data = await search({ query: "", signal });
                     setRecommendations(data.results);
                     return;
@@ -119,7 +119,7 @@ export default function useRecommendation() {
                     .slice(0, 20);
                 setRecommendations(combinedResults);
             } catch (error) {
-                handleError(error, "Error fetching recommendations:", setError);
+                handleError(error, "Error fetching recommendations:", {setErrorCallback: setError});
             } finally {
                 setIsLoadingRecommendations(false);
             }
@@ -130,6 +130,6 @@ export default function useRecommendation() {
         return () => {
             abortController.abort();
         };
-    }, [collectionArr, genresMap, isLoadingCollection, isLoading]);
+    }, [collectionArr, genresMap, isLoadingCollection, isLoading, criticalError]);
     return { recommendations, isLoadingRecommendations, error };
 }

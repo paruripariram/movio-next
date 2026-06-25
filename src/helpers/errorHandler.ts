@@ -1,21 +1,35 @@
 import axios from "axios";
+import { toast } from "sonner";
 
-export function handleError(error: unknown, contextMessage: string, setErrorCallback?: (message: string) => void) {
-    if(axios.isCancel(error)){
-        console.log(`${contextMessage}: Request canceled`);
-        return;
-    }
-    if( error instanceof DOMException && error.name === "AbortError") return
-    if (error instanceof Error && error.message === "canceled") return;
+interface ErrorHandlerOptions {
+    setErrorCallback?: (message: string) => void;
+    skipToast?: boolean;
+}
+
+export function handleError(
+    error: unknown,
+    contextMessage: string,
+    options: ErrorHandlerOptions = {},
+) {
+    const { setErrorCallback, skipToast } = options;
+
+    if (axios.isCancel(error)) return true;
+    if (error instanceof DOMException && error.name === "AbortError") return true;
+    if (error instanceof Error && error.message === "canceled") return true;
+
+    let errorMessage = "An unknown error occurred";
+
     if (error instanceof Error) {
         console.error(`${contextMessage}: ${error.message}`);
-        if(setErrorCallback) setErrorCallback(error.message);
-
-        //TOAST
-
-
-    }else {
+        errorMessage = error.message;
+    } else {
         console.error(`${contextMessage}: Неизвестная ошибка`, error);
-        if(setErrorCallback) setErrorCallback("An unknown error occurred");
     }
+
+    if (setErrorCallback) setErrorCallback(errorMessage);
+
+    if (!skipToast) {
+        toast.error(`${contextMessage}: ${errorMessage}`);
+    }
+    return false;
 }

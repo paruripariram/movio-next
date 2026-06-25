@@ -10,7 +10,9 @@ import Loader from "@/components/Loader";
 
 export default function Collection() {
     const { isLoading } = useAuthContext();
-    const { collectionArr, isLoadingCollection } = useCollectionContext();
+    const { collectionArr, isLoadingCollection, criticalError } = useCollectionContext();
+
+    if(criticalError) throw criticalError
 
     const router = useRouter();
 

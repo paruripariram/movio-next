@@ -66,7 +66,7 @@ export default function useMovieSearch(
                 setHasMore(page < data.total_pages);
                 setError(null);
             } catch (error) {
-                handleError(error, "Error fetching search results:", setError);
+                handleError(error, "Error fetching search results:", {setErrorCallback: setError});
             } finally {
                 setIsLoading(false);
             }

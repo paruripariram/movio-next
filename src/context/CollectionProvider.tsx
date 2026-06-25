@@ -10,13 +10,14 @@ interface CollectionProviderProps {
 
 export function CollectionProvider({ children }: CollectionProviderProps) {
     const { user } = useAuthContext();
-    const { collectionArr, isLoadingCollection } = useCollection(user?.uid);
+    const { collectionArr, isLoadingCollection, criticalError } = useCollection(user?.uid);
 
     return (
         <CollectionContext.Provider
             value={{
                 collectionArr: collectionArr,
                 isLoadingCollection: isLoadingCollection,
+                criticalError,
             }}
         >
             {children}
