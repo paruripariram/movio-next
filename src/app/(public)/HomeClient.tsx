@@ -1,7 +1,6 @@
 "use client";
 
 import Card from "@/components/Card";
-import useNowPlaying from "@/hooks/useNowPlaying";
 import useRecommendation from "@/hooks/useRecommendation";
 import { useGenresContext } from "@/context/GenresContext";
 import { useRef, useState } from "react";
@@ -9,9 +8,15 @@ import { CircleArrowLeft, CircleArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import detailsRouter from "@/helpers/detailsRouter";
 import Loader from "@/components/Loader";
+import { SearchResult } from "@/types/tmdb";
 
-function Home() {
-    const { nowPlaying, isLoadingNowPlaying } = useNowPlaying();
+interface HomeProps {
+    initialNowPlaying: SearchResult[];
+}
+
+function Home({ initialNowPlaying }: HomeProps) {
+    const nowPlaying = initialNowPlaying;
+
     const { recommendations, isLoadingRecommendations } = useRecommendation();
     const { genresMap } = useGenresContext();
     const router = useRouter();
@@ -37,7 +42,11 @@ function Home() {
         });
     }
 
-    function handleScroll(ref: React.RefObject<HTMLDivElement | null>, setCanScrollLeft: (val: boolean) => void, setCanScrollRight: (val: boolean) => void) {
+    function handleScroll(
+        ref: React.RefObject<HTMLDivElement | null>,
+        setCanScrollLeft: (val: boolean) => void,
+        setCanScrollRight: (val: boolean) => void,
+    ) {
         if (!ref.current) return;
         const { scrollLeft, scrollWidth, clientWidth } = ref.current;
         setCanScrollLeft(scrollLeft > 0);
@@ -47,7 +56,7 @@ function Home() {
     return (
         <div className="flex flex-col gap-10 py-6 text-white">
             <div className="flex flex-col gap-4">
-                {nowPlaying.length > 0 && !isLoadingNowPlaying && (
+                {nowPlaying.length > 0 && (
                     <div className="flex items-center justify-between px-2">
                         <h2 className="text-gray-400 text-2xl font-semibold">
                             Сейчас в прокате
@@ -72,15 +81,7 @@ function Home() {
                     </div>
                 )}
 
-                {isLoadingNowPlaying && (
-                    <div className="flex justify-center py-10 w-full">
-                        <Loader size="small">
-                            Загрузка фильмов в прокате...
-                        </Loader>
-                    </div>
-                )}
-
-                {nowPlaying.length === 0 && !isLoadingNowPlaying && (
+                {nowPlaying.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-12 px-4 rounded-2xl bg-zinc-900/30 border border-zinc-800/50 max-w-2xl mx-auto w-full text-center my-4">
                         <p className="text-zinc-400 text-lg font-medium">
                             Нет фильмов в прокате или не удалось их загрузить
@@ -88,11 +89,17 @@ function Home() {
                     </div>
                 )}
 
-                {nowPlaying.length > 0 && !isLoadingNowPlaying && (
+                {nowPlaying.length > 0 && (
                     <div className="relative group -mx-4 px-4">
                         <div
                             ref={nowRef}
-                            onScroll={() => handleScroll(nowRef, setCanScrollLeftNow, setCanScrollRightNow)}
+                            onScroll={() =>
+                                handleScroll(
+                                    nowRef,
+                                    setCanScrollLeftNow,
+                                    setCanScrollRightNow,
+                                )
+                            }
                             className="flex gap-6 overflow-x-auto w-full py-2 snap-x snap-mandatory scrollbar-hide"
                         >
                             {nowPlaying.map((item) => {
@@ -157,7 +164,7 @@ function Home() {
                 )}
 
                 {isLoadingRecommendations && (
-                    <div className="flex justify-center py-10 w-full">
+                    <div className="flex flex-col items-center justify-center h-125 w-full text-zinc-400">
                         <Loader size="small">Загрузка рекомендаций...</Loader>
                     </div>
                 )}
@@ -174,7 +181,13 @@ function Home() {
                     <div className="relative group -mx-4 px-4">
                         <div
                             ref={recRef}
-                            onScroll={() => handleScroll(recRef, setCanScrollLeftRec, setCanScrollRightRec)}
+                            onScroll={() =>
+                                handleScroll(
+                                    recRef,
+                                    setCanScrollLeftRec,
+                                    setCanScrollRightRec,
+                                )
+                            }
                             className="flex gap-6 overflow-x-auto w-full py-2 snap-x snap-mandatory scrollbar-hide"
                         >
                             {recommendations.map((item) => {
