@@ -167,7 +167,7 @@ function Search() {
                                         .
                                     </p>
                                 )}
-                            {isFirstPageLoading && <Loader>Загрузка результатов...</Loader>}
+                            {isFirstPageLoading && <Loader size="medium">Загрузка результатов...</Loader>}
                             {searchResults.length > 0 &&
                                 !isFirstPageLoading &&
                                 searchResults.map((item) => {

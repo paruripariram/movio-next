@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/AuthProvider";
 import { GenresProvider } from "@/context/GenresProvider";
 import { CollectionProvider } from "@/context/CollectionProvider";
 import { Toaster } from "sonner";
+import PageTransition from "@/components/PageTransition";
 
 const roboto = Roboto({
     variable: "--font-roboto",
@@ -30,8 +31,14 @@ export default function RootLayout({
                     <GenresProvider>
                         <CollectionProvider>
                             <Navbar />
-                            <div className="flex-1 min-w-0 ml-70 p-13 min-h-screen flex flex-col">{children}</div>
-                            <Toaster position="top-center" richColors closeButton/>
+                            <PageTransition className="flex-1 min-w-0 ml-70 p-13 min-h-screen flex flex-col">
+                                {children}
+                            </PageTransition>
+                            <Toaster
+                                position="top-center"
+                                richColors
+                                closeButton
+                            />
                         </CollectionProvider>
                     </GenresProvider>
                 </AuthProvider>
