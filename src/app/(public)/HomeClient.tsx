@@ -100,7 +100,7 @@ function Home({ initialNowPlaying }: HomeProps) {
                                     setCanScrollRightNow,
                                 )
                             }
-                            className="flex gap-6 overflow-x-auto w-full py-2 snap-x snap-mandatory scrollbar-hide"
+                            className="flex gap-6 overflow-x-auto w-full py-6 -my-2 snap-x snap-mandatory scrollbar-hide"
                         >
                             {nowPlaying.map((item) => {
                                 const itemGenres = item.genre_ids
@@ -116,7 +116,7 @@ function Home({ initialNowPlaying }: HomeProps) {
                                     <div
                                         key={item.id}
                                         tabIndex={0}
-                                        className="snap-start flex-none w-56 sm:w-64 md:w-72 h-105 outline-none focus:scale-[1.01] transition-transform"
+                                        className="group/slice snap-start flex-none w-56 sm:w-64 md:w-72 h-105 outline-none focus:scale-[1.01] transition-transform"
                                     >
                                         <Card
                                             item={item}
@@ -128,6 +128,7 @@ function Home({ initialNowPlaying }: HomeProps) {
                                                     "movie",
                                                 )
                                             }
+                                            className="group-first/slice:origin-left group-last/slice:origin-right"
                                         />
                                     </div>
                                 );
@@ -188,7 +189,7 @@ function Home({ initialNowPlaying }: HomeProps) {
                                     setCanScrollRightRec,
                                 )
                             }
-                            className="flex gap-6 overflow-x-auto w-full py-2 snap-x snap-mandatory scrollbar-hide"
+                            className="flex gap-6 overflow-x-auto w-full py-6 -my-2 snap-x snap-mandatory scrollbar-hide"
                         >
                             {recommendations.map((item) => {
                                 const itemGenres = item.genre_ids
@@ -204,7 +205,7 @@ function Home({ initialNowPlaying }: HomeProps) {
                                     <div
                                         key={item.id}
                                         tabIndex={0}
-                                        className="snap-start flex-none w-56 sm:w-64 md:w-72 h-105 outline-none focus:scale-[1.01] transition-transform"
+                                        className="group/slice snap-start flex-none w-56 sm:w-64 md:w-72 h-105 outline-none focus:scale-[1.01] transition-transform"
                                     >
                                         <Card
                                             item={item}
@@ -216,6 +217,7 @@ function Home({ initialNowPlaying }: HomeProps) {
                                                     item.media_type,
                                                 )
                                             }
+                                            className="group-first/slice:origin-left group-last/slice:origin-right"
                                         />
                                     </div>
                                 );

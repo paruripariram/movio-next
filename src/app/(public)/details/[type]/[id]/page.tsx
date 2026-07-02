@@ -1,7 +1,7 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import MediaDetails from "./MediaDetails";
-import { getMediaDetails } from "@/services/tmdb/movieService";
-import { handleError } from "@/helpers/errorHandler";
+import { getCachedMediaDetails } from "./details";
 
 interface Props {
     params: Promise<{ type: "movie" | "tv"; id: string }>;
@@ -9,20 +9,29 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { type, id } = await params;
+    const details = await getCachedMediaDetails(id, type);
 
-    try {
-        const details = await getMediaDetails(id, type);
-        const title = type === "movie" ? details.title : details.name;
+    if (!details) {
         return {
-            title: title || "Media Details",
-            description: details.overview || "",
+            title: "Media Details",
         };
-    } catch (error) {
-        handleError(error, "Error fetching media details for metadata:");
-        return { title: "Media Details" };
     }
+
+    const title = "title" in details ? details.title : details.name;
+
+    return {
+        title: title || "Media Details",
+        description: details.overview || "",
+    };
 }
 
-export default function MediaDetailsPage() {
-    return <MediaDetails />;
+export default async function MediaDetailsPage({ params }: Props) {
+    const { type, id } = await params;
+    const details = await getCachedMediaDetails(id, type);
+
+    if (!details) {
+        notFound();
+    }
+
+    return <MediaDetails details={details} type={type} />;
 }

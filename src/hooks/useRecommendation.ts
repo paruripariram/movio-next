@@ -11,11 +11,19 @@ import { handleError } from "@/helpers/errorHandler";
 export default function useRecommendation() {
     const [error, setError] = useState<string | null>(null);
     const { isLoading } = useAuthContext();
-    const { collectionArr, isLoadingCollection, criticalError } = useCollectionContext();
+    const { collectionArr, isLoadingCollection, criticalError } =
+        useCollectionContext();
     const [recommendations, setRecommendations] = useState<SearchResult[]>([]);
-    const [isLoadingRecommendations, setIsLoadingRecommendations] =
-        useState(true);
+    const [isFetching, setIsFetching] = useState(false);
     const { genresMap } = useGenresContext();
+
+    const isLoadingRecommendations = !criticalError &&
+        (isLoading ||
+            isLoadingCollection ||
+            !genresMap.movieGenres ||
+            !genresMap.tvGenres ||
+            isFetching);
+    
 
     type MovieResult = Omit<
         Extract<SearchResult, { media_type: "movie" }>,
@@ -28,10 +36,11 @@ export default function useRecommendation() {
 
     useEffect(() => {
         if (
-            isLoadingCollection && criticalError ||
+            isLoadingCollection ||
             isLoading ||
             !genresMap.movieGenres ||
-            !genresMap.tvGenres
+            !genresMap.tvGenres ||
+            criticalError
         ) {
             return;
         }
@@ -46,7 +55,7 @@ export default function useRecommendation() {
 
         const fetchRecommendations = async (signal: AbortSignal) => {
             try {
-                setIsLoadingRecommendations(true);
+                setIsFetching(true);
 
                 if (collectionArr.length === 0 || criticalError) {
                     const data = await search({ query: "", signal });
@@ -119,9 +128,11 @@ export default function useRecommendation() {
                     .slice(0, 20);
                 setRecommendations(combinedResults);
             } catch (error) {
-                handleError(error, "Error fetching recommendations:", {setErrorCallback: setError});
+                handleError(error, "Error fetching recommendations:", {
+                    setErrorCallback: setError,
+                });
             } finally {
-                setIsLoadingRecommendations(false);
+                setIsFetching(false);
             }
         };
         const abortController = new AbortController();
@@ -130,6 +141,12 @@ export default function useRecommendation() {
         return () => {
             abortController.abort();
         };
-    }, [collectionArr, genresMap, isLoadingCollection, isLoading, criticalError]);
+    }, [
+        collectionArr,
+        genresMap,
+        isLoadingCollection,
+        isLoading,
+        criticalError,
+    ]);
     return { recommendations, isLoadingRecommendations, error };
 }

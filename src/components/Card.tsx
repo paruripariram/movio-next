@@ -9,9 +9,10 @@ interface CardProps {
     item: SearchResult | collectionItem;
     genres: string[];
     onClick?: () => void;
+    className?: string;
 }
 
-function Card({ item, genres, onClick }: CardProps) {
+function Card({ item, genres, onClick, className = "" }: CardProps) {
     const { collectionArr } = useCollectionContext();
     const mediaType =
         "type" in item ? item.type : "title" in item ? "movie" : "tv";
@@ -25,12 +26,11 @@ function Card({ item, genres, onClick }: CardProps) {
     const imageSrc = posterUrl
         ? `https://image.tmdb.org/t/p/w500${posterUrl}`
         : '/noPoster';
-    // const overview = isMedia ? item.overview : "";
     const voteAverage = item.vote_average;
     return (
         <div
             onClick={onClick}
-            className="relative flex max-w-92.5 w-full aspect-2/3 overflow-hidden rounded-4xl cursor-pointer"
+            className={`relative flex max-w-92.5 w-full aspect-2/3 overflow-hidden rounded-4xl cursor-pointer hover:scale-105 transition-transform duration-300 ease-in-out ${className}`}
         >
             <Image
                 src={imageSrc}
