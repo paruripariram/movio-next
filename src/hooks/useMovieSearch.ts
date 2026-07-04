@@ -18,31 +18,20 @@ export default function useMovieSearch(
     const [hasMore, setHasMore] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
 
-    const currentParams = useRef({ searchQuery, type, genres });
-
-    const [prevQuery, setPrevQuery] = useState(searchQuery);
-    const [prevType, setPrevType] = useState(type);
-    const [prevGenres, setPrevGenres] = useState(genres);
-
-    if (
-        searchQuery !== prevQuery ||
-        type !== prevType ||
-        genres !== prevGenres
-    ) {
-        setPrevQuery(searchQuery);
-        setPrevType(type);
-        setPrevGenres(genres);
-        setPage(1);
-    }
+    const prevParams = useRef({ searchQuery, type, genres });
 
     useEffect(() => {
         const isFiltersChanged =
-            currentParams.current.type !== type ||
-            currentParams.current.genres !== genres ||
-            currentParams.current.searchQuery !== searchQuery;
+            prevParams.current.type !== type ||
+            prevParams.current.genres !== genres ||
+            prevParams.current.searchQuery !== searchQuery;
 
-        currentParams.current = { searchQuery, type, genres };
-        if (isFiltersChanged && page !== 1) return;
+        if (isFiltersChanged) {
+            setPage(1);
+            prevParams.current = { searchQuery, genres, type };
+
+            if(page !== 1) return
+        }
 
         async function fetchResults(signal: AbortSignal) {
             setIsDebouncing(false);
@@ -66,7 +55,9 @@ export default function useMovieSearch(
                 setHasMore(page < data.total_pages);
                 setError(null);
             } catch (error) {
-                handleError(error, "Error fetching search results:", {setErrorCallback: setError});
+                handleError(error, "Error fetching search results:", {
+                    setErrorCallback: setError,
+                });
             } finally {
                 setIsLoading(false);
             }
