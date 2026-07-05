@@ -5,7 +5,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import Card from "@/components/Card";
 import { useCollectionContext } from "@/context/CollectionContext";
 import { useRouter } from "next/navigation";
-import detailsRouter from "@/helpers/detailsRouter";
+import {detailsRouter} from "@/helpers/detailsRouter";
 import Loader from "@/components/Loader";
 
 export default function Collection() {
