@@ -46,7 +46,6 @@ export default function useMovieSearch(
                     genres,
                     signal,
                 });
-                console.log("Search results:", data);
                 if (page === 1) {
                     setSearchResults(data.results);
                 } else {

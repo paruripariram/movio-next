@@ -9,7 +9,6 @@ import { useAuthContext } from "@/context/AuthContext";
 import { handleError } from "@/helpers/errorHandler";
 
 export default function useRecommendation() {
-    const [error, setError] = useState<string | null>(null);
     const { isLoading } = useAuthContext();
     const { collectionArr, isLoadingCollection, criticalError } =
         useCollectionContext();
@@ -128,9 +127,7 @@ export default function useRecommendation() {
                     .slice(0, 20);
                 setRecommendations(combinedResults);
             } catch (error) {
-                handleError(error, "Error fetching recommendations:", {
-                    setErrorCallback: setError,
-                });
+                handleError(error, "Error fetching recommendations:");
             } finally {
                 setIsFetching(false);
             }
@@ -148,5 +145,5 @@ export default function useRecommendation() {
         isLoading,
         criticalError,
     ]);
-    return { recommendations, isLoadingRecommendations, error };
+    return { recommendations, isLoadingRecommendations };
 }
