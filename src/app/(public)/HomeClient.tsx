@@ -1,14 +1,11 @@
 "use client";
 
-import Card from "@/components/Card";
 import useRecommendation from "@/hooks/useRecommendation";
-import { useGenresContext } from "@/context/GenresContext";
 import { useRef, useState } from "react";
 import { CircleArrowLeft, CircleArrowRight } from "lucide-react";
-import { useRouter } from "next/navigation";
-import detailsRouter from "@/helpers/detailsRouter";
 import Loader from "@/components/Loader";
 import { SearchResult } from "@/types/tmdb";
+import HorizontalCarouselSection from "@/components/HorizontalCarouselSection";
 
 interface HomeProps {
     initialNowPlaying: SearchResult[];
@@ -18,8 +15,6 @@ function Home({ initialNowPlaying }: HomeProps) {
     const nowPlaying = initialNowPlaying;
 
     const { recommendations, isLoadingRecommendations } = useRecommendation();
-    const { genresMap } = useGenresContext();
-    const router = useRouter();
 
     const nowRef = useRef<HTMLDivElement | null>(null);
     const recRef = useRef<HTMLDivElement | null>(null);
@@ -40,17 +35,6 @@ function Home({ initialNowPlaying }: HomeProps) {
             left: dir === "left" ? -step : step,
             behavior: "smooth",
         });
-    }
-
-    function handleScroll(
-        ref: React.RefObject<HTMLDivElement | null>,
-        setCanScrollLeft: (val: boolean) => void,
-        setCanScrollRight: (val: boolean) => void,
-    ) {
-        if (!ref.current) return;
-        const { scrollLeft, scrollWidth, clientWidth } = ref.current;
-        setCanScrollLeft(scrollLeft > 0);
-        setCanScrollRight(scrollLeft + clientWidth < scrollWidth);
     }
 
     return (
@@ -90,51 +74,7 @@ function Home({ initialNowPlaying }: HomeProps) {
                 )}
 
                 {nowPlaying.length > 0 && (
-                    <div className="relative group -mx-4 px-4">
-                        <div
-                            ref={nowRef}
-                            onScroll={() =>
-                                handleScroll(
-                                    nowRef,
-                                    setCanScrollLeftNow,
-                                    setCanScrollRightNow,
-                                )
-                            }
-                            className="flex gap-6 overflow-x-auto w-full py-6 -my-2 snap-x snap-mandatory scrollbar-hide"
-                        >
-                            {nowPlaying.map((item) => {
-                                const itemGenres = item.genre_ids
-                                    .map(
-                                        (id) =>
-                                            genresMap.movieGenres[id] ||
-                                            genresMap.tvGenres[id],
-                                    )
-                                    .filter((name): name is string =>
-                                        Boolean(name),
-                                    );
-                                return (
-                                    <div
-                                        key={item.id}
-                                        tabIndex={0}
-                                        className="group/slice snap-start flex-none w-56 sm:w-64 md:w-72 h-105 outline-none focus:scale-[1.01] transition-transform"
-                                    >
-                                        <Card
-                                            item={item}
-                                            genres={itemGenres}
-                                            onClick={() =>
-                                                detailsRouter(
-                                                    router,
-                                                    item.id,
-                                                    "movie",
-                                                )
-                                            }
-                                            className="group-first/slice:origin-left group-last/slice:origin-right"
-                                        />
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
+                    <HorizontalCarouselSection CarouselRef={nowRef} data={nowPlaying} setCanScrollLeft={setCanScrollLeftNow} setCanScrollRight={setCanScrollRightNow} mediaType="movie"/>
                 )}
             </div>
 
@@ -179,51 +119,7 @@ function Home({ initialNowPlaying }: HomeProps) {
                 )}
 
                 {recommendations.length > 0 && !isLoadingRecommendations && (
-                    <div className="relative group -mx-4 px-4">
-                        <div
-                            ref={recRef}
-                            onScroll={() =>
-                                handleScroll(
-                                    recRef,
-                                    setCanScrollLeftRec,
-                                    setCanScrollRightRec,
-                                )
-                            }
-                            className="flex gap-6 overflow-x-auto w-full py-6 -my-2 snap-x snap-mandatory scrollbar-hide"
-                        >
-                            {recommendations.map((item) => {
-                                const itemGenres = item.genre_ids
-                                    .map(
-                                        (id) =>
-                                            genresMap.movieGenres[id] ||
-                                            genresMap.tvGenres[id],
-                                    )
-                                    .filter((name): name is string =>
-                                        Boolean(name),
-                                    );
-                                return (
-                                    <div
-                                        key={item.id}
-                                        tabIndex={0}
-                                        className="group/slice snap-start flex-none w-56 sm:w-64 md:w-72 h-105 outline-none focus:scale-[1.01] transition-transform"
-                                    >
-                                        <Card
-                                            item={item}
-                                            genres={itemGenres}
-                                            onClick={() =>
-                                                detailsRouter(
-                                                    router,
-                                                    item.id,
-                                                    item.media_type,
-                                                )
-                                            }
-                                            className="group-first/slice:origin-left group-last/slice:origin-right"
-                                        />
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
+                    <HorizontalCarouselSection CarouselRef={recRef} data={recommendations} setCanScrollLeft={setCanScrollLeftRec} setCanScrollRight={setCanScrollRightRec}/>
                 )}
             </div>
         </div>
