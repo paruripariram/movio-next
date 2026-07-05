@@ -11,7 +11,7 @@ interface HomeProps {
     initialNowPlaying: SearchResult[];
 }
 
-function Home({ initialNowPlaying }: HomeProps) {
+export default function Home({ initialNowPlaying }: HomeProps) {
     const nowPlaying = initialNowPlaying;
 
     const { recommendations, isLoadingRecommendations } = useRecommendation();
@@ -125,5 +125,3 @@ function Home({ initialNowPlaying }: HomeProps) {
         </div>
     );
 }
-
-export default Home;

@@ -7,10 +7,10 @@ import { useGenresContext } from "@/context/GenresContext";
 import Toggler from "@/components/Toggler";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import GenreCheckbox from "@/components/GenreCheckbox";
-import detailsRouter from "@/helpers/detailsRouter";
+import {detailsRouter} from "@/helpers/detailsRouter";
 import Loader from "@/components/Loader";
 
-function Search() {
+export default function Search() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
@@ -219,5 +219,3 @@ function Search() {
         </>
     );
 }
-
-export default Search;

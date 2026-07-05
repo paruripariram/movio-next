@@ -7,7 +7,7 @@ interface GenreCheckboxProps {
     onChange: (genreId: number, checked: boolean) => void
 }
 
-function GenreCheckbox({ genreId, name, checked, onChange }: GenreCheckboxProps) {
+export default function GenreCheckbox({ genreId, name, checked, onChange }: GenreCheckboxProps) {
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         onChange(genreId, e.target.checked);
     }
@@ -25,5 +25,3 @@ function GenreCheckbox({ genreId, name, checked, onChange }: GenreCheckboxProps)
         </label>
     )
 }
-
-export default GenreCheckbox

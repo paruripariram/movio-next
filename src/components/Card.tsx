@@ -12,7 +12,7 @@ interface CardProps {
     className?: string;
 }
 
-function Card({ item, genres, onClick, className = "" }: CardProps) {
+export default function Card({ item, genres, onClick, className = "" }: CardProps) {
     const { collectionArr } = useCollectionContext();
     const mediaType =
         "type" in item ? item.type : "title" in item ? "movie" : "tv";
@@ -65,5 +65,3 @@ function Card({ item, genres, onClick, className = "" }: CardProps) {
         </div>
     );
 }
-
-export default Card;

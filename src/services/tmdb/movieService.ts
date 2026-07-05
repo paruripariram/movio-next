@@ -1,4 +1,4 @@
-import tmdbApi from "./axios";
+import {tmdbApi} from "./axios";
 import type { Genre } from "@/types/tmdb";
 
 export const search = async ({

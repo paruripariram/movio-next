@@ -1,4 +1,4 @@
-import detailsRouter from "@/helpers/detailsRouter";
+import {detailsRouter} from "@/helpers/detailsRouter";
 import Card from "./Card";
 import { SearchResult } from "@/types";
 import { useRouter } from "next/navigation";
