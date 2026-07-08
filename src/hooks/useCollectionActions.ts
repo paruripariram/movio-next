@@ -33,7 +33,7 @@ export default function useCollectionActions(
     }, [userId, mediaId, type]);
 
     const handleAddToCollection = async (
-        collectionType: "watched" | "wishlist",
+        collectionType: "watched" | "wishlist", platformId?: string
     ) => {
         if (isPending) return false;
         if (!user) {
@@ -52,6 +52,7 @@ export default function useCollectionActions(
             vote_average: details.vote_average,
             type: type,
             status: collectionType,
+            ...(platformId && { platform: platformId }),
         };
 
         try {
