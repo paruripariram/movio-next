@@ -6,4 +6,5 @@ export type collectionItem = {
     vote_average: number;
     type: "movie" | "tv";
     status: "wishlist" | "watched";
+    platform?: string;
 };
