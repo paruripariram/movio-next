@@ -95,11 +95,11 @@ export default function Search() {
                 <div className="flex">
                     <aside className="bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-70 h-auto self-start rounded-4xl shrink-0 p-5">
                         <Toggler
-                            type={searchParams.get("type") as "movie" | "tv"}
+                            type={currentType as "movie" | "tv"}
                             typeHandler={typeHandler}
                         />
                         <div className="flex flex-col gap-4 mt-6">
-                            {searchParams.get("type") === "movie"
+                            {currentType === "movie"
                                 ? Object.entries(genresMap.movieGenres).map(
                                       ([id, name]) => (
                                           <GenreCheckbox
