@@ -15,7 +15,9 @@ interface NavMenuLinkProps {
 export default function NavMenuLink({ href, children }: NavMenuLinkProps) {
     const pathname = usePathname();
 
-    const isActive = href === pathname;
+    const decodedPathname = decodeURIComponent(pathname);
+
+    const isActive = href === decodedPathname;
     return (
         <Link
             href={href}

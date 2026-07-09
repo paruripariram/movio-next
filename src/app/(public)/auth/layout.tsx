@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { auth } from "@/config/firebase";
+import { useRouter } from "next/navigation";
 import { APP_ROUTES } from "@/config/routes";
+import { useAuthContext } from "@/context/AuthContext";
 
 interface AuthLayoutProps {
     children: ReactNode;
@@ -11,23 +11,18 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
     const router = useRouter();
-    const pathname = usePathname();
-    const title = pathname.includes("signin") ? "Login" : "Registration";
+    const { user, isLoading } = useAuthContext();
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
-                router.push(APP_ROUTES.HOME.path);
-            }
-        });
-        return () => unsubscribe();
-    }, [router]);
+        if( user && !isLoading ) {
+            router.push(APP_ROUTES.HOME.path);
+        }
+    }, [user, isLoading, router]);
     return (
-        <div className="flex flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <h1 className="text-white text-5xl font-bold mb-6">{title}</h1>
-            <div className="rounded-xl bg-form-color p-8 min-h-100 min-w-100">
+        <div className="flex flex-col w-full min-h-screen items-center justify-center -ml-35 -mt-30">
+
                 {children}
-            </div>
+  
         </div>
     );
 }

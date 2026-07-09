@@ -1,38 +1,45 @@
 "use client";
 
 import { useState } from "react";
-import { loginUser, registerUser } from "@/services/auth/auth";
 import type { authForm } from "../types";
 import { useRouter } from "next/navigation";
 import { APP_ROUTES } from "@/config/routes";
 import { handleError } from "@/helpers/errorHandler";
+import { userService } from "@/services/database/firebase/userService";
+import { signIn } from "next-auth/react";
 
 export default function useAuth() {
     const router = useRouter();
 
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     const handleRegister = async (formData: authForm) => {
-        if (loading) return;
+        if (loading) return false;
         setLoading(true);
-        setError(null);
         try {
-            await registerUser(
+            await userService.registerCredentialsUser(
                 formData.email,
                 formData.password,
                 formData.username!,
             );
+
+            const result = await signIn("credentials", {
+                email: formData.email,
+                password: formData.password,
+                redirect: false,
+            })
+            if(result?.error){
+                handleError(result.error, "Аккаунт создан, но не удалось войти автоматически. Попробуйте войти вручную.");
+                return false
+            }
+
             router.push(APP_ROUTES.HOME.path);
+            router.refresh();
             return true;
         } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message);
-                return false;
-            } else {
-                setError("Failed to register user");
-                return false;
-            }
+            handleError(error, "Ошибка при регистрации")
+            return false;
+
         } finally {
             setLoading(false);
         }
@@ -41,17 +48,25 @@ export default function useAuth() {
     const handleLogin = async (formData: authForm) => {
         if (loading) return;
         setLoading(true);
-        setError(null);
         try {
-            await loginUser(formData.email, formData.password);
+            const result = await signIn("credentials", {
+                email: formData.email,
+                password: formData.password,
+                redirect: false,
+            });
+            if(result?.error){
+                handleError(result.error, "Ошибка при входе. Проверьте свои учетные данные и попробуйте снова.");
+                return false;
+            }
             router.push(APP_ROUTES.HOME.path);
+            router.refresh();
             return true;
         } catch (error) {
-            handleError(error, "Failed to login user", {setErrorCallback: setError});;
+            handleError(error, "Ошибка при входе");
             return false;
         } finally {
             setLoading(false);
         }
     };
-    return { handleRegister, handleLogin, loading, error };
+    return { handleRegister, handleLogin, loading };
 }

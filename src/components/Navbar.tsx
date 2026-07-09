@@ -77,25 +77,35 @@ export default function Navbar() {
                     <li className="nav-li">
                         <NavMenuLink
                             href={APP_ROUTES.PROFILE.path(
-                                user.displayName || "profile",
+                                user.name || "profile",
                             )}
                         >
                             {({ isActive }) => (
                                 <>
                                     <div
-                                        className={`w-12 h-12 rounded-full bg-gray-500 text-form-color flex items-center justify-center text-3xl ${
+                                        className={`w-12 h-12 rounded-full flex items-center justify-center text-3xl ${
                                             isActive
                                                 ? "bg-primary text-white"
                                                 : "bg-gray-500 text-form-color"
                                         }`}
                                     >
-                                        {(user.displayName
-                                            ? user.displayName.charAt(0)
-                                            : user.email?.charAt(0) || "?"
-                                        ).toUpperCase()}
+                                        {user.image ? (
+                                            <Image
+                                                src={user.image}
+                                                alt="Profile"
+                                                width={48}
+                                                height={48}
+                                                className="rounded-full"
+                                            />
+                                        ) : (
+                                            (user.name
+                                                ? user.name.charAt(0)
+                                                : user.email?.charAt(0) || "?"
+                                            ).toUpperCase()
+                                        )}
                                     </div>
                                     <span className="truncate">
-                                        {user.displayName || user.email}
+                                        {user.name || user.email}
                                     </span>
                                 </>
                             )}

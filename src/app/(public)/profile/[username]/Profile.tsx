@@ -1,10 +1,11 @@
-'use client'
+"use client";
 
 import { useAuthContext } from "@/context/AuthContext";
 import { useCollectionContext } from "@/context/CollectionContext";
-import { signOut } from "firebase/auth";
-import { auth } from "@/config/firebase";
+import { signOut } from "next-auth/react";
 import Loader from "@/components/Loader";
+import { APP_ROUTES } from "@/config/routes";
+import { handleError } from "@/helpers/errorHandler";
 
 function Profile() {
     const { user, isLoading } = useAuthContext();
@@ -15,27 +16,23 @@ function Profile() {
 
     async function handleLogout() {
         try {
-            await signOut(auth);
+            await signOut({ callbackUrl: APP_ROUTES.SIGNIN.path });
         } catch (error) {
-            console.error("Logout error:", error);
+            handleError(error, "Ошибка при выходе из аккаунта");
         }
     }
 
     return (
         <div className="flex flex-col gap-6">
-            {isLoading && (
-                <Loader size="large">Аутентификация...</Loader>
-            )}
+            {isLoading && <Loader size="large">Аутентификация...</Loader>}
             {!isLoading && user && (
                 <h1 className="text-gray-500 text-4xl">
                     {" "}
-                    {user.displayName || user.email}
+                    {user.name || user.email}
                 </h1>
             )}
             {isLoadingCollection && (
-                <Loader size="medium">
-                    Загрузка вашей коллекции...
-                </Loader>
+                <Loader size="medium">Загрузка вашей коллекции...</Loader>
             )}
             {!isLoadingCollection && watchedMedia.length === 0 && (
                 <p className="text-gray-500 text-lg px-6">

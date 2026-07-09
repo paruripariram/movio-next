@@ -1,28 +1,39 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from "react";
-import { auth } from "@/config/firebase";
-import type { firebaseUser } from "../types/firebaseUser";
 import { AuthContext } from "./AuthContext";
 import type { AuthContextType } from "./AuthContext";
+import { SessionProvider, useSession } from "next-auth/react";
 
 interface AuthProviderProps {
     children: React.ReactNode;
 }
 
-export function AuthProvider({ children }: AuthProviderProps) {
-    const [authState, setAuthState] = useState<AuthContextType>({ user: null, isLoading: true });
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) =>
-            setAuthState({ user: user as firebaseUser, isLoading: false }),
-        );
+function AuthStateBridge({ children }: AuthProviderProps) {
+    const { data: session, status } = useSession();
 
-        return () => unsubscribe();
-    },[]);
+    const authState: AuthContextType = {
+        user: session?.user?.id
+            ? {
+                  id: session.user.id,
+                  name: session.user.name ?? null,
+                  email: session.user.email ?? null,
+                  image: session.user.image ?? null,
+              }
+            : null,
+        isLoading: status === "loading",
+    };
 
     return (
         <AuthContext.Provider value={authState}>
             {children}
         </AuthContext.Provider>
+    );
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
+    return (
+        <SessionProvider>
+            <AuthStateBridge>{children}</AuthStateBridge>
+        </SessionProvider>
     );
 }

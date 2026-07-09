@@ -1,10 +1,10 @@
 'use client'
 
+import { User } from '@/types';
 import { createContext, useContext } from 'react'
-import type { firebaseUser } from '@/types/firebaseUser'
 
 export interface AuthContextType {
-    user: firebaseUser;
+    user: User | null;
     isLoading: boolean;
 }
 
