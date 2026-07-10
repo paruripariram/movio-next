@@ -17,10 +17,10 @@ export const metadata: Metadata = {
     title: { template: "%s - Movio", default: "Movio" },
     description:
         "Movio — персональный веб-сервис для поиска фильмов, управления личной коллекцией и отслеживания просмотренного медиа-контента.",
-    icons:{icon: "/logoMovio.png"}
-    };
+    icons: { icon: "/logoMovio.png" },
+};
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
@@ -31,7 +31,7 @@ export default function RootLayout({
                 <AuthProvider>
                     <GenresProvider>
                         <CollectionProvider>
-                            <Navbar />
+                            <Navbar/>
                             <PageTransition className="flex-1 min-w-0 ml-70 p-13 min-h-screen flex flex-col">
                                 {children}
                             </PageTransition>

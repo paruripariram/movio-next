@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { AuthContext } from "./AuthContext";
 import type { AuthContextType } from "./AuthContext";
 import { SessionProvider, useSession } from "next-auth/react";
@@ -22,6 +23,10 @@ function AuthStateBridge({ children }: AuthProviderProps) {
             : null,
         isLoading: status === "loading",
     };
+    const userId = session?.user?.id ?? "guest";
+    <div key={userId} className="absolute inset-0 -z-50 pointer-events-none">
+        {children}
+    </div>;
 
     return (
         <AuthContext.Provider value={authState}>
@@ -31,8 +36,9 @@ function AuthStateBridge({ children }: AuthProviderProps) {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+    const pathname = usePathname();
     return (
-        <SessionProvider>
+        <SessionProvider key={pathname}>
             <AuthStateBridge>{children}</AuthStateBridge>
         </SessionProvider>
     );

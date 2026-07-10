@@ -5,23 +5,31 @@ import AuthInput from "@/components/AuthInput";
 import AuthButton from "@/components/AuthButton";
 import useForm from "@/hooks/useForm";
 import type { authForm } from "@/types";
-import useAuth from "@/hooks/useAuth";
 import Link from "next/link";
 import { APP_ROUTES } from "@/config/routes";
 import GoogleButton from "@/components/GoogleButton";
+import { loginAction } from "@/actions/authActions";
+import { useTransition } from "react";
+import { handleError } from "@/helpers/errorHandler";
 
 export default function SignIn() {
-    const { formData, handleChange, resetForm } = useForm<authForm>({
+    const { formData, handleChange } = useForm<authForm>({
         email: "",
         password: "",
     });
 
-    const { handleLogin, loading } = useAuth();
+    const [isPending, startTransition] = useTransition();
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const success = await handleLogin(formData);
-        if (success) resetForm();
+    const handleFormLogin = (formData: FormData) => {
+        startTransition(async () => {
+            const result = await loginAction(formData);
+            if (result && !result.success) {
+                handleError(
+                    result.error,
+                    "Ошибка при входе. Попробуйте еще раз.",
+                );
+            }
+        });
     };
 
     return (
@@ -29,7 +37,7 @@ export default function SignIn() {
             <h1 className="text-white text-5xl font-bold mb-6">Login</h1>
             <div className="rounded-xl bg-form-color p-8 min-h-100 min-w-100">
                 <form
-                    onSubmit={handleSubmit}
+                    action={handleFormLogin}
                     className="flex flex-col gap-15"
                     autoComplete="off"
                 >
@@ -42,6 +50,7 @@ export default function SignIn() {
                             onChange={handleChange}
                             placeholder="johnwick@email.com"
                             icon={AtSign}
+                            isLoading={isPending}
                         />
 
                         <AuthInput
@@ -52,10 +61,11 @@ export default function SignIn() {
                             onChange={handleChange}
                             placeholder="••••••••"
                             icon={LockKeyhole}
+                            isLoading={isPending}
                         />
                     </div>
 
-                    <AuthButton isLoading={loading}>Sign In</AuthButton>
+                    <AuthButton isLoading={isPending}>Sign In</AuthButton>
                 </form>
                 <div className="flex flex-col text-center text-white/50 mb-8">
                     <p>Don&apos;t have an account?</p>{" "}
@@ -66,7 +76,7 @@ export default function SignIn() {
                         Sign Up
                     </Link>
                 </div>
-                <GoogleButton isLoading={loading} page="signin" />
+                <GoogleButton isLoading={isPending} page="signin" />
             </div>
         </>
     );

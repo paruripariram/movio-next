@@ -10,9 +10,10 @@ interface AuthInputProps {
     placeholder: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     icon: LucideIcon
+    isLoading?: boolean;
 }
 
-export default function AuthInput({inputName, inputType, label, value, placeholder, onChange, icon: Icon }: AuthInputProps) {
+export default function AuthInput({inputName, inputType, label, value, placeholder, onChange, icon: Icon, isLoading }: AuthInputProps) {
     return (
         <div className="flex flex-col gap-1">
                     <label
@@ -25,12 +26,14 @@ export default function AuthInput({inputName, inputType, label, value, placehold
                         <Icon  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"/>
                         <input
                             id={`${inputName}-input`}
+                            name={inputName}
                             type={inputType}
                             className="auth-input"
                             placeholder={placeholder}
                             required
                             value={value}
                             onChange={onChange}
+                            disabled={isLoading}
                         />
                     </div>
                 </div>

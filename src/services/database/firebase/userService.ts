@@ -1,6 +1,6 @@
-// src/services/userService.ts
 import { db } from "@/config/firebase";
 import { doc, getDoc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { saltAndHashPassword, verifyPassword } from "@/helpers/password";
 
 export const userService = {
   async syncOAuthUser(userId: string, email: string, username: string) {
@@ -9,7 +9,7 @@ export const userService = {
     
     if (!userSnap.exists()) {
       await setDoc(userRef, {
-        uid: userId,
+        id: userId,
         email,
         username,
         createdAt: new Date().toISOString(),
@@ -26,11 +26,13 @@ export const userService = {
       throw new Error("Такой email уже зарегистрирован. Попробуйте другой.");
     }
 
+    const hashedPassword = await saltAndHashPassword(password);
+
     const newUserRef = doc(collection(db, "users")); 
     const newUserData = {
-      uid: newUserRef.id,
+      id: newUserRef.id,
       email,
-      password,
+      password: hashedPassword,
       username,
       createdAt: new Date().toISOString(),
     };
@@ -52,7 +54,9 @@ export const userService = {
     const userDoc = querySnapshot.docs[0];
     const userData = userDoc.data();
 
-    if (userData.password !== password) {
+    const isPasswordValid = await verifyPassword(password, userData.password);
+
+    if (!isPasswordValid) {
       throw new Error("Неверный пароль. Пожалуйста, попробуйте еще раз.");
     }
 
