@@ -9,6 +9,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import GenreCheckbox from "@/components/GenreCheckbox";
 import {detailsRouter} from "@/helpers/detailsRouter";
 import Loader from "@/components/Loader";
+import { useEffect } from "react";
 
 export default function Search() {
     const searchParams = useSearchParams();
@@ -17,6 +18,15 @@ export default function Search() {
 
     const searchQuery = searchParams.get("with_text_query") || "";
     const withGenres = searchParams.get("with_genres") || "";
+    
+    useEffect(() => {
+        if (!searchParams.has("type")) {
+            const nextParams = new URLSearchParams(searchParams);
+            nextParams.set("type", "movie");
+            router.replace(`${pathname}?${nextParams.toString()}`, { scroll: false });
+        }
+    }, [searchParams, pathname, router]);
+
     const currentType = searchParams.get("type") || "movie";
 
     function setSearchParams(
