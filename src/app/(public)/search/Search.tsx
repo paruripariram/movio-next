@@ -20,6 +20,7 @@ export default function Search() {
     const withGenres = searchParams.get("with_genres") || "";
     
     useEffect(() => {
+        if (!pathname.includes("/search")) return;
         if (!searchParams.has("type")) {
             const nextParams = new URLSearchParams(searchParams);
             nextParams.set("type", "movie");
