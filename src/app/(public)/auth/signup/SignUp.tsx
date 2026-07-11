@@ -11,9 +11,10 @@ import { APP_ROUTES } from "@/config/routes";
 import { handleError } from "@/helpers/errorHandler";
 import { registerAction } from "@/actions/authActions";
 import { useTransition } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function SignUp() {
-    const { formData, handleChange } = useForm<authForm>({
+    const { formData, handleChange, errors, setErrors } = useForm<authForm>({
         username: "",
         email: "",
         password: "",
@@ -22,13 +23,18 @@ export default function SignUp() {
     const [isPending, startTransition] = useTransition();
 
     const handleFormRegister = (formData: FormData) => {
+        setErrors({});
         startTransition(async () => {
             const result = await registerAction(formData);
             if (result && !result.success) {
-                handleError(
-                    result.error,
-                    "Ошибка при регистрации. Попробуйте еще раз.",
-                );
+                if (result.fieldErrors) {
+                    setErrors(result.fieldErrors);
+                } else if (result.error) {
+                    handleError(
+                        result.error,
+                        "Ошибка при регистрации. Попробуйте еще раз.",
+                    );
+                }
             }
         });
     };
@@ -53,6 +59,20 @@ export default function SignUp() {
                             icon={User}
                             isLoading={isPending}
                         />
+                        <div className="h-6">
+                            <AnimatePresence>
+                                {errors.username && (
+                                    <motion.p
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0 }}
+                                        className="text-red-500 text-sm"
+                                    >
+                                        {errors.username[0]}
+                                    </motion.p>
+                                )}
+                            </AnimatePresence>
+                        </div>
 
                         <AuthInput
                             inputName="email"
@@ -64,6 +84,20 @@ export default function SignUp() {
                             icon={AtSign}
                             isLoading={isPending}
                         />
+                        <div className="h-6">
+                            <AnimatePresence>
+                                {errors.email && (
+                                    <motion.p
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0 }}
+                                        className="text-red-500 text-sm"
+                                    >
+                                        {errors.email[0]}
+                                    </motion.p>
+                                )}
+                            </AnimatePresence>
+                        </div>
 
                         <AuthInput
                             inputName="password"
@@ -75,6 +109,20 @@ export default function SignUp() {
                             icon={LockKeyhole}
                             isLoading={isPending}
                         />
+                        <div className="h-6">
+                            <AnimatePresence>
+                                {errors.password && (
+                                    <motion.p
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0 }}
+                                        className="text-red-500 text-sm"
+                                    >
+                                        {errors.password[0]}
+                                    </motion.p>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </div>
 
                     <AuthButton isLoading={isPending}>Sign Up</AuthButton>

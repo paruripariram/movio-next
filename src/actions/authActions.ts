@@ -4,6 +4,7 @@ import { signIn } from "@/auth";
 import { APP_ROUTES } from "@/config/routes";
 import { userService } from "@/services/database/firebase/userService";
 import { AuthError } from "next-auth";
+import { signInSchema, signUpSchema } from "@/helpers/schemas/authSchema";
 
 interface NextRedirectError {
     digest: string;
@@ -21,19 +22,22 @@ function isNextRedirect(error: unknown): error is NextRedirectError {
 
 export async function registerAction(formData: FormData) {
     try {
-        if (!formData.get("username")) {
-            return { success: false, error: "Имя пользователя обязательно" };
+        const rawData = Object.fromEntries(formData);
+        const result = signUpSchema.safeParse(rawData);
+        if (!result.success) {
+            return { success: false, fieldErrors: result.error.flatten().fieldErrors };
         }
+        const {username, email, password} = result.data;
 
         await userService.registerCredentialsUser(
-            formData.get("email") as string,
-            formData.get("password") as string,
-            formData.get("username") as string,
+            email,
+            password,
+            username,
         );
 
         await signIn("credentials", {
-            email: formData.get("email") as string,
-            password: formData.get("password") as string,
+            email,
+            password,
             redirectTo: APP_ROUTES.HOME.path,
         });
 
@@ -58,10 +62,16 @@ export async function registerAction(formData: FormData) {
 }
 
 export async function loginAction(formData: FormData) {
+    const rawData = Object.fromEntries(formData);
+    const result = signInSchema.safeParse(rawData);
+    if (!result.success) {
+        return { success: false, fieldErrors: result.error.flatten().fieldErrors };
+    }
+    const {email, password} = result.data;
     try {
         await signIn("credentials", {
-            email: formData.get("email") as string,
-            password: formData.get("password") as string,
+            email,
+            password,
             redirectTo: APP_ROUTES.HOME.path,
         });
 

@@ -11,9 +11,10 @@ import GoogleButton from "@/components/GoogleButton";
 import { loginAction } from "@/actions/authActions";
 import { useTransition } from "react";
 import { handleError } from "@/helpers/errorHandler";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function SignIn() {
-    const { formData, handleChange } = useForm<authForm>({
+    const { formData, handleChange, errors, setErrors } = useForm<authForm>({
         email: "",
         password: "",
     });
@@ -21,13 +22,18 @@ export default function SignIn() {
     const [isPending, startTransition] = useTransition();
 
     const handleFormLogin = (formData: FormData) => {
+        setErrors({});
         startTransition(async () => {
             const result = await loginAction(formData);
             if (result && !result.success) {
-                handleError(
-                    result.error,
-                    "Ошибка при входе. Попробуйте еще раз.",
-                );
+                if (result.fieldErrors) {
+                    setErrors(result.fieldErrors);
+                } else if (result.error) {
+                    handleError(
+                        result.error,
+                        "Ошибка при входе. Попробуйте еще раз.",
+                    );
+                }
             }
         });
     };
@@ -40,6 +46,7 @@ export default function SignIn() {
                     action={handleFormLogin}
                     className="flex flex-col gap-15"
                     autoComplete="off"
+                    noValidate
                 >
                     <div className="flex flex-col gap-5">
                         <AuthInput
@@ -52,6 +59,20 @@ export default function SignIn() {
                             icon={AtSign}
                             isLoading={isPending}
                         />
+                        <div className="h-6">
+                            <AnimatePresence>
+                                {errors.email && (
+                                    <motion.p
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0 }}
+                                        className="text-red-500 text-sm"
+                                    >
+                                        {errors.email[0]}
+                                    </motion.p>
+                                )}
+                            </AnimatePresence>
+                        </div>
 
                         <AuthInput
                             inputName="password"
@@ -63,6 +84,20 @@ export default function SignIn() {
                             icon={LockKeyhole}
                             isLoading={isPending}
                         />
+                        <div className="h-6">
+                            <AnimatePresence>
+                                {errors.password && (
+                                    <motion.p
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0 }}
+                                        className="text-red-500 text-sm"
+                                    >
+                                        {errors.password[0]}
+                                    </motion.p>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </div>
 
                     <AuthButton isLoading={isPending}>Sign In</AuthButton>
