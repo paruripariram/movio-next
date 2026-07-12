@@ -3,18 +3,20 @@
 import Card from "@/components/Card";
 import SearchInput from "@/components/SearchInput";
 import useMovieSearch from "@/hooks/useMovieSearch";
-import { useGenresContext } from "@/context/GenresContext";
 import Toggler from "@/components/Toggler";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import GenreCheckbox from "@/components/GenreCheckbox";
 import {detailsRouter} from "@/helpers/detailsRouter";
 import Loader from "@/components/Loader";
 import { useEffect } from "react";
+import { useGenresStore } from "@/store/genreStore";
 
 export default function Search() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
+    
+    const genresMap = useGenresStore((state) => state.genresMap);
 
     const searchQuery = searchParams.get("with_text_query") || "";
     const withGenres = searchParams.get("with_genres") || "";
@@ -74,7 +76,6 @@ export default function Search() {
         setRetryCount,
     } = useMovieSearch(searchQuery, currentType as "movie" | "tv", withGenres);
     const isFirstPageLoading = (isLoading || isDebouncing) && page === 1;
-    const { genresMap } = useGenresContext();
 
     function inputHandler(e: React.ChangeEvent<HTMLInputElement>) {
         const nextParams = new URLSearchParams(searchParams);

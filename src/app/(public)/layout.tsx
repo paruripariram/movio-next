@@ -3,10 +3,10 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { AuthProvider } from "@/context/AuthProvider";
-import { GenresProvider } from "@/context/GenresProvider";
 import { CollectionProvider } from "@/context/CollectionProvider";
 import { Toaster } from "sonner";
 import PageTransition from "@/components/PageTransition";
+import { GenresInitializer } from "@/components/providers/GenresInitializer";
 
 const roboto = Roboto({
     variable: "--font-roboto",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     icons: { icon: "/logoMovio.png" },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
@@ -29,9 +29,9 @@ export default async function RootLayout({
         <html lang="en" className={`${roboto.className} h-full antialiased`}>
             <body className="min-h-full flex bg-bgcolor">
                 <AuthProvider>
-                    <GenresProvider>
+                    <GenresInitializer>
                         <CollectionProvider>
-                            <Navbar/>
+                            <Navbar />
                             <PageTransition className="flex-1 min-w-0 ml-70 p-13 min-h-screen flex flex-col">
                                 {children}
                             </PageTransition>
@@ -41,7 +41,7 @@ export default async function RootLayout({
                                 closeButton
                             />
                         </CollectionProvider>
-                    </GenresProvider>
+                    </GenresInitializer>
                 </AuthProvider>
             </body>
         </html>

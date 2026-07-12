@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import type { collectionItem, SearchResult } from "../types";
-import { useGenresContext } from "../context/GenresContext";
 import { search } from "@/services/tmdb/movieService";
 import { useCollectionContext } from "@/context/CollectionContext";
 import { useAuthContext } from "@/context/AuthContext";
 import { handleError } from "@/helpers/errorHandler";
+import { useGenresStore } from "@/store/genreStore";
 
 export default function useRecommendation() {
     const { isLoading } = useAuthContext();
@@ -14,15 +14,18 @@ export default function useRecommendation() {
         useCollectionContext();
     const [recommendations, setRecommendations] = useState<SearchResult[]>([]);
     const [isFetching, setIsFetching] = useState(false);
-    const { genresMap } = useGenresContext();
 
-    const isLoadingRecommendations = !criticalError &&
+    const genresMap = useGenresStore((state) => state.genresMap);
+    const movieGenresCount = Object.keys(genresMap.movieGenres).length;
+    const tvGenresCount = Object.keys(genresMap.tvGenres).length;
+
+    const isLoadingRecommendations =
+        !criticalError &&
         (isLoading ||
             isLoadingCollection ||
             !genresMap.movieGenres ||
             !genresMap.tvGenres ||
             isFetching);
-    
 
     type MovieResult = Omit<
         Extract<SearchResult, { media_type: "movie" }>,
@@ -138,9 +141,11 @@ export default function useRecommendation() {
         return () => {
             abortController.abort();
         };
+        //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         collectionArr,
-        genresMap,
+        movieGenresCount,
+        tvGenresCount,
         isLoadingCollection,
         isLoading,
         criticalError,

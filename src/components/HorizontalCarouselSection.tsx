@@ -2,7 +2,7 @@ import {detailsRouter} from "@/helpers/detailsRouter";
 import Card from "./Card";
 import { SearchResult } from "@/types";
 import { useRouter } from "next/navigation";
-import { useGenresContext } from "@/context/GenresContext";
+import { useGenresStore } from "@/store/genreStore";
 
 interface HorizontalCarouselSectionProps {
     CarouselRef: React.RefObject<HTMLDivElement | null>;
@@ -32,7 +32,7 @@ export default function HorizontalCarouselSection({
 }: HorizontalCarouselSectionProps) {
     const router = useRouter();
 
-    const { genresMap } = useGenresContext();
+    const genresMap = useGenresStore((state) => state.genresMap);
 
     return (
         <div className="relative group -mx-4 px-4">
