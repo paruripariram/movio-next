@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import { AuthProvider } from "@/context/AuthProvider";
 import { Toaster } from "sonner";
 import PageTransition from "@/components/PageTransition";
 import { AppInitializer } from "@/components/providers/AppInitializer";
+import { SessionProvider } from "next-auth/react";
 
 const roboto = Roboto({
     variable: "--font-roboto",
@@ -27,14 +27,15 @@ export default function RootLayout({
     return (
         <html lang="en" className={`${roboto.className} h-full antialiased`}>
             <body className="min-h-full flex bg-bgcolor">
-                <AuthProvider>
-                    <AppInitializer />
-                    <Navbar />
-                    <PageTransition className="flex-1 min-w-0 ml-70 p-13 min-h-screen flex flex-col">
-                        {children}
-                    </PageTransition>
-                    <Toaster position="top-center" richColors closeButton />
-                </AuthProvider>
+                <SessionProvider>
+                    <AppInitializer>
+                        <Navbar />
+                        <PageTransition className="flex-1 min-w-0 ml-70 p-13 min-h-screen flex flex-col">
+                            {children}
+                        </PageTransition>
+                        <Toaster position="top-center" richColors closeButton />
+                    </AppInitializer>
+                </SessionProvider>
             </body>
         </html>
     );

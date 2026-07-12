@@ -2,7 +2,6 @@
 
 import BackButton from "@/components/BackButton";
 import CollectionButton from "@/components/CollectionButton";
-import { useAuthContext } from "@/context/AuthContext";
 import { APP_ROUTES } from "@/config/routes";
 import useCollectionActions from "@/hooks/useCollectionActions";
 import type { MovieDetails, TVDetails } from "@/types";
@@ -11,6 +10,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import WatchedModal from "@/components/WatchedModal";
 import { useState } from "react";
+import { useAuthStore } from "@/store/authStore";
+import Loader from "@/components/Loader";
 
 type MediaDetailsProps = {
     details: MovieDetails | TVDetails;
@@ -18,7 +19,7 @@ type MediaDetailsProps = {
 };
 
 export default function MediaDetails({ details, type }: MediaDetailsProps) {
-    const { user, isLoading } = useAuthContext();
+    const { user, isLoadingUser } = useAuthStore();
     const router = useRouter();
 
     const [isWatchedModalOpen, setIsWatchedModalOpen] = useState(false);
@@ -89,9 +90,9 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                                     exit={{ opacity: 0, y: -10 }}
                                     className="flex flex-col gap-5"
                                 >
-                                    {isLoading && <p>Loading...</p>}
+                                    {isLoadingUser && <Loader size="small">Loading...</Loader>}
 
-                                    {!user && !isLoading && (
+                                    {!user && !isLoadingUser && (
                                         <CollectionButton
                                             type="notAnAccount"
                                             onClick={() =>

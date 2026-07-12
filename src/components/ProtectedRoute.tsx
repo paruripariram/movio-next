@@ -1,26 +1,26 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useAuthContext } from "../context/AuthContext";
 import { APP_ROUTES } from "@/config/routes";
 import { useEffect } from "react";
 import Loader from "./Loader";
+import { useAuthStore } from "@/store/authStore";
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-    const { user, isLoading } = useAuthContext();
+    const { user, isLoadingUser } = useAuthStore();
     const router = useRouter();
 
     useEffect(() => {
-        if (!isLoading && !user) {
+        if (!isLoadingUser && !user) {
             router.push(APP_ROUTES.SIGNIN.path);
         }
-    }, [user, isLoading, router]);
+    }, [user, isLoadingUser, router]);
 
-    if (isLoading) {
+    if (isLoadingUser) {
         return <Loader size="large">Пожалуйста, подождите</Loader>;
     }
     if (user) {

@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import type { collectionItem, SearchResult } from "../types";
 import { search } from "@/services/tmdb/movieService";
-import { useAuthContext } from "@/context/AuthContext";
 import { handleError } from "@/helpers/errorHandler";
 import { useGenresStore } from "@/store/genreStore";
 import { useCollectionStore } from "@/store/collectionStore";
+import { useAuthStore } from "@/store/authStore";
 
 type MovieResult = Omit<
     Extract<SearchResult, { media_type: "movie" }>,
@@ -23,7 +23,7 @@ function addTvMediaType(items: TvResult[]): SearchResult[] {
 }
 
 export default function useRecommendation() {
-    const { isLoading } = useAuthContext();
+    const { isLoadingUser } = useAuthStore();
 
     const collectionArr = useCollectionStore((state) => state.collectionArr);
     const isLoadingCollection = useCollectionStore(
@@ -40,7 +40,7 @@ export default function useRecommendation() {
 
     const isLoadingRecommendations =
         !criticalError &&
-        (isLoading ||
+        (isLoadingUser ||
             isLoadingCollection ||
             !genresMap.movieGenres ||
             !genresMap.tvGenres ||
@@ -49,7 +49,7 @@ export default function useRecommendation() {
     useEffect(() => {
         if (
             isLoadingCollection ||
-            isLoading ||
+            isLoadingUser ||
             !genresMap.movieGenres ||
             !genresMap.tvGenres ||
             criticalError
@@ -149,7 +149,7 @@ export default function useRecommendation() {
         movieGenresCount,
         tvGenresCount,
         isLoadingCollection,
-        isLoading,
+        isLoadingUser,
         criticalError,
     ]);
     return { recommendations, isLoadingRecommendations };

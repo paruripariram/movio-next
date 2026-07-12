@@ -144,14 +144,14 @@ export default function Search() {
                         {searchQuery.trim() === "" &&
                             searchParams.get("with_genres") === "" && (
                                 <p className="text-gray-500 text-3xl px-6">
-                                    Popular now.
+                                    Популярное сейчас.
                                 </p>
                             )}
                         <div className="w-full grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6 p-6 justify-items-center">
                             {error && (
                                 <div className="col-span-full flex flex-col items-center py-10 gap-4">
                                     <p className="flex w-60 h-20 border-zinc-800 text-zinc-400 text-3xl text-center">
-                                        Failed to load results.
+                                        Не удалось загрузить результаты.
                                     </p>
                                     <button
                                         className="bg-primary text-white w-40 h-12 rounded-xl flex items-center justify-center relative disabled:opacity-70 cursor-pointer shadow-glow hover:shadow-glow-bold"
@@ -160,7 +160,7 @@ export default function Search() {
                                             setRetryCount((prev) => prev + 1);
                                         }}
                                     >
-                                        Try again
+                                        Попробовать снова
                                     </button>
                                 </div>
                             )}

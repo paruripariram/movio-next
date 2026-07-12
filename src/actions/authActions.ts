@@ -1,7 +1,6 @@
 "use server";
 
 import { signIn } from "@/auth";
-import { APP_ROUTES } from "@/config/routes";
 import { userService } from "@/services/database/firebase/userService";
 import { AuthError } from "next-auth";
 import { signInSchema, signUpSchema } from "@/helpers/schemas/authSchema";
@@ -25,20 +24,19 @@ export async function registerAction(formData: FormData) {
         const rawData = Object.fromEntries(formData);
         const result = signUpSchema.safeParse(rawData);
         if (!result.success) {
-            return { success: false, fieldErrors: result.error.flatten().fieldErrors };
+            return {
+                success: false,
+                fieldErrors: result.error.flatten().fieldErrors,
+            };
         }
-        const {username, email, password} = result.data;
+        const { username, email, password } = result.data;
 
-        await userService.registerCredentialsUser(
-            email,
-            password,
-            username,
-        );
+        await userService.registerCredentialsUser(email, password, username);
 
         await signIn("credentials", {
             email,
             password,
-            redirectTo: APP_ROUTES.HOME.path,
+            redirect: false,
         });
 
         return { success: true };
@@ -65,14 +63,17 @@ export async function loginAction(formData: FormData) {
     const rawData = Object.fromEntries(formData);
     const result = signInSchema.safeParse(rawData);
     if (!result.success) {
-        return { success: false, fieldErrors: result.error.flatten().fieldErrors };
+        return {
+            success: false,
+            fieldErrors: result.error.flatten().fieldErrors,
+        };
     }
-    const {email, password} = result.data;
+    const { email, password } = result.data;
     try {
         await signIn("credentials", {
             email,
             password,
-            redirectTo: APP_ROUTES.HOME.path,
+            redirect: false,
         });
 
         return { success: true };

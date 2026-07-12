@@ -1,15 +1,15 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useAuthContext } from "@/context/AuthContext";
 import Card from "@/components/Card";
 import { useRouter } from "next/navigation";
 import {detailsRouter} from "@/helpers/detailsRouter";
 import Loader from "@/components/Loader";
 import { useCollectionStore } from "@/store/collectionStore";
+import { useAuthStore } from "@/store/authStore";
 
 export default function Collection() {
-    const { isLoading } = useAuthContext();
+    const { isLoadingUser } = useAuthStore();
 
     const collectionArr = useCollectionStore((state) => state.collectionArr);
     const isLoadingCollection = useCollectionStore((state) => state.isLoadingCollection);
@@ -20,19 +20,19 @@ export default function Collection() {
     const router = useRouter();
 
     const viewKey =
-        isLoading || isLoadingCollection
+        isLoadingUser || isLoadingCollection
             ? "loading"
             : collectionArr.length === 0
               ? "empty"
               : "filled";
     return (
         <div className="flex-1 min-w-0 flex flex-col">
-            {(isLoading || isLoadingCollection) && (
+            {(isLoadingUser || isLoadingCollection) && (
                 <Loader size="large">Загрузка коллекции...</Loader>
             )}
             {collectionArr.length === 0 &&
                 !isLoadingCollection &&
-                !isLoading && (
+                !isLoadingUser && (
                     <p className="text-gray-500 text-3xl px-6">
                         Ваша коллекця пуста.
                     </p>

@@ -25,7 +25,7 @@ export default function GoogleButton({ isLoading, page }: GoogleButtonProps) {
                         width={36}
                         height={36}
                     />
-                    <p>Sign {page === 'signin' ? 'in' : 'up'} with Google</p>
+                    <p>{page === 'signin' ? 'Войти' : 'Зарегистрироваться'} через Google</p>
                 </div>
             )}
         </button>

@@ -1,9 +1,9 @@
 export const APP_ROUTES = {
-    HOME: { path: "/", title: "Home" },
-    SEARCH: { path: "/search", title: "Search" },
-    COLLECTION: { path: "/collection", title: "Collection" },
-    SIGNIN: { path: "/auth/signin", title: "Sign In" },
-    SIGNUP: { path: "/auth/signup", title: "Sign Up" },
+    HOME: { path: "/", title: "Главная" },
+    SEARCH: { path: "/search", title: "Поиск" },
+    COLLECTION: { path: "/collection", title: "Коллекция" },
+    SIGNIN: { path: "/auth/signin", title: "Войти" },
+    SIGNUP: { path: "/auth/signup", title: "Зарегистрироваться" },
     PROFILE: {
         path: (username: string) => `/profile/${username}`,
     },

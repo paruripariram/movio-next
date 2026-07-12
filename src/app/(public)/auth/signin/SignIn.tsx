@@ -12,8 +12,12 @@ import { loginAction } from "@/actions/authActions";
 import { useTransition } from "react";
 import { handleError } from "@/helpers/errorHandler";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function SignIn() {
+    const {update} = useSession()
+    const router = useRouter();
     const { formData, handleChange, errors, setErrors } = useForm<authForm>({
         email: "",
         password: "",
@@ -25,6 +29,10 @@ export default function SignIn() {
         setErrors({});
         startTransition(async () => {
             const result = await loginAction(formData);
+            if (result?.success) {
+                await update();
+                router.replace(APP_ROUTES.HOME.path);
+            }
             if (result && !result.success) {
                 if (result.fieldErrors) {
                     setErrors(result.fieldErrors);
@@ -40,7 +48,7 @@ export default function SignIn() {
 
     return (
         <>
-            <h1 className="text-white text-5xl font-bold mb-6">Login</h1>
+            <h1 className="text-white text-5xl font-bold mb-6">Авторизация</h1>
             <div className="rounded-xl bg-form-color p-8 min-h-100 min-w-100">
                 <form
                     action={handleFormLogin}
@@ -59,7 +67,7 @@ export default function SignIn() {
                             icon={AtSign}
                             isLoading={isPending}
                         />
-                        <div className="h-6">
+                        <div className="h-3">
                             <AnimatePresence>
                                 {errors.email && (
                                     <motion.p
@@ -84,7 +92,7 @@ export default function SignIn() {
                             icon={LockKeyhole}
                             isLoading={isPending}
                         />
-                        <div className="h-6">
+                        <div className="h-3">
                             <AnimatePresence>
                                 {errors.password && (
                                     <motion.p
@@ -103,12 +111,12 @@ export default function SignIn() {
                     <AuthButton isLoading={isPending}>Sign In</AuthButton>
                 </form>
                 <div className="flex flex-col text-center text-white/50 mb-8">
-                    <p>Don&apos;t have an account?</p>{" "}
+                    <p>Еще не зарегистрированы?</p>{" "}
                     <Link
                         href={APP_ROUTES.SIGNUP.path}
                         className="text-primary"
                     >
-                        Sign Up
+                        Зарегистрироваться
                     </Link>
                 </div>
                 <GoogleButton isLoading={isPending} page="signin" />

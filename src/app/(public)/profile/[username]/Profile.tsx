@@ -1,14 +1,15 @@
 "use client";
-
-import { useAuthContext } from "@/context/AuthContext";
+;
 import { signOut } from "next-auth/react";
 import Loader from "@/components/Loader";
 import { APP_ROUTES } from "@/config/routes";
 import { handleError } from "@/helpers/errorHandler";
 import { useCollectionStore } from "@/store/collectionStore";
+import { useAuthStore } from "@/store/authStore";
 
 function Profile() {
-    const { user, isLoading } = useAuthContext();
+    const { user, isLoadingUser } = useAuthStore();
+    
     const collectionArr = useCollectionStore((state) => state.collectionArr);
     const isLoadingCollection = useCollectionStore(
         (state) => state.isLoadingCollection,
@@ -27,8 +28,8 @@ function Profile() {
 
     return (
         <div className="flex flex-col gap-6">
-            {isLoading && <Loader size="large">Аутентификация...</Loader>}
-            {!isLoading && user && (
+            {isLoadingUser && <Loader size="large">Аутентификация...</Loader>}
+            {!isLoadingUser && user && (
                 <h1 className="text-gray-500 text-4xl">
                     {" "}
                     {user.name || user.email}
@@ -39,19 +40,19 @@ function Profile() {
             )}
             {!isLoadingCollection && watchedMedia.length === 0 && (
                 <p className="text-gray-500 text-lg px-6">
-                    You have no watched media items yet.
+                    Вы еще ничего не смотрели.
                 </p>
             )}
             {!isLoadingCollection && watchedMedia.length > 0 && (
                 <p className="text-gray-500 text-lg px-6">
-                    You have {watchedMedia.length} watched media items.
+                    Вы посмотрели {watchedMedia.length} фильмов или сериалов.
                 </p>
             )}
             <button
                 className="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded w-25 transition duration-200"
                 onClick={handleLogout}
             >
-                Logout
+                Выйти
             </button>
         </div>
     );

@@ -17,7 +17,7 @@ export default function SearchInput({ value, onChange }: SearchInputProps) {
                     value={value}
                     onChange={onChange}
                     type="text"
-                    placeholder="Enter movie name, producer or genre..."
+                    placeholder="Введите название фильма или выберите жанр"
                     className="text-xl w-full pl-20 rounded-2xl bg-input-color h-20 p-2 text-white caret-primary transition duration-200 ease-in-out placeholder:text-gray-500 focus:ring-2 focus:ring-primary focus:outline-none tracking-widest;"
                 />
             </div>

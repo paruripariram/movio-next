@@ -1,7 +1,6 @@
 "use client";
 
 import NavMenuLink from "./NavLink";
-import { useAuthContext } from "@/context/AuthContext";
 import {
     CircleUser,
     Clapperboard,
@@ -12,6 +11,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { APP_ROUTES } from "@/config/routes";
 import Image from "next/image";
+import { useAuthStore } from "@/store/authStore";
 
 type NavItem = {
     href: string;
@@ -34,7 +34,7 @@ const navItems: NavItem[] = [
 ];
 
 export default function Navbar() {
-    const { user, isLoading } = useAuthContext();
+    const { user, isLoadingUser } = useAuthStore();
 
     return (
         <nav className="flex flex-col items-center p-5 w-70 bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] rounded-br-4xl fixed">
@@ -57,7 +57,7 @@ export default function Navbar() {
                         </NavMenuLink>
                     </li>
                 ))}
-                {isLoading && (
+                {isLoadingUser && (
                     <li className="nav-li">
                         <div className="p-3 w-full flex gap-2 rounded-2xl text-gray-500">
                             <LoaderCircle className="animate-spin" />
@@ -65,7 +65,7 @@ export default function Navbar() {
                         </div>
                     </li>
                 )}
-                {!isLoading && !user && (
+                {!isLoadingUser && !user && (
                     <li className="nav-li">
                         <NavMenuLink href={APP_ROUTES.SIGNIN.path}>
                             <CircleUser />
@@ -73,7 +73,7 @@ export default function Navbar() {
                         </NavMenuLink>
                     </li>
                 )}
-                {!isLoading && user && (
+                {!isLoadingUser && user && (
                     <li className="nav-li">
                         <NavMenuLink
                             href={APP_ROUTES.PROFILE.path(
