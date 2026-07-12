@@ -1,10 +1,10 @@
 "use client";
 
 import type { collectionItem, SearchResult } from "@/types";
-import { useCollectionContext } from "@/context/CollectionContext";
 import { Bookmark, Check } from "lucide-react";
 import Image from "next/image";
 import { PLATFORMS } from "@/config/platforms";
+import { useCollectionStore } from "@/store/collectionStore";
 
 interface CardProps {
     item: SearchResult | collectionItem;
@@ -19,7 +19,7 @@ export default function Card({
     onClick,
     className = "",
 }: CardProps) {
-    const { collectionArr } = useCollectionContext();
+    const collectionArr = useCollectionStore((state) => state.collectionArr);
     const mediaType =
         "type" in item ? item.type : "title" in item ? "movie" : "tv";
     const statusInCollection = collectionArr.find(

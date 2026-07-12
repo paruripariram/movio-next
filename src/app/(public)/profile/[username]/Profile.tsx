@@ -1,15 +1,18 @@
 "use client";
 
 import { useAuthContext } from "@/context/AuthContext";
-import { useCollectionContext } from "@/context/CollectionContext";
 import { signOut } from "next-auth/react";
 import Loader from "@/components/Loader";
 import { APP_ROUTES } from "@/config/routes";
 import { handleError } from "@/helpers/errorHandler";
+import { useCollectionStore } from "@/store/collectionStore";
 
 function Profile() {
     const { user, isLoading } = useAuthContext();
-    const { collectionArr, isLoadingCollection } = useCollectionContext();
+    const collectionArr = useCollectionStore((state) => state.collectionArr);
+    const isLoadingCollection = useCollectionStore(
+        (state) => state.isLoadingCollection,
+    );
     const watchedMedia = collectionArr.filter(
         (item) => item.status === "watched",
     );

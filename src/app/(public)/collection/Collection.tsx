@@ -3,14 +3,17 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuthContext } from "@/context/AuthContext";
 import Card from "@/components/Card";
-import { useCollectionContext } from "@/context/CollectionContext";
 import { useRouter } from "next/navigation";
 import {detailsRouter} from "@/helpers/detailsRouter";
 import Loader from "@/components/Loader";
+import { useCollectionStore } from "@/store/collectionStore";
 
 export default function Collection() {
     const { isLoading } = useAuthContext();
-    const { collectionArr, isLoadingCollection, criticalError } = useCollectionContext();
+
+    const collectionArr = useCollectionStore((state) => state.collectionArr);
+    const isLoadingCollection = useCollectionStore((state) => state.isLoadingCollection);
+    const criticalError = useCollectionStore((state) => state.criticalError);
 
     if(criticalError) throw criticalError
 

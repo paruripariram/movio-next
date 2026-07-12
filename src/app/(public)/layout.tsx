@@ -3,10 +3,9 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { AuthProvider } from "@/context/AuthProvider";
-import { CollectionProvider } from "@/context/CollectionProvider";
 import { Toaster } from "sonner";
 import PageTransition from "@/components/PageTransition";
-import { GenresInitializer } from "@/components/providers/GenresInitializer";
+import { AppInitializer } from "@/components/providers/AppInitializer";
 
 const roboto = Roboto({
     variable: "--font-roboto",
@@ -29,19 +28,12 @@ export default function RootLayout({
         <html lang="en" className={`${roboto.className} h-full antialiased`}>
             <body className="min-h-full flex bg-bgcolor">
                 <AuthProvider>
-                    <GenresInitializer>
-                        <CollectionProvider>
-                            <Navbar />
-                            <PageTransition className="flex-1 min-w-0 ml-70 p-13 min-h-screen flex flex-col">
-                                {children}
-                            </PageTransition>
-                            <Toaster
-                                position="top-center"
-                                richColors
-                                closeButton
-                            />
-                        </CollectionProvider>
-                    </GenresInitializer>
+                    <AppInitializer />
+                    <Navbar />
+                    <PageTransition className="flex-1 min-w-0 ml-70 p-13 min-h-screen flex flex-col">
+                        {children}
+                    </PageTransition>
+                    <Toaster position="top-center" richColors closeButton />
                 </AuthProvider>
             </body>
         </html>

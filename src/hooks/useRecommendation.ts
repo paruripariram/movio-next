@@ -3,15 +3,34 @@
 import { useEffect, useState } from "react";
 import type { collectionItem, SearchResult } from "../types";
 import { search } from "@/services/tmdb/movieService";
-import { useCollectionContext } from "@/context/CollectionContext";
 import { useAuthContext } from "@/context/AuthContext";
 import { handleError } from "@/helpers/errorHandler";
 import { useGenresStore } from "@/store/genreStore";
+import { useCollectionStore } from "@/store/collectionStore";
+
+type MovieResult = Omit<
+    Extract<SearchResult, { media_type: "movie" }>,
+    "media_type"
+>;
+type TvResult = Omit<Extract<SearchResult, { media_type: "tv" }>, "media_type">;
+
+function addMovieMediaType(items: MovieResult[]): SearchResult[] {
+    return items.map((item) => ({ ...item, media_type: "movie" }));
+}
+
+function addTvMediaType(items: TvResult[]): SearchResult[] {
+    return items.map((item) => ({ ...item, media_type: "tv" }));
+}
 
 export default function useRecommendation() {
     const { isLoading } = useAuthContext();
-    const { collectionArr, isLoadingCollection, criticalError } =
-        useCollectionContext();
+
+    const collectionArr = useCollectionStore((state) => state.collectionArr);
+    const isLoadingCollection = useCollectionStore(
+        (state) => state.isLoadingCollection,
+    );
+    const criticalError = useCollectionStore((state) => state.criticalError);
+
     const [recommendations, setRecommendations] = useState<SearchResult[]>([]);
     const [isFetching, setIsFetching] = useState(false);
 
@@ -27,15 +46,6 @@ export default function useRecommendation() {
             !genresMap.tvGenres ||
             isFetching);
 
-    type MovieResult = Omit<
-        Extract<SearchResult, { media_type: "movie" }>,
-        "media_type"
-    >;
-    type TvResult = Omit<
-        Extract<SearchResult, { media_type: "tv" }>,
-        "media_type"
-    >;
-
     useEffect(() => {
         if (
             isLoadingCollection ||
@@ -45,14 +55,6 @@ export default function useRecommendation() {
             criticalError
         ) {
             return;
-        }
-
-        function addMovieMediaType(items: MovieResult[]): SearchResult[] {
-            return items.map((item) => ({ ...item, media_type: "movie" }));
-        }
-
-        function addTvMediaType(items: TvResult[]): SearchResult[] {
-            return items.map((item) => ({ ...item, media_type: "tv" }));
         }
 
         const fetchRecommendations = async (signal: AbortSignal) => {

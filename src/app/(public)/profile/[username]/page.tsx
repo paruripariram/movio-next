@@ -1,5 +1,4 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { CollectionProvider } from "@/context/CollectionProvider";
 import Profile from "./Profile";
 import { Metadata } from "next";
 
@@ -18,9 +17,7 @@ export async function generateMetadata({
 export default function ProfilePage() {
     return (
         <ProtectedRoute>
-            <CollectionProvider>
                 <Profile />
-            </CollectionProvider>
         </ProtectedRoute>
     );
 }
