@@ -46,6 +46,8 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
         }
     };
 
+    const backdropPath = details.backdrop_path ? `https://image.tmdb.org/t/p/w1920/${details.backdrop_path}` : "/noPoster.png";
+
     return (
         <div>
             <div className="relative -mx-13 -mt-13 overflow-hidden">
@@ -58,7 +60,7 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
 
                 <div className="relative -mx-13 -mt-13 overflow-hidden h-[60vh]">
                     <Image
-                        src={`https://image.tmdb.org/t/p/w1920/${details.backdrop_path}`}
+                        src={backdropPath}
                         alt=""
                         fill
                         unoptimized
