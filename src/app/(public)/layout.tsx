@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     title: { template: "%s - Movio", default: "Movio" },
     description:
         "Movio — персональный веб-сервис для поиска фильмов, управления личной коллекцией и отслеживания просмотренного медиа-контента.",
-    icons: { icon: "/logoMovio.png" },
+    icons: { icon: "/logoMovio.webp" },
 };
 
 export default function RootLayout({

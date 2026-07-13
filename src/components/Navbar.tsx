@@ -39,7 +39,7 @@ export default function Navbar() {
     return (
         <nav className="flex flex-col items-center p-5 w-70 bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] rounded-br-4xl fixed">
             <Image
-                src="/logoMovio.png"
+                src="/logoMovio.webp"
                 alt="logo"
                 width={100}
                 height={100}

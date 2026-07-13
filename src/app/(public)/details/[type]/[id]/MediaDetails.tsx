@@ -46,7 +46,7 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
         }
     };
 
-    const backdropPath = details.backdrop_path ? `https://image.tmdb.org/t/p/w1920/${details.backdrop_path}` : "/noPoster.png";
+    const backdropPath = details.backdrop_path ? `https://image.tmdb.org/t/p/w1920/${details.backdrop_path}` : "/noPoster.webp";
 
     return (
         <div>

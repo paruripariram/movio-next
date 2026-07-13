@@ -35,7 +35,7 @@ export default function Card({
     const posterUrl = item.poster_path;
     const imageSrc = posterUrl
         ? `https://image.tmdb.org/t/p/w500${posterUrl}`
-        : "/noPoster.png";
+        : "/noPoster.webp";
     const voteAverage = item.vote_average;
     return (
         <div
@@ -48,7 +48,7 @@ export default function Card({
                 fill
                 unoptimized
                 className="absolute top-0 left-0 w-full h-full object-cover"
-                onError={(e) => (e.currentTarget.src = "/noPoster.png")}
+                onError={(e) => (e.currentTarget.src = "/noPoster.webp")}
             />
             <div className="z-10 flex flex-col mt-auto w-full p-5 bg-linear-to-t from-back-link-color to-transparent via-back-link-color/80">
                 <span className="absolute top-5 right-5 w-15 h-10 rounded-4xl p-2 text-center font-bold text-primary bg-back-link-color/80">
