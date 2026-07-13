@@ -61,7 +61,7 @@ export default function Navbar() {
                     <li className="nav-li">
                         <div className="p-3 w-full flex gap-2 rounded-2xl text-gray-500">
                             <LoaderCircle className="animate-spin" />
-                            Loading...
+                            Загрузка...
                         </div>
                     </li>
                 )}
@@ -69,7 +69,7 @@ export default function Navbar() {
                     <li className="nav-li">
                         <NavMenuLink href={APP_ROUTES.SIGNIN.path}>
                             <CircleUser />
-                            Sign In
+                            Войти
                         </NavMenuLink>
                     </li>
                 )}
