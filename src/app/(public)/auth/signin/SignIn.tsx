@@ -108,7 +108,7 @@ export default function SignIn() {
                         </div>
                     </div>
 
-                    <AuthButton isLoading={isPending}>Sign In</AuthButton>
+                    <AuthButton isLoading={isPending}>Войти</AuthButton>
                 </form>
                 <div className="flex flex-col text-center text-white/50 mb-8">
                     <p>Еще не зарегистрированы?</p>{" "}
