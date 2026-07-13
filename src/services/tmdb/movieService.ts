@@ -1,5 +1,5 @@
 import {tmdbApi} from "./axios";
-import type { Genre } from "@/types/tmdb";
+import type { Genre, SearchResult } from "@/types/tmdb";
 
 export const search = async ({
     query,
@@ -9,7 +9,7 @@ export const search = async ({
     signal,
 }: {
     query: string;
-    type?: string;
+    type?: "movie" | "tv";
     genres?: string;
     page?: number;
     signal?: AbortSignal;
@@ -18,7 +18,13 @@ export const search = async ({
         params: { with_text_query: query, with_genres: genres, page },
         signal,
     });
-    return response.data;
+    return {
+        ...response.data,
+        results: (response.data.results as SearchResult[]).map((item) => ({
+            ...item,
+            media_type: type,
+        })),
+    };
 };
 
 export const getMovieGenres = async () => {
@@ -60,5 +66,11 @@ export const getNowPlaying = async () => {
     const response = await tmdbApi.get("/movie/now_playing",{
         params: { page: 1 },
     });
-    return response.data;
+    return {
+        ...response.data,
+        results: (response.data.results as SearchResult[]).map((item) => ({
+            ...item,
+            media_type: "movie" as const,
+        })),
+    };
 }

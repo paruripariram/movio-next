@@ -49,10 +49,10 @@ function Profile() {
                 </p>
             )}
             <button
-                className="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded w-25 transition duration-200"
+                className="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-2 rounded w-50 transition duration-200"
                 onClick={handleLogout}
             >
-                Выйти
+                Выйти из аккаунта
             </button>
         </div>
     );

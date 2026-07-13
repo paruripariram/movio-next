@@ -9,7 +9,6 @@ interface HorizontalCarouselSectionProps {
     data: SearchResult[];
     setCanScrollLeft: (val: boolean) => void;
     setCanScrollRight: (val: boolean) => void;
-    mediaType?: "movie" | "tv",
 }
 
 function handleScroll(
@@ -28,7 +27,6 @@ export default function HorizontalCarouselSection({
     data,
     setCanScrollLeft,
     setCanScrollRight,
-    mediaType,
 }: HorizontalCarouselSectionProps) {
     const router = useRouter();
 
@@ -64,7 +62,7 @@ export default function HorizontalCarouselSection({
                                     detailsRouter(
                                         router,
                                         item.id,
-                                        item.media_type || mediaType
+                                        item.media_type
                                     )
                                 }
                                 className="group-first/slice:origin-left group-last/slice:origin-right"

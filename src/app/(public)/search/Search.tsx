@@ -172,10 +172,10 @@ export default function Search() {
                                 !isLoading &&
                                 !error && (
                                     <p className="text-gray-500 text-3xl">
-                                        No results found for{" "}
+                                        Ничего не найдено для{" "}
                                         {searchQuery
                                             ? `"${searchQuery}"`
-                                            : "picked genres"}
+                                            : "выбранных жанров"}
                                         .
                                     </p>
                                 )}
@@ -221,7 +221,7 @@ export default function Search() {
                                 {isLoading ? (
                                     <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                                 ) : (
-                                    "Show more"
+                                    "Показать еще"
                                 )}
                             </button>
                         )}

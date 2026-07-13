@@ -75,7 +75,7 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                         <div className="flex gap-5">
                             <div className="flex flex-col">
                                 <span className="text-primary font-extrabold text-4xl">
-                                    {details.vote_average}
+                                    {details.vote_average?.toFixed(1)}
                                 </span>
                                 <span className="text-gray-500">
                                     {details.vote_count} оценки

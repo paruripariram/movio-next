@@ -74,7 +74,7 @@ export default function Home({ initialNowPlaying }: HomeProps) {
                 )}
 
                 {nowPlaying.length > 0 && (
-                    <HorizontalCarouselSection CarouselRef={nowRef} data={nowPlaying} setCanScrollLeft={setCanScrollLeftNow} setCanScrollRight={setCanScrollRightNow} mediaType="movie"/>
+                    <HorizontalCarouselSection CarouselRef={nowRef} data={nowPlaying} setCanScrollLeft={setCanScrollLeftNow} setCanScrollRight={setCanScrollRightNow}/>
                 )}
             </div>
 
