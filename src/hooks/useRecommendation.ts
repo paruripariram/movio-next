@@ -66,34 +66,20 @@ export default function useRecommendation() {
                     setRecommendations(data.results);
                     return;
                 }
-                const movieGenresNameToId = Object.fromEntries(
-                    Object.entries(genresMap.movieGenres).map(([id, name]) => [
-                        name,
-                        id,
-                    ]),
-                );
-                const tvGenresNameToId = Object.fromEntries(
-                    Object.entries(genresMap.tvGenres).map(([id, name]) => [
-                        name,
-                        id,
-                    ]),
-                );
 
-                const getTopGenreIds = (
-                    items: collectionItem[],
-                    nameToIdMap: Record<string, string>,
-                ) => {
+                const getTopGenreIds = (items: collectionItem[]) => {
                     const counts: Record<string, number> = {};
+
                     items.forEach((item) => {
-                        item.genres.forEach((genreName) => {
-                            counts[genreName] = (counts[genreName] || 0) + 1;
+                        item.genre_ids.forEach((genreId) => {
+                            counts[genreId] = (counts[genreId] || 0) + 1;
                         });
                     });
+
                     return Object.entries(counts)
                         .sort((a, b) => b[1] - a[1])
                         .slice(0, 3)
-                        .map(([name]) => nameToIdMap[name])
-                        .filter(Boolean)
+                        .map(([id]) => id)
                         .join(",");
                 };
                 const movies = collectionArr.filter(
@@ -105,9 +91,8 @@ export default function useRecommendation() {
 
                 const topMovieGenres = getTopGenreIds(
                     movies,
-                    movieGenresNameToId,
                 );
-                const topTvGenres = getTopGenreIds(tvShows, tvGenresNameToId);
+                const topTvGenres = getTopGenreIds(tvShows);
 
                 const results = await Promise.all([
                     search({

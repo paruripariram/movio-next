@@ -46,7 +46,7 @@ export default function useCollectionActions(
         const movieData = {
             id: details.id,
             title: "title" in details ? details.title : details.name,
-            genres: details.genres.map((genre) => genre.name),
+            genre_ids: details.genres.map((genre) => genre.id),
             poster_path: details.poster_path,
             vote_average: details.vote_average,
             type: type,

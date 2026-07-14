@@ -5,21 +5,21 @@ import { Bookmark, Check } from "lucide-react";
 import Image from "next/image";
 import { PLATFORMS } from "@/config/platforms";
 import { useCollectionStore } from "@/store/collectionStore";
+import { useGenresStore } from "@/store/genreStore";
 
 interface CardProps {
     item: SearchResult | collectionItem;
-    genres: string[];
     onClick?: () => void;
     className?: string;
 }
 
 export default function Card({
     item,
-    genres,
     onClick,
     className = "",
 }: CardProps) {
     const collectionArr = useCollectionStore((state) => state.collectionArr);
+    const genresMap = useGenresStore((state) => state.genresMap);
     const mediaType =
         "type" in item ? item.type : "title" in item ? "movie" : "tv";
     const statusInCollection = collectionArr.find(
@@ -37,10 +37,14 @@ export default function Card({
         ? `https://image.tmdb.org/t/p/w500${posterUrl}`
         : "/noPoster.webp";
     const voteAverage = item.vote_average;
+
+    const resolvedGenres = item.genre_ids
+    .map((id) => genresMap.movieGenres[id] || genresMap.tvGenres[id])
+    .filter((name): name is string => Boolean(name));
     return (
         <div
             onClick={onClick}
-            className={`relative flex max-w-92.5 w-full aspect-2/3 overflow-hidden rounded-4xl cursor-pointer hover:scale-105 transition-transform duration-300 ease-in-out ${className}`}
+            className={`relative flex max-w-92.5 w-full aspect-2/3 overflow-hidden rounded-4xl cursor-pointer hover:scale-105 hover:shadow-glow-bold transition-all duration-300 ease-in-out ${className}`}
         >
             <Image
                 src={imageSrc}
@@ -80,7 +84,7 @@ export default function Card({
 
                 <h3 className="text-xl font-extrabold text-white ">{title}</h3>
                 <div>
-                    {genres.map((genre) => (
+                    {resolvedGenres.map((genre) => (
                         <span key={genre} className="text-white">
                             {genre.charAt(0).toUpperCase() +
                                 genre.slice(1).toLowerCase()}{" "}

@@ -52,7 +52,6 @@ export default function Collection() {
                         <Card
                             key={item.id}
                             item={item}
-                            genres={item.genres}
                             onClick={() =>
                                 detailsRouter(router, item.id, item.type)
                             }

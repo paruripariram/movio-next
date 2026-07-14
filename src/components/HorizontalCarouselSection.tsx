@@ -1,75 +1,98 @@
-import {detailsRouter} from "@/helpers/detailsRouter";
+"use client";
+
+import useEmblaCarousel from "embla-carousel-react";
+import { CircleArrowLeft, CircleArrowRight } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { detailsRouter } from "@/helpers/detailsRouter";
 import Card from "./Card";
 import { SearchResult } from "@/types";
-import { useRouter } from "next/navigation";
-import { useGenresStore } from "@/store/genreStore";
 
 interface HorizontalCarouselSectionProps {
-    CarouselRef: React.RefObject<HTMLDivElement | null>;
     data: SearchResult[];
-    setCanScrollLeft: (val: boolean) => void;
-    setCanScrollRight: (val: boolean) => void;
+    title: string;
 }
 
-function handleScroll(
-    ref: React.RefObject<HTMLDivElement | null>,
-    setCanScrollLeft: (val: boolean) => void,
-    setCanScrollRight: (val: boolean) => void,
-) {
-    if (!ref.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = ref.current;
-    setCanScrollLeft(scrollLeft > 0);
-    setCanScrollRight(scrollLeft + clientWidth < scrollWidth);
-}
-
-export default function HorizontalCarouselSection({
-    CarouselRef,
-    data,
-    setCanScrollLeft,
-    setCanScrollRight,
-}: HorizontalCarouselSectionProps) {
+export default function HorizontalCarouselSection({ data, title }: HorizontalCarouselSectionProps) {
     const router = useRouter();
 
-    const genresMap = useGenresStore((state) => state.genresMap);
+    const [emblaRef, emblaApi] = useEmblaCarousel({
+        dragFree: true,
+        align: "start",
+    });
+
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(false);
+
+    const onSelect = useCallback((api: typeof emblaApi) => {
+        if (!api) return;
+        setCanScrollLeft(api.canScrollPrev());
+        setCanScrollRight(api.canScrollNext());
+    }, []);
+
+    useEffect(() => {
+        if (!emblaApi) return;
+
+        const timer = setTimeout(() => {
+            onSelect(emblaApi);
+        }, 0);
+
+        emblaApi.on("reInit", onSelect).on("select", onSelect);
+
+        return () => {
+            clearTimeout(timer);
+            emblaApi.off("reInit", onSelect).off("select", onSelect);
+        };
+    }, [emblaApi, onSelect]);
 
     return (
         <div className="relative group -mx-4 px-4">
-            <div
-                ref={CarouselRef}
-                onScroll={() =>
-                    handleScroll(CarouselRef, setCanScrollLeft, setCanScrollRight)
-                }
-                className="flex gap-6 overflow-x-auto w-full py-6 -my-2 snap-x snap-mandatory scrollbar-hide"
-            >
-                {data.map((item) => {
-                    const itemGenres = item.genre_ids
-                        .map(
-                            (id) =>
-                                genresMap.movieGenres[id] ||
-                                genresMap.tvGenres[id],
-                        )
-                        .filter((name): name is string => Boolean(name));
-                    return (
-                        <div
-                            key={item.id}
-                            tabIndex={0}
-                            className="group/slice snap-start flex-none w-56 sm:w-64 md:w-72 h-105 outline-none focus:scale-[1.01] transition-transform"
-                        >
-                            <Card
-                                item={item}
-                                genres={itemGenres}
-                                onClick={() =>
-                                    detailsRouter(
-                                        router,
-                                        item.id,
-                                        item.media_type
-                                    )
-                                }
-                                className="group-first/slice:origin-left group-last/slice:origin-right"
-                            />
-                        </div>
-                    );
-                })}
+            <div className="flex items-center justify-between px-2 mb-4">
+                <h2 className="text-gray-400 text-2xl font-semibold">
+                    {title}
+                </h2>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => emblaApi?.scrollPrev()}
+                        disabled={!canScrollLeft}
+                        className="bg-zinc-800/60 hover:bg-zinc-700/80 text-white p-2 rounded-full cursor-pointer transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                        <CircleArrowLeft className="text-primary w-5 h-5" />
+                    </button>
+                    <button
+                        onClick={() => emblaApi?.scrollNext()}
+                        disabled={!canScrollRight}
+                        className="bg-zinc-800/60 hover:bg-zinc-700/80 text-white p-2 rounded-full cursor-pointer transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                        <CircleArrowRight className="text-primary w-5 h-5" />
+                    </button>
+                </div>
+            </div>
+
+            <div className="-mx-8 px-8 overflow-hidden">
+                <div className="overflow-visible" ref={emblaRef}>
+                    <div className="flex gap-6 py-8">
+                        {data.map((item) => {
+                            return (
+                                <div
+                                    key={item.id}
+                                    className="flex-[0_0_auto] w-56 sm:w-64 md:w-72"
+                                >
+                                    <Card
+                                        item={item}
+                                        onClick={() =>
+                                            detailsRouter(
+                                                router,
+                                                item.id,
+                                                item.media_type,
+                                            )
+                                        }
+                                    />
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
             </div>
         </div>
     );

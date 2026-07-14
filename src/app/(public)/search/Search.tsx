@@ -183,20 +183,10 @@ export default function Search() {
                             {searchResults.length > 0 &&
                                 !isFirstPageLoading &&
                                 searchResults.map((item) => {
-                                    const itemGenres = item.genre_ids
-                                        .map(
-                                            (id) =>
-                                                genresMap.movieGenres[id] ||
-                                                genresMap.tvGenres[id],
-                                        )
-                                        .filter((name): name is string =>
-                                            Boolean(name),
-                                        );
                                     return (
                                         <Card
                                             key={item.id}
                                             item={item}
-                                            genres={itemGenres}
                                             onClick={() =>
                                                 detailsRouter(
                                                     router,
