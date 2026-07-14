@@ -14,9 +14,11 @@ export default function useMovieSearch(
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isDebouncing, setIsDebouncing] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     const prevParams = useRef({ searchQuery, type, genres });
 
@@ -27,6 +29,7 @@ export default function useMovieSearch(
             prevParams.current.searchQuery !== searchQuery;
 
         if (isFiltersChanged) {
+            setHasSearched(false);
             setPage(1);
             prevParams.current = { searchQuery, genres, type };
 
@@ -59,6 +62,8 @@ export default function useMovieSearch(
                 });
             } finally {
                 setIsLoading(false);
+                setHasSearched(true);
+                setIsInitialLoading(false);
             }
         }
 
@@ -86,9 +91,10 @@ export default function useMovieSearch(
         error,
         setError,
         isDebouncing,
-        page,
         setPage,
         hasMore,
         setRetryCount,
+        hasSearched,
+        isInitialLoading,
     };
 }

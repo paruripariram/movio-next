@@ -6,7 +6,7 @@ import useMovieSearch from "@/hooks/useMovieSearch";
 import Toggler from "@/components/Toggler";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import GenreCheckbox from "@/components/GenreCheckbox";
-import {detailsRouter} from "@/helpers/detailsRouter";
+import { detailsRouter } from "@/helpers/detailsRouter";
 import Loader from "@/components/Loader";
 import { useEffect } from "react";
 import { useGenresStore } from "@/store/genreStore";
@@ -15,18 +15,20 @@ export default function Search() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
-    
+
     const genresMap = useGenresStore((state) => state.genresMap);
 
     const searchQuery = searchParams.get("with_text_query") || "";
     const withGenres = searchParams.get("with_genres") || "";
-    
+
     useEffect(() => {
         if (!pathname.includes("/search")) return;
         if (!searchParams.has("type")) {
             const nextParams = new URLSearchParams(searchParams);
             nextParams.set("type", "movie");
-            router.replace(`${pathname}?${nextParams.toString()}`, { scroll: false });
+            router.replace(`${pathname}?${nextParams.toString()}`, {
+                scroll: false,
+            });
         }
     }, [searchParams, pathname, router]);
 
@@ -70,12 +72,13 @@ export default function Search() {
         error,
         setError,
         isDebouncing,
-        page,
         setPage,
         hasMore,
         setRetryCount,
+        hasSearched,
+        isInitialLoading
     } = useMovieSearch(searchQuery, currentType as "movie" | "tv", withGenres);
-    const isFirstPageLoading = (isLoading || isDebouncing) && page === 1;
+    const isSearching = isLoading || isDebouncing || isInitialLoading;
 
     function inputHandler(e: React.ChangeEvent<HTMLInputElement>) {
         const nextParams = new URLSearchParams(searchParams);
@@ -167,6 +170,7 @@ export default function Search() {
 
                             {(searchQuery.trim() !== "" ||
                                 pickedGenres.length > 0) &&
+                                hasSearched &&
                                 searchResults.length === 0 &&
                                 !isDebouncing &&
                                 !isLoading &&
@@ -179,9 +183,13 @@ export default function Search() {
                                         .
                                     </p>
                                 )}
-                            {isFirstPageLoading && <Loader size="medium">Загрузка результатов...</Loader>}
+                            {isSearching && (
+                                <Loader size="medium">
+                                    Загрузка результатов...
+                                </Loader>
+                            )}
                             {searchResults.length > 0 &&
-                                !isFirstPageLoading &&
+                                !isSearching &&
                                 searchResults.map((item) => {
                                     return (
                                         <Card
@@ -200,7 +208,7 @@ export default function Search() {
                                     );
                                 })}
                         </div>
-                        {hasMore && !isFirstPageLoading && (
+                        {hasMore && !isSearching && (
                             <button
                                 disabled={isLoading}
                                 className="self-center mt-6 bg-primary text-white w-40 h-12 rounded-xl flex items-center justify-center relative disabled:opacity-70 cursor-pointer shadow-glow hover:shadow-glow-bold"
