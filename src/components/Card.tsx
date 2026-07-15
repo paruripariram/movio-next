@@ -41,6 +41,13 @@ export default function Card({
     const resolvedGenres = item.genre_ids
     .map((id) => genresMap.movieGenres[id] || genresMap.tvGenres[id])
     .filter((name): name is string => Boolean(name));
+
+    const rawDate = 
+    ("release_date" in item && item.release_date) || 
+    ("first_air_date" in item && item.first_air_date) || 
+    "";
+
+    const year = rawDate ? rawDate.substring(0, 4) : "N/A";
     return (
         <div
             onClick={onClick}
@@ -84,14 +91,8 @@ export default function Card({
 
                 <h3 className="text-xl font-extrabold text-white ">{title}</h3>
                 <div>
-                    {resolvedGenres.map((genre) => (
-                        <span key={genre} className="text-white">
-                            {genre.charAt(0).toUpperCase() +
-                                genre.slice(1).toLowerCase()}{" "}
-                        </span>
-                    ))}
+                <p className="text-white"><span>{year}</span>, <span>{resolvedGenres[0]}</span></p>
                 </div>
-                {/* <p className="text-sm text-white">{overview}</p> */}
             </div>
         </div>
     );

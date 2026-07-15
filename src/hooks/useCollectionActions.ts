@@ -32,7 +32,8 @@ export default function useCollectionActions(
     }, [userId, mediaId, type]);
 
     const handleAddToCollection = async (
-        collectionType: "watched" | "wishlist", platformId?: string
+        collectionType: "watched" | "wishlist",
+        platformId?: string,
     ) => {
         if (isPending) return false;
         if (!user || !user.id) {
@@ -49,6 +50,12 @@ export default function useCollectionActions(
             genre_ids: details.genres.map((genre) => genre.id),
             poster_path: details.poster_path,
             vote_average: details.vote_average,
+            ...("release_date" in details && {
+                release_date: details.release_date,
+            }),
+            ...("first_air_date" in details && {
+                first_air_date: details.first_air_date,
+            }),
             type: type,
             status: collectionType,
             ...(platformId && { platform: platformId }),
@@ -58,7 +65,9 @@ export default function useCollectionActions(
             await addToCollection(user.id, type, details.id, movieData);
             return true;
         } catch (error) {
-            handleError(error, "Error adding to collection:", {setErrorCallback: setError});
+            handleError(error, "Error adding to collection:", {
+                setErrorCallback: setError,
+            });
             setStatus(previousStatus);
             return false;
         } finally {
@@ -80,7 +89,9 @@ export default function useCollectionActions(
             await removeFromCollection(user.id, type, details.id);
             return true;
         } catch (error) {
-            handleError(error, "Error removing from collection:", {setErrorCallback: setError});
+            handleError(error, "Error removing from collection:", {
+                setErrorCallback: setError,
+            });
             setStatus(previousStatus);
             return false;
         } finally {
