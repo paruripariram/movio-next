@@ -46,7 +46,9 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
         }
     };
 
-    const backdropPath = details.backdrop_path ? `https://image.tmdb.org/t/p/w1920/${details.backdrop_path}` : "/noPoster.webp";
+    const backdropPath = details.backdrop_path
+        ? `https://image.tmdb.org/t/p/w1920/${details.backdrop_path}`
+        : "/noPoster.webp";
 
     return (
         <div>
@@ -92,10 +94,13 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                                     exit={{ opacity: 0, y: -10 }}
                                     className="flex flex-col gap-5"
                                 >
-                                    {isLoadingUser && <Loader size="small">Loading...</Loader>}
+                                    {isLoadingUser && (
+                                        <Loader size="small">Loading...</Loader>
+                                    )}
 
                                     {!user && !isLoadingUser && (
                                         <CollectionButton
+                                            variant="full"
                                             type="notAnAccount"
                                             onClick={() =>
                                                 router.push(
@@ -108,6 +113,7 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                                     {user && status === null && (
                                         <>
                                             <CollectionButton
+                                                variant="full"
                                                 type="watched"
                                                 onClick={() =>
                                                     handleOpenWatchedModal()
@@ -115,6 +121,7 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                                                 disabled={isPending}
                                             />
                                             <CollectionButton
+                                                variant="full"
                                                 type="wishlist"
                                                 onClick={() =>
                                                     handleAddToCollection(
@@ -128,6 +135,7 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
 
                                     {user && status === "watched" && (
                                         <CollectionButton
+                                            variant="full"
                                             type="remove"
                                             onClick={handleRemoveFromCollection}
                                             disabled={isPending}
@@ -137,6 +145,7 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                                     {user && status === "wishlist" && (
                                         <>
                                             <CollectionButton
+                                                variant="full"
                                                 type="watched"
                                                 onClick={() =>
                                                     handleOpenWatchedModal()
@@ -144,6 +153,7 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                                                 disabled={isPending}
                                             />
                                             <CollectionButton
+                                                variant="full"
                                                 type="remove"
                                                 onClick={
                                                     handleRemoveFromCollection

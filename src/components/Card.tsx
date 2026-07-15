@@ -6,6 +6,9 @@ import Image from "next/image";
 import { PLATFORMS } from "@/config/platforms";
 import { useCollectionStore } from "@/store/collectionStore";
 import { useGenresStore } from "@/store/genreStore";
+import CollectionButton from "./CollectionButton";
+import useCollectionActions from "@/hooks/useCollectionActions";
+import { useAuthStore } from "@/store/authStore";
 
 interface CardProps {
     item: SearchResult | collectionItem;
@@ -13,11 +16,8 @@ interface CardProps {
     className?: string;
 }
 
-export default function Card({
-    item,
-    onClick,
-    className = "",
-}: CardProps) {
+export default function Card({ item, onClick, className = "" }: CardProps) {
+    const { user } = useAuthStore();
     const collectionArr = useCollectionStore((state) => state.collectionArr);
     const genresMap = useGenresStore((state) => state.genresMap);
     const mediaType =
@@ -39,19 +39,35 @@ export default function Card({
     const voteAverage = item.vote_average;
 
     const resolvedGenres = item.genre_ids
-    .map((id) => genresMap.movieGenres[id] || genresMap.tvGenres[id])
-    .filter((name): name is string => Boolean(name));
+        .map((id) => genresMap.movieGenres[id] || genresMap.tvGenres[id])
+        .filter((name): name is string => Boolean(name));
 
-    const rawDate = 
-    ("release_date" in item && item.release_date) || 
-    ("first_air_date" in item && item.first_air_date) || 
-    "";
+    const rawDate =
+        ("release_date" in item && item.release_date) ||
+        ("first_air_date" in item && item.first_air_date) ||
+        "";
 
     const year = rawDate ? rawDate.substring(0, 4) : "N/A";
+
+    const {
+        status,
+        isPending,
+        handleAddToCollection,
+        handleRemoveFromCollection,
+    } = useCollectionActions(mediaType, item, user);
+    const handleAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        handleAddToCollection("watched");
+    };
+    const handleRemove = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        handleRemoveFromCollection();
+    };
+
     return (
         <div
             onClick={onClick}
-            className={`relative flex max-w-92.5 w-full aspect-2/3 overflow-hidden rounded-4xl cursor-pointer hover:scale-105 hover:shadow-glow-bold transition-all duration-300 ease-in-out ${className}`}
+            className={`group/card relative flex max-w-92.5 w-full aspect-2/3 overflow-hidden rounded-4xl cursor-pointer hover:scale-105 hover:shadow-glow-bold transition-all duration-300 ease-in-out ${className}`}
         >
             <Image
                 src={imageSrc}
@@ -66,32 +82,78 @@ export default function Card({
                     {voteAverage !== null && voteAverage?.toFixed(1)}
                 </span>
                 {statusInCollection === "watched" && (
-                    <span className="absolute top-5 left-5 w-20 h-10 rounded-4xl p-2 flex gap-1.5 items-center justify-center font-bold text-primary bg-back-link-color/80">
-                        <Check />
-                        <Image
-                            src={
-                                PLATFORMS.find((p) => p.id === platformInCollection)
-                                    ?.logoUrl || 
-                                    PLATFORMS.find((p) => p.id === "other")?.logoUrl || ""
-                            }
-                            alt={
-                                PLATFORMS.find((p) => p.id === platformInCollection)
-                                    ?.name || 'source'
-                            }
-                            width={32}
-                            height={32}
-                        />
-                    </span>
+                    <div className="absolute top-5 left-5 flex flex-col gap-1.5">
+                        <span className="w-20 h-10 rounded-4xl p-2 flex gap-1.5 items-center justify-center font-bold text-primary bg-back-link-color/80">
+                            <Check />
+                            <Image
+                                src={
+                                    PLATFORMS.find(
+                                        (p) => p.id === platformInCollection,
+                                    )?.logoUrl ||
+                                    PLATFORMS.find((p) => p.id === "other")
+                                        ?.logoUrl ||
+                                    ""
+                                }
+                                alt={
+                                    PLATFORMS.find(
+                                        (p) => p.id === platformInCollection,
+                                    )?.name || "source"
+                                }
+                                width={32}
+                                height={32}
+                            />
+                        </span>
+                        <span
+                            className="opacity-0 scale-90 pointer-events-none
+                  transition-all duration-300 ease-out
+                  group-hover/card:opacity-100 group-hover/card:scale-100 group-hover/card:pointer-events-auto"
+                        >
+                            <CollectionButton
+                                type="remove"
+                                variant="icon"
+                                onClick={handleRemove}
+                                disabled={isPending}
+                            />
+                        </span>
+                    </div>
                 )}
                 {statusInCollection === "wishlist" && (
-                    <span className="absolute top-5 left-5 w-10 h-10 rounded-4xl p-2 flex items-center justify-center font-bold text-primary bg-back-link-color/80">
-                        <Bookmark />
-                    </span>
+                    <div className="absolute top-5 left-5 flex flex-col gap-1.5">
+                        <span className="w-10 h-10 rounded-4xl p-2 flex items-center justify-center font-bold text-primary bg-back-link-color/80">
+                            <Bookmark />
+                        </span>
+                        <span
+                            className="opacity-0 scale-90 pointer-events-none
+                  transition-all duration-300 ease-out
+                  group-hover/card:opacity-100 group-hover/card:scale-100 group-hover/card:pointer-events-auto"
+                        >
+                            <CollectionButton
+                                type="watched"
+                                variant="icon"
+                                onClick={handleAdd}
+                                disabled={isPending}
+                            />
+                        </span>
+                        <span
+                            className="opacity-0 scale-90 pointer-events-none
+                  transition-all duration-300 ease-out
+                  group-hover/card:opacity-100 group-hover/card:scale-100 group-hover/card:pointer-events-auto"
+                        >
+                            <CollectionButton
+                                type="remove"
+                                variant="icon"
+                                onClick={handleRemove}
+                                disabled={isPending}
+                            />
+                        </span>
+                    </div>
                 )}
 
                 <h3 className="text-xl font-extrabold text-white ">{title}</h3>
                 <div>
-                <p className="text-white"><span>{year}</span>, <span>{resolvedGenres[0]}</span></p>
+                    <p className="text-white">
+                        <span>{year}</span>, <span>{resolvedGenres[0]}</span>
+                    </p>
                 </div>
             </div>
         </div>

@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { MovieDetails, TVDetails, User } from "../types";
+import type {
+    collectionItem,
+    MovieDetails,
+    SearchResult,
+    TVDetails,
+    User,
+} from "../types";
 import {
     addToCollection,
     checkMediaStatus,
@@ -11,7 +17,7 @@ import { handleError } from "@/helpers/errorHandler";
 
 export default function useCollectionActions(
     type: "movie" | "tv",
-    details: MovieDetails | TVDetails | null,
+    details: MovieDetails | TVDetails | collectionItem | SearchResult | null,
     user: User | null,
 ) {
     type CollectionStatus = "watched" | "wishlist";
@@ -44,18 +50,26 @@ export default function useCollectionActions(
         const previousStatus = status;
         setStatus(collectionType);
 
-        const movieData = {
+        const movieData: collectionItem = {
             id: details.id,
-            title: "title" in details ? details.title : details.name,
-            genre_ids: details.genres.map((genre) => genre.id),
+            title:
+                "title" in details && details.title
+                    ? details.title
+                    : "name" in details && details.name
+                      ? details.name
+                      : "",
+            genre_ids:
+                "genres" in details
+                    ? details.genres.map((genre) => genre.id)
+                    : details && "genre_ids" in details
+                      ? details.genre_ids
+                      : [],
             poster_path: details.poster_path,
             vote_average: details.vote_average,
-            ...("release_date" in details && {
-                release_date: details.release_date,
-            }),
-            ...("first_air_date" in details && {
-                first_air_date: details.first_air_date,
-            }),
+            release_date:
+                ("release_date" in details ? details.release_date : null) ??
+                ("first_air_date" in details ? details.first_air_date : null) ??
+                "",
             type: type,
             status: collectionType,
             ...(platformId && { platform: platformId }),
