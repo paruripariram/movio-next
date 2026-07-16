@@ -5,7 +5,7 @@ import useCollectionActions from "@/hooks/useCollectionActions";
 import { useAuthStore } from "@/store/authStore";
 import { useWatchedModalStore } from "@/store/watchedModalStore";
 import { collectionItem, MovieDetails, SearchResult, TVDetails } from "@/types";
-import { Check, Trash2 } from "lucide-react";
+import { Bookmark, Check, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface BaseProps {
@@ -17,7 +17,7 @@ type CollectionButtonProps =
           variant: "full";
           type: "watched" | "wishlist" | "remove" | "notAnAccount";
       })
-    | (BaseProps & { variant: "icon"; type: "watched" | "remove" });
+    | (BaseProps & { variant: "icon"; type: "watched" | "remove" | "wishlist" });
 
 const mapTitles = {
     watched: "Добавить в коллекцию",
@@ -29,6 +29,7 @@ const mapTitles = {
 const mapIcons = {
     watched: <Check className="w-5 h-5" />,
     remove: <Trash2 className="w-5 h-5" />,
+    wishlist: <Bookmark className="w-5 h-5" />,
 };
 export default function CollectionButton({
     item,
@@ -68,7 +69,7 @@ export default function CollectionButton({
         </button>
     ) : (
         <button
-            className={`cursor-pointer ${type === "watched" ? "bg-green-900 text-green-600 hover:bg-green-600 hover:text-green-900" : "bg-red-900 text-red-500 hover:bg-red-500 hover:text-red-900"} w-10 h-10 rounded-4xl flex items-center justify-center hover:scale-110 transition-all duration-300 ease-in-out`}
+            className={`cursor-pointer ${type === "watched" ? "bg-green-900 text-green-600 hover:bg-green-600 hover:text-green-900" : type === "wishlist" ? "bg-bgcolor text-primary hover:bg-primary hover:text-bgcolor" : "bg-red-900 text-red-500 hover:bg-red-500 hover:text-red-900"} w-10 h-10 rounded-4xl flex items-center justify-center hover:scale-110 transition-all duration-300 ease-in-out`}
             onClick={handleClick}
             disabled={isPending}
         >

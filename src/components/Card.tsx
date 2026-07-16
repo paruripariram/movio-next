@@ -130,6 +130,34 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                         </span>
                     </div>
                 )}
+                {statusInCollection === undefined && (
+                    <div className="absolute top-5 left-5 flex flex-col gap-1.5">
+                        <span
+                            className="opacity-0 scale-90 pointer-events-none
+                  transition-all duration-300 ease-out
+                  group-hover/card:opacity-100 group-hover/card:scale-100 group-hover/card:pointer-events-auto"
+                        >
+                            <CollectionButton
+                                type="wishlist"
+                                variant="icon"
+                                item={item}
+                                mediaType={mediaType}
+                            />
+                        </span>
+                        <span
+                            className="opacity-0 scale-90 pointer-events-none
+                  transition-all duration-300 ease-out
+                  group-hover/card:opacity-100 group-hover/card:scale-100 group-hover/card:pointer-events-auto"
+                        >
+                            <CollectionButton
+                                type="watched"
+                                variant="icon"
+                                item={item}
+                                mediaType={mediaType}
+                            />
+                        </span>
+                    </div>
+                )}
 
                 <h3 className="text-xl font-extrabold text-white ">{title}</h3>
                 <div>
