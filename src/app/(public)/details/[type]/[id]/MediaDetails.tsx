@@ -3,15 +3,13 @@
 import BackButton from "@/components/BackButton";
 import CollectionButton from "@/components/CollectionButton";
 import { APP_ROUTES } from "@/config/routes";
-import useCollectionActions from "@/hooks/useCollectionActions";
 import type { MovieDetails, TVDetails } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import WatchedModal from "@/components/WatchedModal";
-import { useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import Loader from "@/components/Loader";
+import useCollectionActions from "@/hooks/useCollectionActions";
 
 type MediaDetailsProps = {
     details: MovieDetails | TVDetails;
@@ -21,22 +19,7 @@ type MediaDetailsProps = {
 export default function MediaDetails({ details, type }: MediaDetailsProps) {
     const { user, isLoadingUser } = useAuthStore();
     const router = useRouter();
-
-    const [isWatchedModalOpen, setIsWatchedModalOpen] = useState(false);
-    const handleOpenWatchedModal = () => {
-        setIsWatchedModalOpen(true);
-    };
-    const handleSaveToWatched = (platformId: string) => {
-        handleAddToCollection("watched", platformId);
-        setIsWatchedModalOpen(false);
-    };
-
-    const {
-        status,
-        isPending,
-        handleAddToCollection,
-        handleRemoveFromCollection,
-    } = useCollectionActions(type, details, user);
+    const { status } = useCollectionActions(type, details, user);
 
     const handleBack = () => {
         if (typeof window !== "undefined" && window.history.length > 1) {
@@ -102,11 +85,8 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                                         <CollectionButton
                                             variant="full"
                                             type="notAnAccount"
-                                            onClick={() =>
-                                                router.push(
-                                                    APP_ROUTES.SIGNIN.path,
-                                                )
-                                            }
+                                            item={details}
+                                            mediaType={type}
                                         />
                                     )}
 
@@ -115,20 +95,14 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                                             <CollectionButton
                                                 variant="full"
                                                 type="watched"
-                                                onClick={() =>
-                                                    handleOpenWatchedModal()
-                                                }
-                                                disabled={isPending}
+                                                item={details}
+                                                mediaType={type}
                                             />
                                             <CollectionButton
                                                 variant="full"
                                                 type="wishlist"
-                                                onClick={() =>
-                                                    handleAddToCollection(
-                                                        "wishlist",
-                                                    )
-                                                }
-                                                disabled={isPending}
+                                                item={details}
+                                                mediaType={type}
                                             />
                                         </>
                                     )}
@@ -137,8 +111,8 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                                         <CollectionButton
                                             variant="full"
                                             type="remove"
-                                            onClick={handleRemoveFromCollection}
-                                            disabled={isPending}
+                                            item={details}
+                                            mediaType={type}
                                         />
                                     )}
 
@@ -147,18 +121,14 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                                             <CollectionButton
                                                 variant="full"
                                                 type="watched"
-                                                onClick={() =>
-                                                    handleOpenWatchedModal()
-                                                }
-                                                disabled={isPending}
+                                                item={details}
+                                                mediaType={type}
                                             />
                                             <CollectionButton
                                                 variant="full"
                                                 type="remove"
-                                                onClick={
-                                                    handleRemoveFromCollection
-                                                }
-                                                disabled={isPending}
+                                                item={details}
+                                                mediaType={type}
                                             />
                                         </>
                                     )}
@@ -181,12 +151,6 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
 
                 <p className="text-white">{details.overview}</p>
             </div>
-            <WatchedModal
-                isOpen={isWatchedModalOpen}
-                onClose={() => setIsWatchedModalOpen(false)}
-                onConfirm={handleSaveToWatched}
-                movieTitle={"title" in details ? details.title : details.name}
-            />
         </div>
     );
 }

@@ -7,8 +7,6 @@ import { PLATFORMS } from "@/config/platforms";
 import { useCollectionStore } from "@/store/collectionStore";
 import { useGenresStore } from "@/store/genreStore";
 import CollectionButton from "./CollectionButton";
-import useCollectionActions from "@/hooks/useCollectionActions";
-import { useAuthStore } from "@/store/authStore";
 
 interface CardProps {
     item: SearchResult | collectionItem;
@@ -17,7 +15,6 @@ interface CardProps {
 }
 
 export default function Card({ item, onClick, className = "" }: CardProps) {
-    const { user } = useAuthStore();
     const collectionArr = useCollectionStore((state) => state.collectionArr);
     const genresMap = useGenresStore((state) => state.genresMap);
     const mediaType =
@@ -48,21 +45,6 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
         "";
 
     const year = rawDate ? rawDate.substring(0, 4) : "N/A";
-
-    const {
-        status,
-        isPending,
-        handleAddToCollection,
-        handleRemoveFromCollection,
-    } = useCollectionActions(mediaType, item, user);
-    const handleAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation();
-        handleAddToCollection("watched");
-    };
-    const handleRemove = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation();
-        handleRemoveFromCollection();
-    };
 
     return (
         <div
@@ -111,8 +93,8 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                             <CollectionButton
                                 type="remove"
                                 variant="icon"
-                                onClick={handleRemove}
-                                disabled={isPending}
+                                item={item}
+                                mediaType={mediaType}
                             />
                         </span>
                     </div>
@@ -130,8 +112,8 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                             <CollectionButton
                                 type="watched"
                                 variant="icon"
-                                onClick={handleAdd}
-                                disabled={isPending}
+                                item={item}
+                                mediaType={mediaType}
                             />
                         </span>
                         <span
@@ -142,8 +124,8 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                             <CollectionButton
                                 type="remove"
                                 variant="icon"
-                                onClick={handleRemove}
-                                disabled={isPending}
+                                item={item}
+                                mediaType={mediaType}
                             />
                         </span>
                     </div>

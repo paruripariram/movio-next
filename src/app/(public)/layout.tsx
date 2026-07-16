@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import PageTransition from "@/components/PageTransition";
 import { AppInitializer } from "@/components/providers/AppInitializer";
 import { SessionProvider } from "next-auth/react";
+import { ModalProvider } from "@/components/providers/ModalProvider";
 
 const roboto = Roboto({
     variable: "--font-roboto",
@@ -34,6 +35,7 @@ export default function RootLayout({
                             {children}
                         </PageTransition>
                         <Toaster position="top-center" richColors closeButton />
+                        <ModalProvider/>
                     </AppInitializer>
                 </SessionProvider>
             </body>
