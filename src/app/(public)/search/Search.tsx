@@ -10,6 +10,7 @@ import { detailsRouter } from "@/helpers/detailsRouter";
 import Loader from "@/components/Loader";
 import { useEffect } from "react";
 import { useGenresStore } from "@/store/genreStore";
+import { motion } from "framer-motion";
 
 export default function Search() {
     const searchParams = useSearchParams();
@@ -76,7 +77,8 @@ export default function Search() {
         hasMore,
         setRetryCount,
         hasSearched,
-        isInitialLoading
+        isInitialLoading,
+        page,
     } = useMovieSearch(searchQuery, currentType as "movie" | "tv", withGenres);
     const isSearching = isLoading || isDebouncing || isInitialLoading;
 
@@ -183,32 +185,42 @@ export default function Search() {
                                         .
                                     </p>
                                 )}
-                            {isSearching && (
+                            {isSearching && page === 1 && (
                                 <Loader size="medium">
                                     Загрузка результатов...
                                 </Loader>
                             )}
                             {searchResults.length > 0 &&
-                                !isSearching &&
+                                !(isSearching && page === 1) &&
                                 searchResults.map((item) => {
                                     return (
-                                        <Card
+                                        <motion.div
                                             key={item.id}
-                                            item={item}
-                                            onClick={() =>
-                                                detailsRouter(
-                                                    router,
-                                                    item.id,
-                                                    currentType as
-                                                        | "movie"
-                                                        | "tv",
-                                                )
-                                            }
-                                        />
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{
+                                                duration: 0.4,
+                                                ease: "easeOut",
+                                            }}
+                                            className="w-full flex justify-center"
+                                        >
+                                            <Card
+                                                item={item}
+                                                onClick={() =>
+                                                    detailsRouter(
+                                                        router,
+                                                        item.id,
+                                                        currentType as
+                                                            | "movie"
+                                                            | "tv",
+                                                    )
+                                                }
+                                            />
+                                        </motion.div>
                                     );
                                 })}
                         </div>
-                        {hasMore && !isSearching && (
+                        {hasMore && !(isSearching && page === 1) && (
                             <button
                                 disabled={isLoading}
                                 className="self-center mt-6 bg-primary text-white w-40 h-12 rounded-xl flex items-center justify-center relative disabled:opacity-70 cursor-pointer shadow-glow hover:shadow-glow-bold"

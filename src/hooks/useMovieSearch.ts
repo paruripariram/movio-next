@@ -52,7 +52,11 @@ export default function useMovieSearch(
                 if (page === 1) {
                     setSearchResults(data.results);
                 } else {
-                    setSearchResults((prev) => [...prev, ...data.results]);
+                    setSearchResults((prev) => {
+                        const seenIds = new Set(prev.map((item) => item.id));
+                        const uniqueNewResults = data.results.filter((item: SearchResult)=>!seenIds.has(item.id));
+                        return [...prev, ...uniqueNewResults]
+                    });
                 }
                 setHasMore(page < data.total_pages);
                 setError(null);
@@ -86,6 +90,7 @@ export default function useMovieSearch(
     }, [searchQuery, page, retryCount, type, genres]);
 
     return {
+        page,
         searchResults,
         isLoading,
         error,
