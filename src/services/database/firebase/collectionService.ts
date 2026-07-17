@@ -30,24 +30,28 @@ export function getCollection(
     );
     return unsubscribe;
 }
+type MediaStatus = {
+    status: "watched" | "wishlist";
+    platform?: string;
+} | null
 
 export function checkMediaStatus(
     userId: string,
     type: "movie" | "tv",
     mediaId: number,
-    setStatus: (status: "watched" | "wishlist" | null) => void,
+    onStatusChange: (data: MediaStatus) => void,
 ) {
     const docRef = doc(db, "users", userId, "collection", `${type}-${mediaId}`);
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
         if (docSnap.exists()) {
             const data = docSnap.data();
             if (data.status === "watched" || data.status === "wishlist") {
-                setStatus(data.status);
+                onStatusChange({ status: data.status, platform: data.platform || "" });
             } else {
-                setStatus(null);
+                onStatusChange(null);
             }
         } else {
-            setStatus(null);
+            onStatusChange(null);
         }
     });
     return unsubscribe;

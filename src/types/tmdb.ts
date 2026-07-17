@@ -34,7 +34,7 @@ interface TVShow {
     vote_count: number;
 }
 
-interface Person {
+export interface Person {
     adult: boolean;
     gender: number;
     id: number;
@@ -44,6 +44,18 @@ interface Person {
     name: string;
     popularity: number;
     profile_path: string | null;
+}
+
+export interface CastMember extends Person {
+    character: string;
+    credit_id: string;
+    order: number;
+}
+
+export interface CrewMember extends Person {
+    department: string;
+    job: string;
+    credit_id: string;
 }
 
 export type Genre = {
@@ -145,7 +157,10 @@ export interface TVDetails {
     type: string;
     vote_average: number;
     vote_count: number;
-    credits: Record<"cast" | "crew", Person[]>;
+    credits: {
+        cast: CastMember[];
+        crew: CrewMember[];
+    };
 }
 export interface MovieDetails {
     adult: boolean;
@@ -179,5 +194,8 @@ export interface MovieDetails {
     video: boolean;
     vote_average: number;
     vote_count: number;
-    credits: Record<"cast" | "crew", Person[]>;
+    credits: {
+        cast: CastMember[];
+        crew: CrewMember[];
+    };
 }

@@ -24,6 +24,7 @@ export default function useCollectionActions(
     const [status, setStatus] = useState<CollectionStatus | null>(null);
     const [isPending, setIsPending] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [platform, setPlatform] = useState("");
 
     const userId = user?.id;
     const mediaId = details?.id;
@@ -33,13 +34,21 @@ export default function useCollectionActions(
             return;
         }
 
-        const unsubscribe = checkMediaStatus(userId, type, mediaId, setStatus);
+        const unsubscribe = checkMediaStatus(userId, type, mediaId, (data) => {
+            if (data) {
+                setStatus(data.status);
+                setPlatform(data.platform || "");
+            } else {
+                setStatus(null);
+                setPlatform("");
+            }
+        });
         return () => unsubscribe();
     }, [userId, mediaId, type]);
 
     const handleAddToCollection = async (
         collectionType: "watched" | "wishlist",
-        platformId?: string,
+        incomingPlatformId?: string,
     ) => {
         if (isPending) return false;
         if (!user || !user.id) {
@@ -49,6 +58,7 @@ export default function useCollectionActions(
         setIsPending(true);
         const previousStatus = status;
         setStatus(collectionType);
+        setPlatform(incomingPlatformId || "");
 
         const movieData: collectionItem = {
             id: details.id,
@@ -72,7 +82,7 @@ export default function useCollectionActions(
                 "",
             type: type,
             status: collectionType,
-            ...(platformId && { platform: platformId }),
+            ...(incomingPlatformId && { platform: incomingPlatformId }),
         };
 
         try {
@@ -97,7 +107,9 @@ export default function useCollectionActions(
         if (!details) return false;
         setIsPending(true);
         const previousStatus = status;
+        const previousPlatform = platform;
         setStatus(null);
+        setPlatform("");
 
         try {
             await removeFromCollection(user.id, type, details.id);
@@ -107,6 +119,7 @@ export default function useCollectionActions(
                 setErrorCallback: setError,
             });
             setStatus(previousStatus);
+            setPlatform(previousPlatform);
             return false;
         } finally {
             setIsPending(false);
@@ -114,6 +127,7 @@ export default function useCollectionActions(
     };
     return {
         status,
+        platform,
         isPending,
         error,
         handleAddToCollection,
