@@ -7,6 +7,7 @@ import { PLATFORMS } from "@/config/platforms";
 import { useCollectionStore } from "@/store/collectionStore";
 import { useGenresStore } from "@/store/genreStore";
 import CollectionButton from "./CollectionButton";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface CardProps {
     item: SearchResult | collectionItem;
@@ -46,6 +47,12 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
 
     const year = rawDate ? rawDate.substring(0, 4) : "N/A";
 
+    const fadeScaleVariants = {
+        initial: { opacity: 0, scale: 0.8 },
+        animate: { opacity: 1, scale: 1 },
+        exit: { opacity: 0, scale: 0.8 },
+    };
+
     return (
         <div
             onClick={onClick}
@@ -63,8 +70,16 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                 <span className="absolute top-5 right-5 w-15 h-10 rounded-4xl p-2 text-center font-bold text-primary bg-back-link-color/80">
                     {voteAverage !== null && voteAverage?.toFixed(1)}
                 </span>
+                <AnimatePresence mode="popLayout">
                 {statusInCollection === "watched" && (
-                    <div className="absolute top-5 left-5 flex flex-col gap-1.5">
+                    <motion.div 
+                    key="watched-container"
+                    variants={fadeScaleVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{duration:0.3, ease:"easeOut"}}
+                    className="absolute top-5 left-5 flex flex-col gap-1.5">
                         <span className="w-20 h-10 rounded-4xl p-2 flex gap-1.5 items-center justify-center font-bold text-primary bg-back-link-color/80">
                             <Check />
                             <Image
@@ -97,10 +112,17 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                                 mediaType={mediaType}
                             />
                         </span>
-                    </div>
+                    </motion.div>
                 )}
                 {statusInCollection === "wishlist" && (
-                    <div className="absolute top-5 left-5 flex flex-col gap-1.5">
+                    <motion.div
+                    key="wishlist-container"
+                    variants={fadeScaleVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{duration:0.3, ease:"easeOut"}}
+                    className="absolute top-5 left-5 flex flex-col gap-1.5">
                         <span className="w-10 h-10 rounded-4xl p-2 flex items-center justify-center font-bold text-primary bg-back-link-color/80">
                             <Bookmark />
                         </span>
@@ -128,10 +150,17 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                                 mediaType={mediaType}
                             />
                         </span>
-                    </div>
+                    </motion.div>
                 )}
                 {statusInCollection === undefined && (
-                    <div className="absolute top-5 left-5 flex flex-col gap-1.5">
+                    <motion.div 
+                    key="empty-container"
+                    variants={fadeScaleVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{duration:0.3, ease:"easeOut"}}
+                    className="absolute top-5 left-5 flex flex-col gap-1.5">
                         <span
                             className="opacity-0 scale-90 pointer-events-none
                   transition-all duration-300 ease-out
@@ -156,8 +185,9 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                                 mediaType={mediaType}
                             />
                         </span>
-                    </div>
+                    </motion.div>
                 )}
+                </AnimatePresence>
 
                 <h3 className="text-xl font-extrabold text-white ">{title}</h3>
                 <div>
