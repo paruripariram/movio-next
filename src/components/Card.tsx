@@ -8,6 +8,7 @@ import { useCollectionStore } from "@/store/collectionStore";
 import { useGenresStore } from "@/store/genreStore";
 import CollectionButton from "./CollectionButton";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAuthStore } from "@/store/authStore";
 
 interface CardProps {
     item: SearchResult | collectionItem;
@@ -16,6 +17,7 @@ interface CardProps {
 }
 
 export default function Card({ item, onClick, className = "" }: CardProps) {
+    const { user } = useAuthStore();
     const collectionArr = useCollectionStore((state) => state.collectionArr);
     const genresMap = useGenresStore((state) => state.genresMap);
     const mediaType =
@@ -152,7 +154,7 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                         </span>
                     </motion.div>
                 )}
-                {statusInCollection === undefined && (
+                {user && statusInCollection === undefined && (
                     <motion.div 
                     key="empty-container"
                     variants={fadeScaleVariants}
