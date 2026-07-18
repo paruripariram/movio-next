@@ -10,6 +10,7 @@ interface SearchCacheState {
     lastType: "movie" | "tv" | "";
     lastGenres: string;
     cachedScrollY: number;
+    cachedCollectionScrollY: number;
     setCache: (state: Partial<SearchCacheState>) => void;
     clearCache: () => void;
 }
@@ -23,9 +24,10 @@ export const useSearchCacheStore = create<SearchCacheState>((set) => ({
     lastType: "",
     lastGenres: "",
     cachedScrollY: 0,
+    cachedCollectionScrollY: 0,
     setCache: (newState) => set((state) => ({ ...state, ...newState })),
     clearCache: () =>
-        set({
+        set((state) => ({
             cachedResults: [],
             cachedPage: 1,
             cachedHasMore: true,
@@ -34,5 +36,6 @@ export const useSearchCacheStore = create<SearchCacheState>((set) => ({
             lastType: "",
             lastGenres: "",
             cachedScrollY: 0,
-        }),
+            cachedCollectionScrollY: state.cachedCollectionScrollY,
+        })),
 }));
