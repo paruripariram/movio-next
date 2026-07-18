@@ -100,6 +100,7 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                                 }
                                 width={32}
                                 height={32}
+                                className="rounded-md"
                             />
                         </span>
                         <span
