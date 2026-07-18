@@ -11,6 +11,7 @@ import Loader from "@/components/Loader";
 import { useEffect } from "react";
 import { useGenresStore } from "@/store/genreStore";
 import { motion } from "framer-motion";
+import { useSearchCacheStore } from "@/store/searchCacheStore";
 
 export default function Search() {
     const searchParams = useSearchParams();
@@ -18,6 +19,7 @@ export default function Search() {
     const pathname = usePathname();
 
     const genresMap = useGenresStore((state) => state.genresMap);
+    const setCache = useSearchCacheStore((state) => state.setCache);
 
     const searchQuery = searchParams.get("with_text_query") || "";
     const withGenres = searchParams.get("with_genres") || "";
@@ -206,15 +208,19 @@ export default function Search() {
                                         >
                                             <Card
                                                 item={item}
-                                                onClick={() =>
+                                                onClick={() => {
+                                                    setCache({
+                                                        cachedScrollY:
+                                                            window.scrollY,
+                                                    });
                                                     detailsRouter(
                                                         router,
                                                         item.id,
                                                         currentType as
                                                             | "movie"
                                                             | "tv",
-                                                    )
-                                                }
+                                                    );
+                                                }}
                                             />
                                         </motion.div>
                                     );
