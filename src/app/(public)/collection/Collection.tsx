@@ -22,6 +22,9 @@ export default function Collection() {
     const pathname = usePathname();
     const { isLoadingUser } = useAuthStore();
 
+    const [initialPathname] = useState(pathname);
+    const isNavigatingAway = pathname !== initialPathname;
+
     const {
         query: queryFromUrl,
         type: currentType,
@@ -40,12 +43,36 @@ export default function Collection() {
 
     const [prevQuery, setPrevQuery] = useState(queryFromUrl);
 
-    if (queryFromUrl !== prevQuery) {
+    if (queryFromUrl !== prevQuery && !isNavigatingAway) {
         setPrevQuery(queryFromUrl);
         setLocalSearch(queryFromUrl);
     }
 
+    const currentGenresStr = JSON.stringify(pickedGenres);
+    const [activeFilters, setActiveFilters] = useState({
+        currentType,
+        localSearch,
+        currentStatus,
+        pickedGenresStr: currentGenresStr,
+    });
+
+    if (
+        !isNavigatingAway &&
+        (currentType !== activeFilters.currentType ||
+            localSearch !== activeFilters.localSearch ||
+            currentStatus !== activeFilters.currentStatus ||
+            currentGenresStr !== activeFilters.pickedGenresStr)
+    ) {
+        setActiveFilters({
+            currentType,
+            localSearch,
+            currentStatus,
+            pickedGenresStr: currentGenresStr,
+        });
+    }
+
     useEffect(() => {
+        if (isNavigatingAway) return;
         const timer = setTimeout(() => {
             updateParams({
                 with_text_query: localSearch.trim() !== "" ? localSearch : null,
@@ -53,9 +80,10 @@ export default function Collection() {
         }, 400);
         return () => clearTimeout(timer);
         //eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [localSearch]);
+    }, [localSearch, isNavigatingAway]);
 
     useEffect(() => {
+        if (isNavigatingAway) return;
         if (!pathname.includes("/collection")) return;
         if (!searchParams.has("type")) {
             const nextParams = new URLSearchParams(searchParams);
@@ -64,7 +92,7 @@ export default function Collection() {
                 scroll: false,
             });
         }
-    }, [searchParams, pathname, router]);
+    }, [searchParams, pathname, router, isNavigatingAway]);
 
     function inputHandler(e: React.ChangeEvent<HTMLInputElement>) {
         setLocalSearch(e.target.value);
@@ -86,29 +114,40 @@ export default function Collection() {
     const criticalError = useCollectionStore((state) => state.criticalError);
 
     const filteredCollection = useMemo(() => {
-        return collectionArr.filter((item) => {
-            if (item.type !== currentType) return false;
+        const genresList = JSON.parse(
+            activeFilters.pickedGenresStr,
+        ) as number[];
 
-            if (localSearch.trim() !== "") {
+        return collectionArr.filter((item) => {
+            if (item.type !== activeFilters.currentType) return false;
+
+            if (activeFilters.localSearch.trim() !== "") {
                 const title = item.title || "";
-                if (!title.toLowerCase().includes(localSearch.toLowerCase()))
+                if (
+                    !title
+                        .toLowerCase()
+                        .includes(activeFilters.localSearch.toLowerCase())
+                )
                     return false;
             }
 
-            if (pickedGenres.length > 0) {
+            if (genresList.length > 0) {
                 const itemGenres = item.genre_ids || [];
-                const hasAllGenres = pickedGenres.every((id) =>
+                const hasAllGenres = genresList.every((id) =>
                     itemGenres.includes(id),
                 );
                 if (!hasAllGenres) return false;
             }
 
-            if (currentStatus !== "all" && item.status !== currentStatus)
+            if (
+                activeFilters.currentStatus !== "all" &&
+                item.status !== activeFilters.currentStatus
+            )
                 return false;
 
             return true;
         });
-    }, [collectionArr, currentType, localSearch, pickedGenres, currentStatus]);
+    }, [collectionArr, activeFilters]);
 
     if (criticalError) throw criticalError;
 

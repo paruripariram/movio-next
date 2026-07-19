@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import type { SearchResult } from "../types";
 import { search } from "@/services/tmdb/movieService";
 import { handleError } from "@/helpers/errorHandler";
@@ -16,93 +17,85 @@ export default function useMovieSearch(
         cachedPage,
         cachedHasMore,
         cachedHasSearched,
-        lastQuery,
-        lastType,
-        lastGenres,
         setCache,
-        clearCache,
     } = useSearchCacheStore();
-    useEffect(() => {
-        if (
-            searchQuery !== lastQuery ||
-            type !== lastType ||
-            genres !== lastGenres
-        ) {
-            clearCache();
-            setCache({
-                lastQuery: searchQuery,
-                lastType: type,
-                lastGenres: genres,
-                cachedScrollY: 0,
-            });
-        }
-    }, [
-        searchQuery,
-        type,
-        genres,
-        lastQuery,
-        lastType,
-        lastGenres,
-        clearCache,
-        setCache,
-    ]);
+
+    const pathname = usePathname();
+    const initialPathnameRef = useRef(pathname);
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isDebouncing, setIsDebouncing] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
+    const [isInitialLoading, setIsInitialLoading] = useState(false);
 
-    const isSameParams =
-        searchQuery === lastQuery && type === lastType && genres === lastGenres;
-
-    const [isInitialLoading, setIsInitialLoading] = useState(
-        !isSameParams && cachedResults.length === 0,
-    );
-
-    const prevParams = useRef({ searchQuery, type, genres });
-
-    const isFirstRender = useRef(true);
+    const prevPageRef = useRef(cachedPage);
+    const isSearchChangeRef = useRef(false);
+    const isFirstRenderRef = useRef(true);
 
     useEffect(() => {
+        if (pathname !== initialPathnameRef.current) {
+            return;
+        }
+
+        const currentStore = useSearchCacheStore.getState();
         const isFiltersChanged =
-            prevParams.current.type !== type ||
-            prevParams.current.genres !== genres ||
-            prevParams.current.searchQuery !== searchQuery;
+            searchQuery !== currentStore.lastQuery ||
+            type !== currentStore.lastType ||
+            genres !== currentStore.lastGenres;
 
         if (isFiltersChanged) {
+            const isIncomingPropsEmpty = searchQuery === "" && genres === "";
+            const hasAnyCachedFilters = currentStore.lastQuery !== "" || currentStore.lastGenres !== "";
+
+            if (isFirstRenderRef.current && isIncomingPropsEmpty && hasAnyCachedFilters) {
+                isFirstRenderRef.current = false;
+                return; 
+            }
+
+            isFirstRenderRef.current = false;
+            isSearchChangeRef.current = searchQuery !== currentStore.lastQuery;
+            
             setCache({
                 cachedResults: [],
                 cachedPage: 1,
-                cachedHasMore: true,
+                cachedHasMore: false,
                 cachedHasSearched: false,
                 lastQuery: searchQuery,
                 lastType: type,
                 lastGenres: genres,
             });
             setIsInitialLoading(true);
-            prevParams.current = { searchQuery, type, genres };
+            prevPageRef.current = 1;
 
-            if (cachedPage !== 1) return;
-        }
-
-        const currentStore = useSearchCacheStore.getState();
-
-        if (isFirstRender.current) {
-            isFirstRender.current = false;
-            if (isSameParams && currentStore.cachedResults.length > 0) {
-                const savedScrollY =
-                    useSearchCacheStore.getState().cachedScrollY;
-                if (savedScrollY > 0) {
-                    setTimeout(() => {
-                        window.scrollTo({
-                            top: savedScrollY,
-                            behavior: "instant",
-                        });
-                    }, 50);
-                }
+            if (cachedPage !== 1) {
                 return;
             }
+        } else {
+            isFirstRenderRef.current = false;
         }
+
+        const isPageChanged = prevPageRef.current !== cachedPage;
+
+        if (
+            !isFiltersChanged &&
+            currentStore.cachedResults.length > 0 &&
+            !isPageChanged &&
+            retryCount === 0
+        ) {
+            const savedScrollY = currentStore.cachedScrollY;
+            if (savedScrollY > 0) {
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: savedScrollY,
+                        behavior: "instant",
+                    });
+                }, 50);
+            }
+            return;
+        }
+
+        prevPageRef.current = cachedPage;
 
         async function fetchResults(signal: AbortSignal) {
             setIsDebouncing(false);
@@ -118,20 +111,27 @@ export default function useMovieSearch(
                     signal,
                 });
 
-                const currentResults =
-                    useSearchCacheStore.getState().cachedResults;
+                const latestStore = useSearchCacheStore.getState();
+
+                if (
+                    searchQuery !== latestStore.lastQuery ||
+                    genres !== latestStore.lastGenres ||
+                    type !== latestStore.lastType
+                ) {
+                    return;
+                }
 
                 if (cachedPage === 1) {
                     setCache({ cachedResults: data.results });
                 } else {
                     const seenIds = new Set(
-                        currentResults.map((item) => item.id),
+                        latestStore.cachedResults.map((item) => item.id),
                     );
                     const uniqueNewResults = data.results.filter(
                         (item: SearchResult) => !seenIds.has(item.id),
                     );
                     setCache({
-                        cachedResults: [...currentResults, ...uniqueNewResults],
+                        cachedResults: [...latestStore.cachedResults, ...uniqueNewResults],
                     });
                 }
                 setCache({
@@ -154,7 +154,8 @@ export default function useMovieSearch(
 
         const abortController = new AbortController();
         const signal = abortController.signal;
-        if (cachedPage === 1) {
+
+        if (cachedPage === 1 && isSearchChangeRef.current) {
             debounceStartTimeout = setTimeout(() => {
                 setIsDebouncing(true);
             }, 0);
@@ -164,6 +165,7 @@ export default function useMovieSearch(
         } else {
             fetchResults(signal);
         }
+
         return () => {
             clearTimeout(debounceTimeout);
             clearTimeout(debounceStartTimeout);
@@ -171,15 +173,12 @@ export default function useMovieSearch(
         };
     }, [
         searchQuery,
-        cachedPage,
-        retryCount,
         type,
         genres,
-        lastQuery,
-        lastType,
-        lastGenres,
-        isSameParams,
+        cachedPage,
+        retryCount,
         setCache,
+        pathname,
     ]);
 
     const handleSetPage = (
@@ -194,7 +193,7 @@ export default function useMovieSearch(
 
     return {
         page: cachedPage,
-        searchResults: useSearchCacheStore().cachedResults,
+        searchResults: cachedResults,
         isLoading,
         error,
         setError,
