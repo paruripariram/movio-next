@@ -14,6 +14,7 @@ import { useGenresStore } from "@/store/genreStore";
 import { useEffect, useMemo, useState } from "react";
 import GenreCheckbox from "@/components/GenreCheckbox";
 import Toggler from "@/components/Toggler";
+import { useUrlFilters } from "@/hooks/useUrlFilteres";
 
 export default function Collection() {
     const searchParams = useSearchParams();
@@ -21,15 +22,21 @@ export default function Collection() {
     const pathname = usePathname();
     const { isLoadingUser } = useAuthStore();
 
+    const {
+        query: queryFromUrl,
+        type: currentType,
+        status: currentStatus,
+        pickedGenres,
+        updateParams,
+        toggleGenre,
+    } = useUrlFilters();
+
     const genresMap = useGenresStore((state) => state.genresMap);
     const setCache = useSearchCacheStore((state) => state.setCache);
-
-    const withGenres = searchParams.get("with_genres") || "";
 
     const [localSearch, setLocalSearch] = useState(
         searchParams.get("with_text_query") || "",
     );
-    const queryFromUrl = searchParams.get("with_text_query") || "";
 
     const [prevQuery, setPrevQuery] = useState(queryFromUrl);
 
@@ -40,25 +47,13 @@ export default function Collection() {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            const nextParams = new URLSearchParams(searchParams.toString());
-            const currentQuery = searchParams.get("with_text_query") || "";
-
-            if (localSearch.trim() !== "") {
-                nextParams.set("with_text_query", localSearch);
-            } else {
-                nextParams.delete("with_text_query");
-            }
-
-            const nextQuery = nextParams.get("with_text_query") || "";
-            if (nextQuery !== currentQuery) {
-                router.replace(`${pathname}?${nextParams.toString()}`, {
-                    scroll: false,
-                });
-            }
+            updateParams({
+                with_text_query: localSearch.trim() !== "" ? localSearch : null,
+            });
         }, 400);
-
         return () => clearTimeout(timer);
-    }, [localSearch, pathname, router, searchParams]);
+        //eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [localSearch]);
 
     useEffect(() => {
         if (!pathname.includes("/collection")) return;
@@ -71,55 +66,18 @@ export default function Collection() {
         }
     }, [searchParams, pathname, router]);
 
-    const currentType = searchParams.get("type") || "movie";
-    const currentStatus = searchParams.get("status") || "all";
-
-    function setSearchParams(
-        nextParams: Record<string, string> | URLSearchParams,
-    ) {
-        router.replace(`${pathname}?${nextParams.toString()}`, {
-            scroll: false,
-        });
-    }
-
-    const pickedGenres = useMemo(() => {
-        return withGenres
-            .split(",")
-            .map((id) => id.trim())
-            .filter((id) => id !== "")
-            .map(Number)
-            .filter((id) => Number.isInteger(id) && id > 0);
-    }, [withGenres]);
-
     function inputHandler(e: React.ChangeEvent<HTMLInputElement>) {
         setLocalSearch(e.target.value);
     }
 
     function typeHandler(newType: string) {
-        const nextParams = new URLSearchParams(searchParams);
-        nextParams.set("type", newType);
-        nextParams.delete("with_genres");
-        setSearchParams(nextParams);
+        updateParams({ type: newType, with_genres: null });
     }
 
     function statusHandler(newStatus: string) {
-        const nextParams = new URLSearchParams(searchParams);
-        if (newStatus === "all") {
-            nextParams.delete("status");
-        } else {
-            nextParams.set("status", newStatus);
-        }
-        setSearchParams(nextParams);
+        updateParams({ status: newStatus === "all" ? null : newStatus });
     }
 
-    function genreHandler(genreId: number, checked: boolean) {
-        const newGenres = checked
-            ? [...pickedGenres, genreId]
-            : pickedGenres.filter((id) => id !== genreId);
-        const nextParams = new URLSearchParams(searchParams);
-        nextParams.set("with_genres", newGenres.join(","));
-        setSearchParams(nextParams);
-    }
     const collectionArr = useCollectionStore((state) => state.collectionArr);
 
     const isLoadingCollection = useCollectionStore(
@@ -217,7 +175,7 @@ export default function Collection() {
                                           checked={pickedGenres.includes(
                                               Number(id),
                                           )}
-                                          onChange={genreHandler}
+                                          onChange={toggleGenre}
                                       />
                                   ),
                               )
@@ -230,7 +188,7 @@ export default function Collection() {
                                           checked={pickedGenres.includes(
                                               Number(id),
                                           )}
-                                          onChange={genreHandler}
+                                          onChange={toggleGenre}
                                       />
                                   ),
                               )}

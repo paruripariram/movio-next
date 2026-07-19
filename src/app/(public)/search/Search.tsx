@@ -8,20 +8,28 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import GenreCheckbox from "@/components/GenreCheckbox";
 import { detailsRouter } from "@/helpers/detailsRouter";
 import Loader from "@/components/Loader";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useGenresStore } from "@/store/genreStore";
 import { motion } from "framer-motion";
 import { useSearchCacheStore } from "@/store/searchCacheStore";
+import { useUrlFilters } from "@/hooks/useUrlFilteres";
 
 export default function Search() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
 
+    const {
+        query,
+        type: currentType,
+        pickedGenres,
+        updateParams,
+        toggleGenre,
+    } = useUrlFilters();
+
     const genresMap = useGenresStore((state) => state.genresMap);
     const setCache = useSearchCacheStore((state) => state.setCache);
 
-    const searchQuery = searchParams.get("with_text_query") || "";
     const withGenres = searchParams.get("with_genres") || "";
 
     useEffect(() => {
@@ -35,40 +43,6 @@ export default function Search() {
         }
     }, [searchParams, pathname, router]);
 
-    const currentType = searchParams.get("type") || "movie";
-
-    function setSearchParams(
-        nextParams: Record<string, string> | URLSearchParams,
-    ) {
-        const currentParams = new URLSearchParams(searchParams);
-
-        const entries =
-            nextParams instanceof URLSearchParams
-                ? Array.from(nextParams.entries())
-                : Object.entries(nextParams);
-
-        entries.forEach(([key, value]) => {
-            if (value) {
-                currentParams.set(key, value);
-            } else {
-                currentParams.delete(key);
-            }
-        });
-
-        const searchStr = currentParams.toString();
-        const newSearchStr = searchStr ? `?${searchStr}` : "";
-
-        router.push(`${pathname}${newSearchStr}`, {
-            scroll: false,
-        });
-    }
-
-    const pickedGenres = withGenres
-        .split(",")
-        .map((id) => id.trim())
-        .filter((id) => id !== "")
-        .map(Number)
-        .filter((id) => Number.isInteger(id) && id > 0);
     const {
         searchResults,
         isLoading,
@@ -81,41 +55,65 @@ export default function Search() {
         hasSearched,
         isInitialLoading,
         page,
-    } = useMovieSearch(searchQuery, currentType as "movie" | "tv", withGenres);
+    } = useMovieSearch(query, currentType as "movie" | "tv", withGenres);
     const isSearching = isLoading || isDebouncing || isInitialLoading;
 
+    const [localSearch, setLocalSearch] = useState(
+        searchParams.get("with_text_query") || "",
+    );
+
+    const [prevQuery, setPrevQuery] = useState(query);
+
+    if (query !== prevQuery) {
+        setPrevQuery(query);
+        setLocalSearch(query);
+    }
+
+    useEffect(() => {
+        if (localSearch === query) return;
+
+        const timer = setTimeout(() => {
+            updateParams({
+                with_text_query: localSearch.trim() !== "" ? localSearch : null,
+            });
+        }, 400);
+
+        return () => clearTimeout(timer);
+    }, [localSearch, updateParams, query]);
+
     function inputHandler(e: React.ChangeEvent<HTMLInputElement>) {
-        const nextParams = new URLSearchParams(searchParams);
-        nextParams.set("with_text_query", e.target.value);
-        setSearchParams(nextParams);
+        setLocalSearch(e.target.value);
     }
 
-    function typeHandler() {
-        const newType = searchParams.get("type") === "movie" ? "tv" : "movie";
-        const nextParams = new URLSearchParams(searchParams);
-        nextParams.set("type", newType);
-        nextParams.set("with_genres", "");
-        setSearchParams(nextParams);
+    function typeHandler(newType: string) {
+        updateParams({ type: newType, with_genres: null });
     }
 
-    function genreHandler(genreId: number, checked: boolean) {
-        const newGenres = checked
-            ? [...pickedGenres, genreId]
-            : pickedGenres.filter((id) => id !== genreId);
-        const nextParams = new URLSearchParams(searchParams);
-        nextParams.set("with_genres", newGenres.join(","));
-        setSearchParams(nextParams);
-    }
+    const togglerMediaOptions = [
+        { value: "movie", label: "Фильмы" },
+        { value: "tv", label: "Сериалы" },
+    ];
+
+    useEffect(() => {
+        const savedScrollY = useSearchCacheStore.getState().cachedScrollY;
+        if (savedScrollY && savedScrollY > 0) {
+            const timer = setTimeout(() => {
+                window.scrollTo({ top: savedScrollY, behavior: "instant" });
+            }, 50);
+            return () => clearTimeout(timer);
+        }
+    }, []);
 
     return (
         <>
             <div className="flex flex-col gap-10">
-                <SearchInput value={searchQuery} onChange={inputHandler} />
+                <SearchInput value={localSearch} onChange={inputHandler} />
                 <div className="flex">
                     <aside className="bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-70 h-auto self-start rounded-4xl shrink-0 p-5">
                         <Toggler
-                            type={currentType as "movie" | "tv"}
-                            typeHandler={typeHandler}
+                            options={togglerMediaOptions}
+                            value={currentType as "movie" | "tv"}
+                            optionHandler={typeHandler}
                         />
                         <div className="flex flex-col gap-4 mt-6">
                             {currentType === "movie"
@@ -128,7 +126,7 @@ export default function Search() {
                                               checked={pickedGenres.includes(
                                                   Number(id),
                                               )}
-                                              onChange={genreHandler}
+                                              onChange={toggleGenre}
                                           />
                                       ),
                                   )
@@ -141,14 +139,14 @@ export default function Search() {
                                               checked={pickedGenres.includes(
                                                   Number(id),
                                               )}
-                                              onChange={genreHandler}
+                                              onChange={toggleGenre}
                                           />
                                       ),
                                   )}
                         </div>
                     </aside>
                     <div className="flex-1 min-w-0 flex flex-col">
-                        {searchQuery.trim() === "" &&
+                        {query.trim() === "" &&
                             searchParams.get("with_genres") === "" && (
                                 <p className="text-gray-500 text-3xl px-6">
                                     Популярное сейчас.
@@ -172,8 +170,7 @@ export default function Search() {
                                 </div>
                             )}
 
-                            {(searchQuery.trim() !== "" ||
-                                pickedGenres.length > 0) &&
+                            {(query.trim() !== "" || pickedGenres.length > 0) &&
                                 hasSearched &&
                                 searchResults.length === 0 &&
                                 !isDebouncing &&
@@ -181,8 +178,8 @@ export default function Search() {
                                 !error && (
                                     <p className="text-gray-500 text-3xl">
                                         Ничего не найдено для{" "}
-                                        {searchQuery
-                                            ? `"${searchQuery}"`
+                                        {query
+                                            ? `"${query}"`
                                             : "выбранных жанров"}
                                         .
                                     </p>

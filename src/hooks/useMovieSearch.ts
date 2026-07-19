@@ -20,7 +20,7 @@ export default function useMovieSearch(
         lastType,
         lastGenres,
         setCache,
-        clearCache
+        clearCache,
     } = useSearchCacheStore();
     useEffect(() => {
         if (
@@ -90,11 +90,15 @@ export default function useMovieSearch(
         if (isFirstRender.current) {
             isFirstRender.current = false;
             if (isSameParams && currentStore.cachedResults.length > 0) {
-                const savedScrollY = useSearchCacheStore.getState().cachedScrollY;
-                if(savedScrollY > 0) {
+                const savedScrollY =
+                    useSearchCacheStore.getState().cachedScrollY;
+                if (savedScrollY > 0) {
                     setTimeout(() => {
-                        window.scrollTo({ top: savedScrollY, behavior: "instant" });
-                    },50)
+                        window.scrollTo({
+                            top: savedScrollY,
+                            behavior: "instant",
+                        });
+                    }, 50);
                 }
                 return;
             }
@@ -150,10 +154,7 @@ export default function useMovieSearch(
 
         const abortController = new AbortController();
         const signal = abortController.signal;
-        if (
-            cachedPage === 1 &&
-            useSearchCacheStore.getState().cachedResults.length === 0
-        ) {
+        if (cachedPage === 1) {
             debounceStartTimeout = setTimeout(() => {
                 setIsDebouncing(true);
             }, 0);
