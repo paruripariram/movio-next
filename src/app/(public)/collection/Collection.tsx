@@ -1,5 +1,6 @@
 "use client";
 
+import { Bookmark, Check } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import Card from "@/components/Card";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -10,7 +11,7 @@ import { useAuthStore } from "@/store/authStore";
 import SearchInput from "@/components/SearchInput";
 import { useSearchCacheStore } from "@/store/searchCacheStore";
 import { useGenresStore } from "@/store/genreStore";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import GenreCheckbox from "@/components/GenreCheckbox";
 import Toggler from "@/components/Toggler";
 
@@ -23,8 +24,41 @@ export default function Collection() {
     const genresMap = useGenresStore((state) => state.genresMap);
     const setCache = useSearchCacheStore((state) => state.setCache);
 
-    const searchQuery = searchParams.get("with_text_query") || "";
     const withGenres = searchParams.get("with_genres") || "";
+
+    const [localSearch, setLocalSearch] = useState(
+        searchParams.get("with_text_query") || "",
+    );
+    const queryFromUrl = searchParams.get("with_text_query") || "";
+
+    const [prevQuery, setPrevQuery] = useState(queryFromUrl);
+
+    if (queryFromUrl !== prevQuery) {
+        setPrevQuery(queryFromUrl);
+        setLocalSearch(queryFromUrl);
+    }
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const nextParams = new URLSearchParams(searchParams.toString());
+            const currentQuery = searchParams.get("with_text_query") || "";
+
+            if (localSearch.trim() !== "") {
+                nextParams.set("with_text_query", localSearch);
+            } else {
+                nextParams.delete("with_text_query");
+            }
+
+            const nextQuery = nextParams.get("with_text_query") || "";
+            if (nextQuery !== currentQuery) {
+                router.replace(`${pathname}?${nextParams.toString()}`, {
+                    scroll: false,
+                });
+            }
+        }, 400);
+
+        return () => clearTimeout(timer);
+    }, [localSearch, pathname, router, searchParams]);
 
     useEffect(() => {
         if (!pathname.includes("/collection")) return;
@@ -38,51 +72,43 @@ export default function Collection() {
     }, [searchParams, pathname, router]);
 
     const currentType = searchParams.get("type") || "movie";
+    const currentStatus = searchParams.get("status") || "all";
 
     function setSearchParams(
         nextParams: Record<string, string> | URLSearchParams,
     ) {
-        const currentParams = new URLSearchParams(searchParams);
-
-        const entries =
-            nextParams instanceof URLSearchParams
-                ? Array.from(nextParams.entries())
-                : Object.entries(nextParams);
-
-        entries.forEach(([key, value]) => {
-            if (value) {
-                currentParams.set(key, value);
-            } else {
-                currentParams.delete(key);
-            }
-        });
-
-        const searchStr = currentParams.toString();
-        const newSearchStr = searchStr ? `?${searchStr}` : "";
-
-        router.push(`${pathname}${newSearchStr}`, {
+        router.replace(`${pathname}?${nextParams.toString()}`, {
             scroll: false,
         });
     }
 
-    const pickedGenres = withGenres
-        .split(",")
-        .map((id) => id.trim())
-        .filter((id) => id !== "")
-        .map(Number)
-        .filter((id) => Number.isInteger(id) && id > 0);
+    const pickedGenres = useMemo(() => {
+        return withGenres
+            .split(",")
+            .map((id) => id.trim())
+            .filter((id) => id !== "")
+            .map(Number)
+            .filter((id) => Number.isInteger(id) && id > 0);
+    }, [withGenres]);
 
     function inputHandler(e: React.ChangeEvent<HTMLInputElement>) {
+        setLocalSearch(e.target.value);
+    }
+
+    function typeHandler(newType: string) {
         const nextParams = new URLSearchParams(searchParams);
-        nextParams.set("with_text_query", e.target.value);
+        nextParams.set("type", newType);
+        nextParams.delete("with_genres");
         setSearchParams(nextParams);
     }
 
-    function typeHandler() {
-        const newType = searchParams.get("type") === "movie" ? "tv" : "movie";
+    function statusHandler(newStatus: string) {
         const nextParams = new URLSearchParams(searchParams);
-        nextParams.set("type", newType);
-        nextParams.set("with_genres", "");
+        if (newStatus === "all") {
+            nextParams.delete("status");
+        } else {
+            nextParams.set("status", newStatus);
+        }
         setSearchParams(nextParams);
     }
 
@@ -101,25 +127,30 @@ export default function Collection() {
     );
     const criticalError = useCollectionStore((state) => state.criticalError);
 
-    const filteredCollection = collectionArr.filter((item) => {
-        if (item.type !== currentType) return false;
+    const filteredCollection = useMemo(() => {
+        return collectionArr.filter((item) => {
+            if (item.type !== currentType) return false;
 
-        if (searchQuery.trim() !== "") {
-            const title = item.title || "";
-            if (!title.toLowerCase().includes(searchQuery.toLowerCase()))
+            if (localSearch.trim() !== "") {
+                const title = item.title || "";
+                if (!title.toLowerCase().includes(localSearch.toLowerCase()))
+                    return false;
+            }
+
+            if (pickedGenres.length > 0) {
+                const itemGenres = item.genre_ids || [];
+                const hasAllGenres = pickedGenres.every((id) =>
+                    itemGenres.includes(id),
+                );
+                if (!hasAllGenres) return false;
+            }
+
+            if (currentStatus !== "all" && item.status !== currentStatus)
                 return false;
-        }
 
-        if (pickedGenres.length > 0) {
-            const itemGenres = item.genre_ids || [];
-            const hasAllGenres = pickedGenres.every((id) =>
-                itemGenres.includes(id),
-            );
-            if (!hasAllGenres) return false;
-        }
-
-        return true;
-    });
+            return true;
+        });
+    }, [collectionArr, currentType, localSearch, pickedGenres, currentStatus]);
 
     if (criticalError) throw criticalError;
 
@@ -142,15 +173,39 @@ export default function Collection() {
             }
         }
     }, [viewKey]);
+
+    const togglerStatusOptions = [
+        { value: "all", label: "Все" },
+        { value: "watched", label: <Check /> },
+        { value: "wishlist", label: <Bookmark /> },
+    ];
+
+    const togglerMediaOptions = [
+        { value: "movie", label: "Фильмы" },
+        { value: "tv", label: "Сериалы" },
+    ];
+
     return (
         <div className="flex flex-col gap-10">
-            <SearchInput value={searchQuery} onChange={inputHandler} />
+            <SearchInput value={localSearch} onChange={inputHandler} />
             <div className="flex">
                 <aside className="bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-70 h-auto self-start rounded-4xl shrink-0 p-5">
-                    <Toggler
-                        type={currentType as "movie" | "tv"}
-                        typeHandler={typeHandler}
-                    />
+                    <div className="flex flex-col justify-center items-center gap-4">
+                        <div className="w-60">
+                            <Toggler
+                                options={togglerStatusOptions}
+                                value={currentStatus}
+                                optionHandler={statusHandler}
+                            />
+                        </div>
+                        <div className="w-60">
+                            <Toggler
+                                options={togglerMediaOptions}
+                                value={currentType as "movie" | "tv"}
+                                optionHandler={typeHandler}
+                            />
+                        </div>
+                    </div>
                     <div className="flex flex-col gap-4 mt-6">
                         {currentType === "movie"
                             ? Object.entries(genresMap.movieGenres).map(
@@ -205,7 +260,7 @@ export default function Collection() {
                                 className="flex-1 flex items-center justify-center"
                             >
                                 <p className="text-gray-500 text-3xl px-6">
-                                    Ваша коллекця пуста.
+                                    Ваша коллекция пуста.
                                 </p>
                             </motion.div>
                         )}
