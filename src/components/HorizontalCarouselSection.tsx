@@ -6,10 +6,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { detailsRouter } from "@/helpers/detailsRouter";
 import Card from "./Card";
-import { SearchResult } from "@/types";
+import { collectionItem, SearchResult } from "@/types";
 
 interface HorizontalCarouselSectionProps {
-    data: SearchResult[];
+    data: SearchResult[] | collectionItem[];
     title: string;
 }
 
@@ -84,7 +84,7 @@ export default function HorizontalCarouselSection({ data, title }: HorizontalCar
                                             detailsRouter(
                                                 router,
                                                 item.id,
-                                                item.media_type,
+                                                "media_type" in item ? item.media_type : item.type,
                                             )
                                         }
                                     />

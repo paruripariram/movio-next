@@ -60,6 +60,8 @@ export default function useCollectionActions(
         setStatus(collectionType);
         setPlatform(incomingPlatformId || "");
 
+        const now = new Date().toISOString();
+
         const movieData: collectionItem = {
             id: details.id,
             title:
@@ -83,6 +85,8 @@ export default function useCollectionActions(
             type: type,
             status: collectionType,
             ...(incomingPlatformId && { platform: incomingPlatformId }),
+            addedAt: now,
+            watchedAt: collectionType === "watched" ? now : null,
         };
 
         try {

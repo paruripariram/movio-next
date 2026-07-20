@@ -8,4 +8,6 @@ export type collectionItem = {
     type: "movie" | "tv";
     status: "wishlist" | "watched";
     platform?: string;
+    watchedAt?: string | null;
+    addedAt?: string;
 };
