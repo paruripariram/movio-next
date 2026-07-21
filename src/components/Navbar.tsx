@@ -45,7 +45,6 @@ export default function Navbar() {
 
     return (
         <>
-            {/* Мобильная верхняя плашка */}
             <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-form-color px-4 flex items-center justify-between z-50 border-b border-zinc-800/50 shadow-md">
                 <Link href="/" className="flex items-center gap-3" onClick={closeMenu}>
                     <Image
@@ -156,7 +155,7 @@ export default function Navbar() {
                                                 ).toUpperCase()
                                             )}
                                         </div>
-                                        <span className="truncate text-sm 2xl:text-base">
+                                        <span className="truncate text-lg 2xl:text-xl">
                                             {user.name || user.email}
                                         </span>
                                     </>

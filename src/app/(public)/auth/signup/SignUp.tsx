@@ -16,7 +16,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function SignUp() {
-    const {update} = useSession()
+    const { update } = useSession();
     const router = useRouter();
     const { formData, handleChange, errors, setErrors } = useForm<authForm>({
         username: "",
@@ -49,8 +49,10 @@ export default function SignUp() {
 
     return (
         <>
-            <h1 className="text-white text-5xl font-bold mb-6">Регистрация</h1>
-            <div className="rounded-xl bg-form-color p-8 min-h-100 min-w-100">
+            <h1 className="text-white text-4xl sm:text-5xl font-bold mb-6 text-center">
+                Регистрация
+            </h1>
+            <div className="rounded-xl bg-form-color p-6 sm:p-8 min-h-100 w-full sm:w-100 max-w-full">
                 <form
                     action={handleFormRegister}
                     className="flex flex-col gap-15 mb-1"
@@ -133,13 +135,15 @@ export default function SignUp() {
                         </div>
                     </div>
 
-                    <AuthButton isLoading={isPending}>Зарегистрироваться</AuthButton>
+                    <AuthButton isLoading={isPending}>
+                        Зарегистрироваться
+                    </AuthButton>
                 </form>
-                <div className="flex flex-col text-center text-white/50 mb-8">
+                <div className="flex flex-col text-center text-white/50 mb-8 mt-4">
                     Уже есть аккаунт?{" "}
                     <Link
                         href={APP_ROUTES.SIGNIN.path}
-                        className="text-primary"
+                        className="text-primary hover:underline"
                     >
                         Войти
                     </Link>
