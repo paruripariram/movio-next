@@ -10,9 +10,10 @@ type ChildrenFunction = (props: ChildrenProps) => ReactNode;
 interface NavMenuLinkProps {
     href: string;
     children: ReactNode | ChildrenFunction;
+    onClick?: () => void;
 }
 
-export default function NavMenuLink({ href, children }: NavMenuLinkProps) {
+export default function NavMenuLink({ href, children, onClick }: NavMenuLinkProps) {
     const pathname = usePathname();
 
     const decodedPathname = decodeURIComponent(pathname);
@@ -21,7 +22,10 @@ export default function NavMenuLink({ href, children }: NavMenuLinkProps) {
     return (
         <Link
             href={href}
-            className={`p-3 w-full flex gap-2 rounded-2xl items-center transition-all duration-300 ease-in-out hover:bg-bgcolor ${isActive ? "text-primary bg-back-link-color" : "text-gray-500"} `}
+            onClick={onClick}
+            className={`p-3 w-full flex gap-3 rounded-2xl items-center transition-all duration-300 ease-in-out hover:bg-bgcolor ${
+                isActive ? "text-primary bg-back-link-color font-semibold" : "text-gray-500"
+            }`}
         >
             {typeof children === "function"
                 ? (children as ChildrenFunction)({ isActive })

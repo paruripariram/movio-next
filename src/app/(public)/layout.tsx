@@ -31,11 +31,11 @@ export default function RootLayout({
                 <SessionProvider>
                     <AppInitializer>
                         <Navbar />
-                        <PageTransition className="flex-1 min-w-0 ml-70 p-13 min-h-screen flex flex-col">
+                        <PageTransition className="flex-1 min-w-0 ml-0 md:ml-60 2xl:ml-70 p-4 sm:p-6 lg:p-8 2xl:p-13 min-h-screen flex flex-col">
                             {children}
                         </PageTransition>
                         <Toaster position="top-center" richColors closeButton />
-                        <ModalProvider/>
+                        <ModalProvider />
                     </AppInitializer>
                 </SessionProvider>
             </body>
