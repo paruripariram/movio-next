@@ -109,14 +109,17 @@ export default function Profile() {
         };
     }, [collectionArr, genresMap]);
 
+    if (isLoadingUser) {
+        return (
+            <div className="flex w-full min-h-[70vh] items-center justify-center">
+                <Loader size="large">Аутентификация...</Loader>
+            </div>
+        );
+    }
+
     return (
         <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto px-4 lg:px-8 py-6">
-            {isLoadingUser && <Loader size="large">Аутентификация...</Loader>}
-            {isLoadingCollection && (
-                <Loader size="medium">Загрузка вашей коллекции...</Loader>
-            )}
-
-            {!isLoadingUser && user && (
+            {user && (
                 <div className="flex flex-col gap-8 sm:gap-10">
                     <div className="flex flex-col gap-6 bg-form-color shadow-lg rounded-3xl w-full p-6 sm:p-8 lg:p-10 border border-white/5">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
@@ -172,7 +175,13 @@ export default function Profile() {
                         </button>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 relative">
+                        {isLoadingCollection && (
+                            <div className="absolute inset-0 bg-form-color/60 backdrop-blur-xs z-10 rounded-3xl flex items-center justify-center">
+                                <Loader size="medium">Загрузка коллекции...</Loader>
+                            </div>
+                        )}
+
                         <div className="bg-form-color shadow-lg rounded-3xl p-5 sm:p-6 min-h-45 relative flex flex-col justify-between gap-4 border border-white/5">
                             <div className="flex items-center justify-between gap-2">
                                 <div className="bg-primary/20 text-primary p-2.5 rounded-xl shrink-0">
