@@ -4,14 +4,9 @@ import { useMemo } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { useGenresStore } from "@/store/genreStore";
 import { collectionItem } from "@/types/collection";
+import { formatPlural } from "@/helpers/pluralize";
 
-const COLORS = [
-    "#3b82f6",
-    "#8b5cf6",
-    "#10b981",
-    "#f59e0b",
-    "#64748b",
-];
+const COLORS = ["#3b82f6", "#8b5cf6", "#10b981", "#f59e0b", "#64748b"];
 
 interface GenrePieChartProps {
     items: collectionItem[];
@@ -24,17 +19,19 @@ export function GenrePieChart({ items }: GenrePieChartProps) {
         if (!items || items.length === 0) return [];
 
         const counts: Record<number, number> = {};
+        let totalGenreTags = 0;
 
         items.forEach((item) => {
             item.genre_ids?.forEach((genreId) => {
                 counts[genreId] = (counts[genreId] || 0) + 1;
+                totalGenreTags += 1;
             });
         });
 
-        const sortedEntries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-        if (sortedEntries.length === 0) return [];
-
-        const total = items.length;
+        const sortedEntries = Object.entries(counts).sort(
+            (a, b) => b[1] - a[1],
+        );
+        if (sortedEntries.length === 0 || totalGenreTags === 0) return [];
 
         const topGenres = sortedEntries.slice(0, 4);
         const otherGenres = sortedEntries.slice(4);
@@ -47,14 +44,17 @@ export function GenrePieChart({ items }: GenrePieChartProps) {
                 "Другой";
 
             const name = rawName.charAt(0).toUpperCase() + rawName.slice(1);
-            const percentage = Math.round((count / total) * 100);
+            const percentage = Math.round((count / totalGenreTags) * 100);
 
             return { name, value: count, percentage };
         });
 
         if (otherGenres.length > 0) {
-            const othersCount = otherGenres.reduce((acc, [, count]) => acc + count, 0);
-            const percentage = Math.round((othersCount / total) * 100);
+            const othersCount = otherGenres.reduce(
+                (acc, [, count]) => acc + count,
+                0,
+            );
+            const percentage = Math.round((othersCount / totalGenreTags) * 100);
             result.push({ name: "Другие", value: othersCount, percentage });
         }
 
@@ -70,25 +70,26 @@ export function GenrePieChart({ items }: GenrePieChartProps) {
     }
 
     return (
-        <div className="flex items-center w-full h-60">
-            {/* ЛЕВАЯ ЧАСТЬ: График */}
-            <div className="w-1/2 h-full">
+        <div className="flex flex-col sm:flex-row items-center w-full h-auto sm:h-72 gap-6 sm:gap-4">
+            <div className="w-full sm:w-1/2 h-64 sm:h-full [&_path]:outline-none [&_svg]:outline-none">
                 <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
+                    <PieChart style={{ outline: "none" }}>
                         <Pie
                             data={chartData}
                             cx="50%"
                             cy="50%"
-                            innerRadius={42} 
-                            outerRadius={100}
+                            innerRadius="45%"
+                            outerRadius="80%"
                             paddingAngle={4}
                             dataKey="value"
                             stroke="none"
+                            style={{ outline: "none" }}
                         >
                             {chartData.map((_, index) => (
                                 <Cell
                                     key={`cell-${index}`}
                                     fill={COLORS[index % COLORS.length]}
+                                    style={{ outline: "none" }}
                                 />
                             ))}
                         </Pie>
@@ -99,35 +100,53 @@ export function GenrePieChart({ items }: GenrePieChartProps) {
                                 border: "1px solid #374151",
                                 color: "#fff",
                                 fontSize: "12px",
+                                boxShadow:
+                                    "0 10px 15px -3px rgba(0, 0, 0, 0.3)",
                             }}
                             itemStyle={{ color: "#fff" }}
-                            formatter={(value) => [`${value} проектов`, "Количество"]}
+                            formatter={(value) => [
+                                formatPlural(
+                                    value as number,
+                                    "проект",
+                                    "проекта",
+                                    "проектов",
+                                ),
+                                "Встречается",
+                            ]}
                         />
                     </PieChart>
                 </ResponsiveContainer>
             </div>
 
-            {/* ПРАВАЯ ЧАСТЬ: Кастомная легенда */}
-            <div className="w-1/2 flex flex-col justify-center gap-2 pr-2">
+            <div className="w-full sm:w-1/2 flex flex-col justify-center gap-3 px-2">
                 {chartData.map((item, index) => {
                     const color = COLORS[index % COLORS.length];
 
                     return (
-                        <div key={item.name} className="flex items-center justify-between text-md gap-1">
-                            {/* Кружочек и Название */}
-                            <div className="flex items-center gap-2 min-w-0">
+                        <div
+                            key={item.name}
+                            className="flex items-center justify-between text-sm sm:text-base gap-2"
+                        >
+                            <div className="flex items-center gap-2.5 min-w-0">
                                 <span
                                     className="w-3 h-3 rounded-full shrink-0"
                                     style={{ backgroundColor: color }}
                                 />
-                                <span className="text-gray-300 truncate font-medium" title={item.name}>
+                                <span
+                                    className="text-gray-300 truncate font-medium"
+                                    title={item.name}
+                                >
                                     {item.name}
                                 </span>
                             </div>
 
-                            {/* Процент */}
-                            <span className="text-gray-500 font-bold ml-1 shrink-0">
-                                {item.percentage}%
+                            <span className="text-gray-400 font-bold shrink-0 text-xs sm:text-sm">
+                                {formatPlural(
+                                    item.value,
+                                    "проект",
+                                    "проекта",
+                                    "проектов",
+                                )}
                             </span>
                         </div>
                     );
