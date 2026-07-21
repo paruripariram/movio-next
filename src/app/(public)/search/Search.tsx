@@ -105,142 +105,148 @@ export default function Search() {
     }, []);
 
     return (
-        <>
-            <div className="flex flex-col gap-10">
-                <SearchInput value={localSearch} onChange={inputHandler} />
-                <div className="flex">
-                    <aside className="bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-70 h-auto self-start rounded-4xl shrink-0 p-5">
-                        <Toggler
-                            options={togglerMediaOptions}
-                            value={currentType as "movie" | "tv"}
-                            optionHandler={typeHandler}
-                        />
-                        <div className="flex flex-col gap-4 mt-6">
-                            {currentType === "movie"
-                                ? Object.entries(genresMap.movieGenres).map(
-                                      ([id, name]) => (
-                                          <GenreCheckbox
-                                              key={id}
-                                              genreId={Number(id)}
-                                              name={name}
-                                              checked={pickedGenres.includes(
-                                                  Number(id),
-                                              )}
-                                              onChange={toggleGenre}
-                                          />
-                                      ),
-                                  )
-                                : Object.entries(genresMap.tvGenres).map(
-                                      ([id, name]) => (
-                                          <GenreCheckbox
-                                              key={id}
-                                              genreId={Number(id)}
-                                              name={name}
-                                              checked={pickedGenres.includes(
-                                                  Number(id),
-                                              )}
-                                              onChange={toggleGenre}
-                                          />
-                                      ),
-                                  )}
+        <div className="flex flex-col gap-4 md:gap-10 w-full max-w-full overflow-x-hidden">
+            <SearchInput value={localSearch} onChange={inputHandler} />
+
+            <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 min-w-0">
+                <aside className="bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-full lg:w-70 h-auto self-start rounded-2xl md:rounded-4xl shrink-0 p-4 sm:p-5">
+                    <div className="flex justify-center">
+                        <div className="w-full sm:w-60">
+                            <Toggler
+                                options={togglerMediaOptions}
+                                value={currentType as "movie" | "tv"}
+                                optionHandler={typeHandler}
+                            />
                         </div>
-                    </aside>
-                    <div className="flex-1 min-w-0 flex flex-col">
-                        {query.trim() === "" &&
-                            searchParams.get("with_genres") === "" && (
-                                <p className="text-gray-500 text-3xl px-6">
-                                    Популярное сейчас.
+                    </div>
+
+                    <div className="flex flex-col gap-3.5 mt-4 lg:mt-6 max-h-48 lg:max-h-none overflow-y-auto pr-1">
+                        {currentType === "movie"
+                            ? Object.entries(genresMap.movieGenres).map(
+                                  ([id, name]) => (
+                                      <GenreCheckbox
+                                          key={id}
+                                          genreId={Number(id)}
+                                          name={name}
+                                          checked={pickedGenres.includes(
+                                              Number(id),
+                                          )}
+                                          onChange={toggleGenre}
+                                      />
+                                  ),
+                              )
+                            : Object.entries(genresMap.tvGenres).map(
+                                  ([id, name]) => (
+                                      <GenreCheckbox
+                                          key={id}
+                                          genreId={Number(id)}
+                                          name={name}
+                                          checked={pickedGenres.includes(
+                                              Number(id),
+                                          )}
+                                          onChange={toggleGenre}
+                                      />
+                                  ),
+                              )}
+                    </div>
+                </aside>
+
+                <div className="flex-1 min-w-0 flex flex-col">
+                    {query.trim() === "" &&
+                        searchParams.get("with_genres") === "" && (
+                            <p className="text-gray-500 text-xl sm:text-3xl px-2 sm:px-6 mb-2 sm:mb-0">
+                                Популярное сейчас.
+                            </p>
+                        )}
+
+                    <div className="w-full grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3 sm:gap-6 p-2 sm:p-6 justify-items-center">
+                        {error && (
+                            <div className="col-span-full flex flex-col items-center py-10 gap-4">
+                                <p className="text-zinc-400 text-xl sm:text-3xl text-center max-w-xs sm:max-w-md">
+                                    Не удалось загрузить результаты.
+                                </p>
+                                <button
+                                    className="bg-primary text-white w-40 h-12 rounded-xl flex items-center justify-center relative disabled:opacity-70 cursor-pointer shadow-glow hover:shadow-glow-bold"
+                                    onClick={() => {
+                                        setError(null);
+                                        setRetryCount((prev) => prev + 1);
+                                    }}
+                                >
+                                    Попробовать снова
+                                </button>
+                            </div>
+                        )}
+
+                        {(query.trim() !== "" || pickedGenres.length > 0) &&
+                            hasSearched &&
+                            searchResults.length === 0 &&
+                            !isDebouncing &&
+                            !isLoading &&
+                            !error && (
+                                <p className="text-gray-500 text-xl sm:text-3xl col-span-full py-10 text-center">
+                                    Ничего не найдено для{" "}
+                                    {query ? `"${query}"` : "выбранных жанров"}.
                                 </p>
                             )}
-                        <div className="w-full grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6 p-6 justify-items-center">
-                            {error && (
-                                <div className="col-span-full flex flex-col items-center py-10 gap-4">
-                                    <p className="flex w-60 h-20 border-zinc-800 text-zinc-400 text-3xl text-center">
-                                        Не удалось загрузить результаты.
-                                    </p>
-                                    <button
-                                        className="bg-primary text-white w-40 h-12 rounded-xl flex items-center justify-center relative disabled:opacity-70 cursor-pointer shadow-glow hover:shadow-glow-bold"
-                                        onClick={() => {
-                                            setError(null);
-                                            setRetryCount((prev) => prev + 1);
-                                        }}
-                                    >
-                                        Попробовать снова
-                                    </button>
-                                </div>
-                            )}
 
-                            {(query.trim() !== "" || pickedGenres.length > 0) &&
-                                hasSearched &&
-                                searchResults.length === 0 &&
-                                !isDebouncing &&
-                                !isLoading &&
-                                !error && (
-                                    <p className="text-gray-500 text-3xl">
-                                        Ничего не найдено для{" "}
-                                        {query
-                                            ? `"${query}"`
-                                            : "выбранных жанров"}
-                                        .
-                                    </p>
-                                )}
-                            {isSearching && page === 1 && (
+                        {isSearching && page === 1 && (
+                            <div className="col-span-full py-12 flex justify-center">
                                 <Loader size="medium">
                                     Загрузка результатов...
                                 </Loader>
-                            )}
-                            {searchResults.length > 0 &&
-                                !(isSearching && page === 1) &&
-                                searchResults.map((item) => {
-                                    return (
-                                        <motion.div
-                                            key={item.id}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{
-                                                duration: 0.4,
-                                                ease: "easeOut",
-                                            }}
-                                            className="w-full flex justify-center"
-                                        >
-                                            <Card
-                                                item={item}
-                                                onClick={() => {
-                                                    setCache({
-                                                        cachedScrollY:
-                                                            window.scrollY,
-                                                    });
-                                                    detailsRouter(
-                                                        router,
-                                                        item.id,
-                                                        currentType as
-                                                            | "movie"
-                                                            | "tv",
-                                                    );
-                                                }}
-                                            />
-                                        </motion.div>
-                                    );
-                                })}
-                        </div>
-                        {hasMore && !(isSearching && page === 1) && (
-                            <button
-                                disabled={isLoading}
-                                className="self-center mt-6 bg-primary text-white w-40 h-12 rounded-xl flex items-center justify-center relative disabled:opacity-70 cursor-pointer shadow-glow hover:shadow-glow-bold"
-                                onClick={() =>
-                                    setPage((prevPage) => prevPage + 1)
-                                }
-                            >
-                                {isLoading ? (
-                                    <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                ) : (
-                                    "Показать еще"
-                                )}
-                            </button>
+                            </div>
                         )}
+
+                        {searchResults.length > 0 &&
+                            !(isSearching && page === 1) &&
+                            searchResults.map((item) => {
+                                return (
+                                    <motion.div
+                                        key={item.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{
+                                            duration: 0.4,
+                                            ease: "easeOut",
+                                        }}
+                                        className="w-full min-w-0 flex justify-center"
+                                    >
+                                        <Card
+                                            item={item}
+                                            onClick={() => {
+                                                setCache({
+                                                    cachedScrollY:
+                                                        window.scrollY,
+                                                });
+                                                detailsRouter(
+                                                    router,
+                                                    item.id,
+                                                    currentType as
+                                                        | "movie"
+                                                        | "tv",
+                                                );
+                                            }}
+                                        />
+                                    </motion.div>
+                                );
+                            })}
                     </div>
+
+                    {hasMore && !(isSearching && page === 1) && (
+                        <button
+                            disabled={isLoading}
+                            className="self-center my-6 bg-primary text-white w-40 h-12 rounded-xl flex items-center justify-center relative disabled:opacity-70 cursor-pointer shadow-glow hover:shadow-glow-bold"
+                            onClick={() => setPage((prevPage) => prevPage + 1)}
+                        >
+                            {isLoading ? (
+                                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            ) : (
+                                "Показать еще"
+                            )}
+                        </button>
+                    )}
                 </div>
             </div>
-        </>
+        </div>
     );
 }

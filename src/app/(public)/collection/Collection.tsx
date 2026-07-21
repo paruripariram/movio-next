@@ -189,7 +189,6 @@ export default function Collection() {
     ];
 
     return (
-        /* w-full max-w-full overflow-x-hidden гарантируют отсутствие горизонтальной полосы прокрутки */
         <div className="flex flex-col gap-4 md:gap-10 w-full max-w-full overflow-x-hidden">
             <SearchInput value={localSearch} onChange={inputHandler} />
 
@@ -212,7 +211,6 @@ export default function Collection() {
                         </div>
                     </div>
 
-                    {/* Список жанров со скроллом для мобилок */}
                     <div className="flex flex-col gap-3.5 mt-4 lg:mt-6 max-h-48 lg:max-h-none overflow-y-auto pr-1">
                         {currentType === "movie"
                             ? Object.entries(genresMap.movieGenres).map(
@@ -284,10 +282,6 @@ export default function Collection() {
                                     Ваша коллекция.
                                 </p>
 
-                                {/* 
-                                    Резиновая сетка с auto-fill: карточки не разрывают контейнер,
-                                    а плавно уменьшаются до min 140px (или 180px на sm) и переносятся
-                                */}
                                 <div className="w-full grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3 sm:gap-6 p-2 sm:p-6 justify-items-center">
                                     <AnimatePresence mode="popLayout">
                                         {filteredCollection.length === 0 && (
