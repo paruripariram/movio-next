@@ -18,12 +18,12 @@ export default function Toggler({
     optionHandler,
 }: TogglerProps) {
     const activeIndex = options.findIndex((opt) => opt.value === value);
-
     const sliderWidth = 100 / options.length;
+
     return (
-        <div className="flex items-center justify-between h-10 bg-bgcolor rounded-full relative">
+        <div className="flex items-center justify-between h-9 sm:h-10 bg-bgcolor rounded-full relative">
             <div
-                className={`absolute h-full bg-back-link-color rounded-full z-2 transition-transform duration-300 ease-in-out`}
+                className="absolute h-full bg-back-link-color rounded-full z-2 transition-transform duration-300 ease-in-out"
                 style={{
                     width: `${sliderWidth}%`,
                     transform: `translateX(${activeIndex * 100}%)`,
@@ -33,7 +33,11 @@ export default function Toggler({
                 <button
                     key={option.value}
                     onClick={() => optionHandler(option.value)}
-                    className={`cursor-pointer relative z-3 rounded-full flex-1 h-full flex items-center justify-center font-extrabold transition-colors duration-300 ${value === option.value ? "text-primary" : "text-gray-500"}`}
+                    className={`cursor-pointer relative z-3 rounded-full flex-1 h-full flex items-center justify-center font-bold sm:font-extrabold text-xs sm:text-base transition-colors duration-300 ${
+                        value === option.value
+                            ? "text-primary"
+                            : "text-gray-500"
+                    }`}
                 >
                     {option.label}
                 </button>

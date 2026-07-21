@@ -173,8 +173,14 @@ export default function Collection() {
 
     const togglerStatusOptions = [
         { value: "all", label: "Все" },
-        { value: "watched", label: <Check /> },
-        { value: "wishlist", label: <Bookmark /> },
+        {
+            value: "watched",
+            label: <Check className="w-4 h-4 sm:w-5 sm:h-5" />,
+        },
+        {
+            value: "wishlist",
+            label: <Bookmark className="w-4 h-4 sm:w-5 sm:h-5" />,
+        },
     ];
 
     const togglerMediaOptions = [
@@ -183,19 +189,21 @@ export default function Collection() {
     ];
 
     return (
-        <div className="flex flex-col gap-10">
+        /* w-full max-w-full overflow-x-hidden гарантируют отсутствие горизонтальной полосы прокрутки */
+        <div className="flex flex-col gap-4 md:gap-10 w-full max-w-full overflow-x-hidden">
             <SearchInput value={localSearch} onChange={inputHandler} />
-            <div className="flex">
-                <aside className="bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-70 h-auto self-start rounded-4xl shrink-0 p-5">
-                    <div className="flex flex-col justify-center items-center gap-4">
-                        <div className="w-60">
+
+            <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 min-w-0">
+                <aside className="bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-full lg:w-70 h-auto self-start rounded-2xl md:rounded-4xl shrink-0 p-4 sm:p-5">
+                    <div className="flex flex-col sm:flex-row lg:flex-col justify-center items-center gap-3 sm:gap-4">
+                        <div className="w-full sm:w-60">
                             <Toggler
                                 options={togglerStatusOptions}
                                 value={currentStatus}
                                 optionHandler={statusHandler}
                             />
                         </div>
-                        <div className="w-60">
+                        <div className="w-full sm:w-60">
                             <Toggler
                                 options={togglerMediaOptions}
                                 value={currentType as "movie" | "tv"}
@@ -203,7 +211,9 @@ export default function Collection() {
                             />
                         </div>
                     </div>
-                    <div className="flex flex-col gap-4 mt-6">
+
+                    {/* Список жанров со скроллом для мобилок */}
+                    <div className="flex flex-col gap-3.5 mt-4 lg:mt-6 max-h-48 lg:max-h-none overflow-y-auto pr-1">
                         {currentType === "movie"
                             ? Object.entries(genresMap.movieGenres).map(
                                   ([id, name]) => (
@@ -231,8 +241,9 @@ export default function Collection() {
                                       />
                                   ),
                               )}
-                    </div>{" "}
+                    </div>
                 </aside>
+
                 <div className="flex-1 min-w-0 flex flex-col">
                     <AnimatePresence mode="wait">
                         {viewKey === "loading" && (
@@ -241,7 +252,7 @@ export default function Collection() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="flex-1 flex items-center justify-center"
+                                className="flex-1 flex items-center justify-center min-h-75"
                             >
                                 <Loader size="large">
                                     Загрузка коллекции...
@@ -254,9 +265,9 @@ export default function Collection() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="flex-1 flex items-center justify-center"
+                                className="flex-1 flex items-center justify-center min-h-75"
                             >
-                                <p className="text-gray-500 text-3xl px-6">
+                                <p className="text-gray-500 text-xl sm:text-3xl px-2 sm:px-6 text-center">
                                     Ваша коллекция пуста.
                                 </p>
                             </motion.div>
@@ -267,16 +278,20 @@ export default function Collection() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="flex-1 flex flex-col"
+                                className="flex-1 flex flex-col min-w-0"
                             >
-                                <p className="text-gray-500 text-3xl px-6">
+                                <p className="text-gray-500 text-xl sm:text-3xl px-2 sm:px-6 mb-2 sm:mb-0">
                                     Ваша коллекция.
                                 </p>
 
-                                <div className="w-full grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6 p-6 justify-items-center">
+                                {/* 
+                                    Резиновая сетка с auto-fill: карточки не разрывают контейнер,
+                                    а плавно уменьшаются до min 140px (или 180px на sm) и переносятся
+                                */}
+                                <div className="w-full grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3 sm:gap-6 p-2 sm:p-6 justify-items-center">
                                     <AnimatePresence mode="popLayout">
                                         {filteredCollection.length === 0 && (
-                                            <p className="text-gray-500 text-2xl col-span-full py-10">
+                                            <p className="text-gray-500 text-lg sm:text-2xl col-span-full py-10 text-center">
                                                 Ничего не найдено по выбранным
                                                 фильтрам.
                                             </p>
@@ -285,7 +300,7 @@ export default function Collection() {
                                             <motion.div
                                                 key={item.id}
                                                 layout="position"
-                                                className="w-full"
+                                                className="w-full min-w-0 flex justify-center"
                                                 initial={{
                                                     opacity: 0,
                                                     scale: 0.9,
