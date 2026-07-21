@@ -159,7 +159,7 @@ export default function Search() {
                             </p>
                         )}
 
-                    <div className="w-full grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3 sm:gap-6 p-2 sm:p-6 justify-items-center">
+                    <div className="w-full grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] xl:grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3 sm:gap-6 p-2 sm:p-6 justify-items-center">
                         {error && (
                             <div className="col-span-full flex flex-col items-center py-10 gap-4">
                                 <p className="text-zinc-400 text-xl sm:text-3xl text-center max-w-xs sm:max-w-md">
