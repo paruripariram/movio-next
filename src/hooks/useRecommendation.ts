@@ -26,13 +26,19 @@ export default function useRecommendation() {
     const { isLoadingUser } = useAuthStore();
 
     const collectionArr = useCollectionStore((state) => state.collectionArr);
+    const excludedIds = new Set(
+        collectionArr
+            .filter((item) => item.status === "watched")
+            .map((item) => item.id),
+    );
+
     const isLoadingCollection = useCollectionStore(
         (state) => state.isLoadingCollection,
     );
     const criticalError = useCollectionStore((state) => state.criticalError);
 
     const [recommendations, setRecommendations] = useState<SearchResult[]>([]);
-    const [isFetching, setIsFetching] = useState(false);
+    const [isFetching, setIsFetching] = useState(true);
 
     const genresMap = useGenresStore((state) => state.genresMap);
     const movieGenresCount = Object.keys(genresMap.movieGenres).length;
@@ -89,9 +95,7 @@ export default function useRecommendation() {
                     (item) => item.type === "tv",
                 );
 
-                const topMovieGenres = getTopGenreIds(
-                    movies,
-                );
+                const topMovieGenres = getTopGenreIds(movies);
                 const topTvGenres = getTopGenreIds(tvShows);
 
                 const results = await Promise.all([
@@ -113,6 +117,7 @@ export default function useRecommendation() {
                     ...addMovieMediaType(results[0].results as MovieResult[]),
                     ...addTvMediaType(results[1].results as TvResult[]),
                 ]
+                    .filter((item) => !excludedIds.has(item.id))
                     .sort((a, b) => b.popularity - a.popularity)
                     .slice(0, 20);
                 setRecommendations(combinedResults);
