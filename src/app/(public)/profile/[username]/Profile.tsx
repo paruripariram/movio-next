@@ -178,7 +178,9 @@ export default function Profile() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 relative">
                         {isLoadingCollection && (
                             <div className="absolute inset-0 bg-form-color/60 backdrop-blur-xs z-10 rounded-3xl flex items-center justify-center">
-                                <Loader size="medium">Загрузка коллекции...</Loader>
+                                <Loader size="medium">
+                                    Загрузка коллекции...
+                                </Loader>
                             </div>
                         )}
 
@@ -287,13 +289,17 @@ export default function Profile() {
                                     любимый жанр
                                 </p>
                                 <p className="text-white text-xl font-bold truncate">
-                                    {stats.topGenreData.genreName || "—"}
+                                    {stats.topGenreData.genreName ||
+                                        "Не определен"}
                                 </p>
-                                <p className="text-gray-400 text-xs mt-0.5">
-                                    встречается в{" "}
-                                    {stats.topGenreData.percentage}% вашей
-                                    коллекции
-                                </p>
+                                {stats.topGenreData.genreName !==
+                                    "Не определен" && (
+                                    <p className="text-gray-400 text-xs mt-0.5">
+                                        встречается в{" "}
+                                        {stats.topGenreData.percentage}% вашей
+                                        коллекции
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>
