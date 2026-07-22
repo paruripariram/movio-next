@@ -71,10 +71,10 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
           : (status ?? "none");
 
     return (
-        <div className="flex flex-col min-h-screen w-full">
-            <div className="relative -mt-4 -mx-4 sm:-mt-6 sm:-mx-6 md:-mt-8 md:-mx-8 lg:-mt-10 lg:-mx-10 xl:-mt-12 xl:-mx-12 2xl:-mt-16 2xl:-mx-16 overflow-hidden h-90 sm:h-105] lg:h-120 shrink-0 bg-back-link-color">
+        <div className="flex flex-col min-h-screen w-full min-w-0">
+            <div className="relative -mt-4 -mx-4 sm:-mt-6 sm:-mx-6 md:-mt-8 md:-mx-8 lg:-mt-10 lg:-mx-10 xl:-mt-12 xl:-mx-12 2xl:-mt-16 2xl:-mx-16 overflow-hidden h-90 sm:h-105 lg:h-120 shrink-0 bg-back-link-color">
                 <div
-                    className="absolute z-30 top-4 left-4 sm:top-6 sm:left-6 cursor-pointer"
+                    className="absolute z-30 top-4 left-4 sm:top-6 sm:left-6 md:left-8 lg:left-10 xl:left-12 2xl:left-16 cursor-pointer"
                     onClick={handleBack}
                 >
                     <BackButton />
@@ -91,7 +91,7 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
 
                 <div className="absolute inset-0 z-10 bg-linear-to-t from-bgcolor via-bgcolor/50 to-transparent" />
 
-                <div className="absolute bottom-0 left-0 right-0 z-20 p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row lg:items-end justify-between gap-5">
+                <div className="absolute bottom-0 left-0 right-0 z-20 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 pb-4 sm:pb-6 lg:pb-8 flex flex-col lg:flex-row lg:items-end justify-between gap-5">
                     <div className="flex flex-col gap-1.5 max-w-2xl">
                         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight drop-shadow-md">
                             {"title" in details ? details.title : details.name}
@@ -230,7 +230,7 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                 </div>
             </div>
 
-            <div className="flex flex-col gap-6 pt-6 pb-12">
+            <div className="flex flex-col gap-6 pt-6 pb-12 w-full min-w-0">
                 {details.genres && details.genres.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                         {details.genres.map((genre) => (
@@ -293,11 +293,11 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                 )}
 
                 {details.credits?.cast && details.credits.cast.length > 0 && (
-                    <div className="flex flex-col gap-3 sm:gap-4 mt-2">
+                    <div className="flex flex-col gap-3 sm:gap-4 mt-2 w-full min-w-0">
                         <h3 className="text-xl sm:text-2xl font-bold text-white">
                             В главных ролях
                         </h3>
-                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-white/10">
+                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-3 w-full min-w-0 scrollbar-thin scrollbar-thumb-white/10">
                             {details.credits.cast.slice(0, 10).map((actor) => (
                                 <div
                                     key={actor.id}

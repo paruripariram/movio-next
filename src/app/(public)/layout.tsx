@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" className={`${roboto.className} h-full antialiased`}>
-            <body className="min-h-full flex bg-bgcolor">
+            <body className="min-h-full flex bg-bgcolor overflow-x-hidden">
                 <SessionProvider>
                     <AppInitializer>
                         <Navbar />
