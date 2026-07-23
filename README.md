@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Movio
 
-## Getting Started
+<p align="left">
+  <img src="https://img.shields.io/badge/Next.js-16.2-black?style=for-the-badge&logo=next.js" alt="Next.js 16" />
+  <img src="https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
+  <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript 5" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-4.0-38BDF8?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS 4" />
+  <img src="https://img.shields.io/badge/Auth.js-v5-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Auth.js v5" />
+  <img src="https://img.shields.io/badge/Firebase-12.0-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase 12" />
+  <img src="https://img.shields.io/badge/TMDB_API-v3-01b4e4?style=for-the-badge&logo=themoviedb&logoColor=white" alt="TMDB API" />
+</p>
 
-First, run the development server:
+Веб-приложение для отслеживания и коллекционирования фильмов и сериалов. Синхронизирует данные пользователей с Firebase Firestore, использует Auth.js v5 для авторизации и TMDB API в качестве основного источника данных.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+🔗 **Live Demo:** [movio-next.vercel.app](https://movio-next.vercel.app)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Скриншоты
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Главная страница | Детали проекта |
+| :---: | :---: |
+| ![Home](./public/screenshots/home.png) | ![Details](./public/screenshots/details.png) |
 
-## Learn More
+| Личная коллекция | Аналитика |
+| :---: | :---: |
+| ![Collection](./public/screenshots/collection.png) | ![Analytics](./public/screenshots/analytics.png) |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Функционал
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Каталог & Поиск:** Интеграция с TMDB API (актуальная база фильмов, сериалов, актёров).
+- **Коллекции:** Группировка проектов по статусам («Просмотрено», «В планах»).
+- **Платформы:** Фиксация сервиса, на котором был просмотрен конкретный проект.
+- **Аналитика:** Визуализация статистики просмотров и предпочтений на Recharts.
+- **Аутентификация:** Защита роутов и сессии через Auth.js v5 (NextAuth) + bcryptjs.
+- **UI/UX:** Адаптивный тёмный интерфейс, плавная анимация на Framer Motion, свайпер на Embla Carousel и тосты Sonner.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Стек технологий
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* **Core:** Next.js 16 (App Router), React 19, TypeScript
+* **Auth & DB:** Auth.js v5 (`next-auth`), Firebase Firestore, Bcryptjs
+* **State & Validation:** Zustand 5, Zod 4
+* **UI & Styling:** Tailwind CSS 4, Framer Motion 12, Embla Carousel, Recharts, Lucide Icons, Sonner
+
+---
+
+## Локальный запуск
+
+1. **Клонировать репозиторий:**
+   ```bash
+   git clone [https://github.com/your-username/movio-next.git](https://github.com/your-username/movio-next.git)
+   cd movio-next
