@@ -17,7 +17,7 @@ export default function SearchInput({ value, onChange }: SearchInputProps) {
                 onChange={onChange}
                 type="text"
                 placeholder="Введите название фильма или сериала"
-                className="text-sm md:text-xl w-full pl-11 md:pl-20 pr-4 rounded-xl md:rounded-2xl bg-input-color h-12 md:h-20 text-white caret-primary transition duration-200 ease-in-out placeholder:text-gray-500 focus:ring-2 focus:ring-primary focus:outline-none tracking-normal md:tracking-widest"
+                className="text-base md:text-xl w-full pl-11 md:pl-20 pr-4 rounded-xl md:rounded-2xl bg-input-color h-12 md:h-20 text-white caret-primary transition duration-200 ease-in-out placeholder:text-gray-500 focus:ring-2 focus:ring-primary focus:outline-none tracking-normal md:tracking-widest"
             />
         </div>
     );

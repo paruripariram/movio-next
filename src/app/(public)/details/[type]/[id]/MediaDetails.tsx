@@ -236,7 +236,8 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                         {details.genres.map((genre) => (
                             <span
                                 key={genre.id}
-                                className="bg-primary/10 text-primary font-semibold px-3 py-1 rounded-full text-xs sm:text-sm"
+                                onClick={()=>router.replace(`${APP_ROUTES.SEARCH.path}?type=${type}&with_genres=${genre.id}`)}
+                                className="bg-primary/10 text-primary font-semibold px-3 py-1 rounded-full text-xs sm:text-sm cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-glow"
                             >
                                 {genre.name.charAt(0).toUpperCase() +
                                     genre.name.slice(1).toLowerCase()}
