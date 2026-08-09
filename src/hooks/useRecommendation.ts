@@ -37,27 +37,34 @@ export default function useRecommendation() {
     );
     const criticalError = useCollectionStore((state) => state.criticalError);
 
-    const [recommendations, setRecommendations] = useState<SearchResult[]>([]);
-    const [isFetching, setIsFetching] = useState(true);
+    const [recommendations, setRecommendations] = useState<
+        SearchResult[] | null
+    >(null);
 
     const genresMap = useGenresStore((state) => state.genresMap);
     const movieGenresCount = Object.keys(genresMap.movieGenres).length;
     const tvGenresCount = Object.keys(genresMap.tvGenres).length;
+    const isLoadingGenres = useGenresStore((state) => state.isLoading);
 
     const isLoadingRecommendations =
         !criticalError &&
         (isLoadingUser ||
             isLoadingCollection ||
-            !genresMap.movieGenres ||
-            !genresMap.tvGenres ||
-            isFetching);
+            isLoadingGenres ||
+            recommendations === null);
+
+    const isAbortError = (error: unknown) =>
+        (error instanceof DOMException && error.name === "AbortError") ||
+        (typeof error === "object" &&
+            error !== null &&
+            "code" in error &&
+            (error as { code?: string }).code === "ERR_CANCELED");
 
     useEffect(() => {
         if (
             isLoadingCollection ||
             isLoadingUser ||
-            !genresMap.movieGenres ||
-            !genresMap.tvGenres ||
+            isLoadingGenres ||
             criticalError
         ) {
             return;
@@ -65,10 +72,9 @@ export default function useRecommendation() {
 
         const fetchRecommendations = async (signal: AbortSignal) => {
             try {
-                setIsFetching(true);
-
                 if (collectionArr.length === 0 || criticalError) {
                     const data = await search({ query: "", signal });
+                    if (signal.aborted) return;
                     setRecommendations(data.results);
                     return;
                 }
@@ -120,11 +126,12 @@ export default function useRecommendation() {
                     .filter((item) => !excludedIds.has(item.id))
                     .sort((a, b) => b.popularity - a.popularity)
                     .slice(0, 20);
+                if (signal.aborted) return;
                 setRecommendations(combinedResults);
             } catch (error) {
+                if (isAbortError(error) || signal.aborted) return;
                 handleError(error, "Error fetching recommendations:");
-            } finally {
-                setIsFetching(false);
+                setRecommendations([]);
             }
         };
         const abortController = new AbortController();

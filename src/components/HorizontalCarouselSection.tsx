@@ -7,13 +7,19 @@ import { useRouter } from "next/navigation";
 import { detailsRouter } from "@/helpers/detailsRouter";
 import Card from "./Card";
 import { collectionItem, SearchResult } from "@/types";
+import CardSkeleton from "./CardSceleton";
 
 interface HorizontalCarouselSectionProps {
     data: SearchResult[] | collectionItem[];
     title: string;
+    isLoading?: boolean;
 }
 
-export default function HorizontalCarouselSection({ data, title }: HorizontalCarouselSectionProps) {
+export default function HorizontalCarouselSection({
+    data,
+    title,
+    isLoading,
+}: HorizontalCarouselSectionProps) {
     const router = useRouter();
 
     const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -72,22 +78,28 @@ export default function HorizontalCarouselSection({ data, title }: HorizontalCar
             <div className="-mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 overflow-hidden">
                 <div className="overflow-visible" ref={emblaRef}>
                     <div className="flex gap-3 sm:gap-4 lg:gap-6 py-4 sm:py-6 2xl:py-8">
-                        {(data || []).map((item) => {
+                        {(data || []).map((item, index) => {
                             return (
                                 <div
-                                    key={item.id}
+                                    key={isLoading ? index : item.id}
                                     className="flex-[0_0_auto] w-36 sm:w-48 lg:w-56 2xl:w-64"
                                 >
-                                    <Card
-                                        item={item}
-                                        onClick={() =>
-                                            detailsRouter(
-                                                router,
-                                                item.id,
-                                                "media_type" in item ? item.media_type : item.type,
-                                            )
-                                        }
-                                    />
+                                    {isLoading ? (
+                                        <CardSkeleton />
+                                    ) : (
+                                        <Card
+                                            item={item}
+                                            onClick={() =>
+                                                detailsRouter(
+                                                    router,
+                                                    item.id,
+                                                    "media_type" in item
+                                                        ? item.media_type
+                                                        : item.type,
+                                                )
+                                            }
+                                        />
+                                    )}
                                 </div>
                             );
                         })}

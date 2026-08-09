@@ -1,7 +1,6 @@
 "use client";
 
 import useRecommendation from "@/hooks/useRecommendation";
-import Loader from "@/components/Loader";
 import HorizontalCarouselSection from "@/components/HorizontalCarouselSection";
 import { SearchResult } from "@/types/tmdb";
 
@@ -29,10 +28,12 @@ export default function Home({ initialNowPlaying }: HomeProps) {
 
             <div className="flex flex-col gap-3 lg:gap-4">
                 {isLoadingRecommendations ? (
-                    <div className="flex justify-center py-8 sm:py-12">
-                        <Loader size="small">Загрузка рекомендаций...</Loader>
-                    </div>
-                ) : (recommendations || []).length > 0 ? (
+                    <HorizontalCarouselSection
+                        title="Рекомендации для вас"
+                        data={Array.from({ length: 10 }) as SearchResult[]}
+                        isLoading={true}
+                    />
+                ) : recommendations !== null && recommendations.length > 0 ? (
                     <HorizontalCarouselSection
                         title="Рекомендации для вас"
                         data={recommendations}
