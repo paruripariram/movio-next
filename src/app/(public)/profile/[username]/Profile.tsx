@@ -1,7 +1,6 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import Loader from "@/components/Loader";
 import { APP_ROUTES } from "@/config/routes";
 import { handleError } from "@/helpers/errorHandler";
 import { useCollectionStore } from "@/store/collectionStore";
