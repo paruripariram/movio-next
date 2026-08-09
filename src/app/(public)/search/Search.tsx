@@ -7,7 +7,6 @@ import Toggler from "@/components/Toggler";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import GenreCheckbox from "@/components/GenreCheckbox";
 import { detailsRouter } from "@/helpers/detailsRouter";
-import Loader from "@/components/Loader";
 import { useEffect, useState } from "react";
 import { useGenresStore } from "@/store/genreStore";
 import { motion } from "framer-motion";
