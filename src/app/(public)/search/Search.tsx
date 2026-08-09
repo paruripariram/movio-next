@@ -13,6 +13,7 @@ import { useGenresStore } from "@/store/genreStore";
 import { motion } from "framer-motion";
 import { useSearchCacheStore } from "@/store/searchCacheStore";
 import { useUrlFilters } from "@/hooks/useUrlFilteres";
+import CardSceleton from "@/components/CardSceleton";
 
 export default function Search() {
     const searchParams = useSearchParams();
@@ -189,13 +190,24 @@ export default function Search() {
                                 </p>
                             )}
 
-                        {isSearching && page === 1 && (
-                            <div className="col-span-full py-12 flex justify-center">
-                                <Loader size="medium">
-                                    Загрузка результатов...
-                                </Loader>
-                            </div>
-                        )}
+                        {isSearching &&
+                            page === 1 &&
+                            Array.from({ length: 20 }).map((item, index) => {
+                                return (
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{
+                                            duration: 0.4,
+                                            ease: "easeOut",
+                                        }}
+                                        className="w-full min-w-0 flex justify-center"
+                                    >
+                                        <CardSceleton />
+                                    </motion.div>
+                                );
+                            })}
 
                         {searchResults.length > 0 &&
                             !(isSearching && page === 1) &&
