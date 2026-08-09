@@ -18,12 +18,12 @@
 
 ## Скриншоты
 
-| Главная страница | Детали проекта |
-| :---: | :---: |
+|            Главная страница            |                Детали проекта                |
+| :------------------------------------: | :------------------------------------------: |
 | ![Home](./public/screenshots/home.png) | ![Details](./public/screenshots/details.png) |
 
-| Личная коллекция | Аналитика |
-| :---: | :---: |
+|                  Личная коллекция                  |                    Аналитика                     |
+| :------------------------------------------------: | :----------------------------------------------: |
 | ![Collection](./public/screenshots/collection.png) | ![Analytics](./public/screenshots/analytics.png) |
 
 ---
@@ -41,16 +41,38 @@
 
 ## Стек технологий
 
-* **Core:** Next.js 16 (App Router), React 19, TypeScript
-* **Auth & DB:** Auth.js v5 (`next-auth`), Firebase Firestore, Bcryptjs
-* **State & Validation:** Zustand 5, Zod 4
-* **UI & Styling:** Tailwind CSS 4, Framer Motion 12, Embla Carousel, Recharts, Lucide Icons, Sonner
+- **Core:** Next.js 16 (App Router), React 19, TypeScript
+- **Auth & DB:** Auth.js v5 (`next-auth`), Firebase Firestore, Bcryptjs
+- **State & Validation:** Zustand 5, Zod 4
+- **UI & Styling:** Tailwind CSS 4, Framer Motion 12, Embla Carousel, Recharts, Lucide Icons, Sonner
 
 ---
 
 ## Локальный запуск
 
 1. **Клонировать репозиторий:**
-   ```bash
-   git clone [https://github.com/your-username/movio-next.git](https://github.com/your-username/movio-next.git)
-   cd movio-next
+
+    ```bash
+    git clone [https://github.com/paruripariram/movio-next.git](https://github.com/paruripariram/movio-next.git)
+    cd movio-next
+    ```
+
+2. **Установить зависимости:**
+
+    ```bash
+    npm install
+    ```
+
+3. **Настроить переменные окружения:**
+   Создай файл `.env.local` в корне проекта и добавь необходимые ключи (Firebase, TMDB API, NextAuth и т.д.):
+
+    ```env
+    NEXT_PUBLIC_...=your_key
+    ```
+
+4. **Запустить режим разработки:**
+    ```bash
+    npm run dev
+    ```
+
+Открой [http://localhost:3000](http://localhost:3000) в браузере, чтобы увидеть результат.
