@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import Card from "@/components/Card";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { detailsRouter } from "@/helpers/detailsRouter";
-import Loader from "@/components/Loader";
 import { useCollectionStore } from "@/store/collectionStore";
 import { useAuthStore } from "@/store/authStore";
 import SearchInput from "@/components/SearchInput";
@@ -15,6 +14,7 @@ import { useEffect, useMemo, useState } from "react";
 import GenreCheckbox from "@/components/GenreCheckbox";
 import Toggler from "@/components/Toggler";
 import { useUrlFilters } from "@/hooks/useUrlFilteres";
+import CardSceleton from "@/components/CardSceleton";
 
 export default function Collection() {
     const searchParams = useSearchParams();
@@ -246,15 +246,47 @@ export default function Collection() {
                     <AnimatePresence mode="wait">
                         {viewKey === "loading" && (
                             <motion.div
-                                key="loading"
+                                key="filled"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="flex-1 flex items-center justify-center min-h-75"
+                                className="flex-1 flex flex-col min-w-0"
                             >
-                                <Loader size="large">
-                                    Загрузка коллекции...
-                                </Loader>
+                                <p className="text-gray-500 text-xl sm:text-3xl px-2 sm:px-6 mb-2 sm:mb-0">
+                                    Ваша коллекция.
+                                </p>
+
+                                <div className="w-full grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] xl:grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3 sm:gap-6 p-2 sm:p-6 justify-items-center">
+                                    <AnimatePresence mode="popLayout">
+                                        {Array.from({ length: 20 }).map((item,index) => (
+                                            <motion.div
+                                                key={index}
+                                                layout="position"
+                                                className="w-full min-w-0 flex justify-center"
+                                                initial={{
+                                                    opacity: 0,
+                                                    scale: 0.9,
+                                                }}
+                                                animate={{
+                                                    opacity: 1,
+                                                    scale: 1,
+                                                }}
+                                                exit={{
+                                                    opacity: 0,
+                                                    scale: 0.8,
+                                                }}
+                                                transition={{
+                                                    type: "spring",
+                                                    stiffness: 300,
+                                                    damping: 40,
+                                                    opacity: { duration: 0.2 },
+                                                }}
+                                            >
+                                                <CardSceleton/>
+                                            </motion.div>
+                                        ))}
+                                    </AnimatePresence>
+                                </div>
                             </motion.div>
                         )}
                         {viewKey === "empty" && (

@@ -4,10 +4,8 @@ import { APP_ROUTES } from "@/config/routes";
 
 export const metadata: Metadata = {
     title: APP_ROUTES.COLLECTION.title,
-}
+};
 
 export default function CollectionPage() {
-    return (
-                <Collection/>
-    );
+    return <Collection />;
 }
