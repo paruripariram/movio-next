@@ -107,9 +107,9 @@ export function GenrePieChart({ items }: GenrePieChartProps) {
                             formatter={(value) => [
                                 formatPlural(
                                     value as number,
-                                    "проект",
-                                    "проекта",
-                                    "проектов",
+                                    "раз",
+                                    "раза",
+                                    "раз",
                                 ),
                                 "Встречается",
                             ]}
@@ -143,9 +143,9 @@ export function GenrePieChart({ items }: GenrePieChartProps) {
                             <span className="text-gray-400 font-bold shrink-0 text-xs sm:text-sm">
                                 {formatPlural(
                                     item.value,
-                                    "проект",
-                                    "проекта",
-                                    "проектов",
+                                    "раз",
+                                    "раза",
+                                    "раз",
                                 )}
                             </span>
                         </div>

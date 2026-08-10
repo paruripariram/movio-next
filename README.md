@@ -53,7 +53,7 @@
 1. **Клонировать репозиторий:**
 
     ```bash
-    git clone [https://github.com/paruripariram/movio-next.git](https://github.com/paruripariram/movio-next.git)
+    git clone https://github.com/paruripariram/movio-next.git
     cd movio-next
     ```
 
@@ -64,10 +64,16 @@
     ```
 
 3. **Настроить переменные окружения:**
-   Создай файл `.env.local` в корне проекта и добавь необходимые ключи (Firebase, TMDB API, NextAuth и т.д.):
+   Создай файл .env.local в корне проекта и добавь необходимые ключи:
 
     ```env
-    NEXT_PUBLIC_...=your_key
+    NEXT_PUBLIC_TMDB_API_KEY=your_tmdb_api_key
+    NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+    NEXTAUTH_SECRET=your_nextauth_secret
+    AUTH_GOOGLE_ID=your_google_id
+    AUTH_GOOGLE_SECRET=your_google_secret
     ```
 
 4. **Запустить режим разработки:**
@@ -75,4 +81,4 @@
     npm run dev
     ```
 
-Открой [http://localhost:3000](http://localhost:3000) в браузере, чтобы увидеть результат.
+Открой http://localhost:3000 в браузере, чтобы увидеть результат.
