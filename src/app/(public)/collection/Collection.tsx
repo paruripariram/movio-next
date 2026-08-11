@@ -1,6 +1,5 @@
 "use client";
 
-import { Bookmark, Check } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import Card from "@/components/media/Card";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -9,12 +8,10 @@ import { useCollectionStore } from "@/store/collectionStore";
 import { useAuthStore } from "@/store/authStore";
 import SearchInput from "@/components/ui/SearchInput";
 import { useSearchCacheStore } from "@/store/searchCacheStore";
-import { useGenresStore } from "@/store/genreStore";
 import { useEffect, useMemo, useState } from "react";
-import GenreCheckbox from "@/components/filteres/GenreCheckbox";
-import Toggler from "@/components/ui/Toggler";
 import { useUrlFilters } from "@/hooks/useUrlFilteres";
 import CardSceleton from "@/components/ui/sceletons/CardSceleton";
+import FilterSidebar from "@/components/filteres/FilterSidebar";
 
 export default function Collection() {
     const searchParams = useSearchParams();
@@ -34,7 +31,6 @@ export default function Collection() {
         toggleGenre,
     } = useUrlFilters();
 
-    const genresMap = useGenresStore((state) => state.genresMap);
     const setCache = useSearchCacheStore((state) => state.setCache);
 
     const [localSearch, setLocalSearch] = useState(
@@ -171,82 +167,26 @@ export default function Collection() {
         }
     }, [viewKey]);
 
-    const togglerStatusOptions = [
-        { value: "all", label: "Все" },
-        {
-            value: "watched",
-            label: <Check className="w-4 h-4 sm:w-5 sm:h-5" />,
-        },
-        {
-            value: "wishlist",
-            label: <Bookmark className="w-4 h-4 sm:w-5 sm:h-5" />,
-        },
-    ];
-
-    const togglerMediaOptions = [
-        { value: "movie", label: "Фильмы" },
-        { value: "tv", label: "Сериалы" },
-    ];
-
     return (
-        <div className="flex flex-col gap-4 md:gap-10 w-full max-w-fullк">
+        <div className="flex flex-col gap-4 md:gap-10 w-full max-w-full">
             <SearchInput value={localSearch} onChange={inputHandler} />
 
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 min-w-0">
-                <aside className="sticky top-10 bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-full lg:w-70 h-auto self-start rounded-2xl md:rounded-4xl shrink-0 p-4 sm:p-5">
-                    <div className="flex flex-col sm:flex-row lg:flex-col justify-center items-center gap-3 sm:gap-4">
-                        <div className="w-full sm:w-60">
-                            <Toggler
-                                options={togglerStatusOptions}
-                                value={currentStatus}
-                                optionHandler={statusHandler}
-                            />
-                        </div>
-                        <div className="w-full sm:w-60">
-                            <Toggler
-                                options={togglerMediaOptions}
-                                value={currentType as "movie" | "tv"}
-                                optionHandler={typeHandler}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col gap-3.5 mt-4 lg:mt-6 max-h-48 lg:max-h-none overflow-y-auto pr-1">
-                        {currentType === "movie"
-                            ? Object.entries(genresMap.movieGenres).map(
-                                  ([id, name]) => (
-                                      <GenreCheckbox
-                                          key={id}
-                                          genreId={Number(id)}
-                                          name={name}
-                                          checked={pickedGenres.includes(
-                                              Number(id),
-                                          )}
-                                          onChange={toggleGenre}
-                                      />
-                                  ),
-                              )
-                            : Object.entries(genresMap.tvGenres).map(
-                                  ([id, name]) => (
-                                      <GenreCheckbox
-                                          key={id}
-                                          genreId={Number(id)}
-                                          name={name}
-                                          checked={pickedGenres.includes(
-                                              Number(id),
-                                          )}
-                                          onChange={toggleGenre}
-                                      />
-                                  ),
-                              )}
-                    </div>
-                </aside>
+                <FilterSidebar
+                    collectionPage={true}
+                    currentStatus={currentStatus}
+                    currentType={currentType}
+                    pickedGenres={pickedGenres}
+                    statusHandler={statusHandler}
+                    typeHandler={typeHandler}
+                    toggleGenre={toggleGenre}
+                />
 
                 <div className="flex-1 min-w-0 flex flex-col">
                     <AnimatePresence mode="wait">
                         {viewKey === "loading" && (
                             <motion.div
-                                key="filled"
+                                key="loading"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
@@ -321,7 +261,7 @@ export default function Collection() {
                                 <div className="w-full grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] xl:grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3 sm:gap-6 p-2 sm:p-6 justify-items-center">
                                     <AnimatePresence mode="popLayout">
                                         {filteredCollection.length === 0 && (
-                                            <p className="text-gray-500 text-lg sm:text-2xl col-span-full py-10 text-center">
+                                            <p key="empty-filter" className="text-gray-500 text-lg sm:text-2xl col-span-full py-10 text-center">
                                                 Ничего не найдено по выбранным
                                                 фильтрам.
                                             </p>
