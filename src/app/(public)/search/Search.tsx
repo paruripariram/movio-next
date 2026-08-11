@@ -11,6 +11,8 @@ import { useSearchCacheStore } from "@/store/searchCacheStore";
 import { useUrlFilters } from "@/hooks/useUrlFilteres";
 import CardSceleton from "@/components/ui/sceletons/CardSceleton";
 import FilterSidebar from "@/components/filteres/FilterSidebar";
+import { SlidersHorizontal } from "lucide-react";
+import MobileDrawer from "@/components/ui/MobileDrawer";
 
 export default function Search() {
     const searchParams = useSearchParams();
@@ -24,6 +26,8 @@ export default function Search() {
         updateParams,
         toggleGenre,
     } = useUrlFilters();
+
+    const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
     const setCache = useSearchCacheStore((state) => state.setCache);
 
@@ -98,15 +102,27 @@ export default function Search() {
 
     return (
         <div className="flex flex-col gap-4 md:gap-10 w-full max-w-full ">
-            <SearchInput value={localSearch} onChange={inputHandler} />
+            <div className="flex gap-3">
+                <div className="flex-1">
+                    <SearchInput value={localSearch} onChange={inputHandler} />
+                </div>
+                <button
+                    onClick={() => setIsMobileFiltersOpen(true)}
+                    className="lg:hidden flex items-center justify-center w-13 h-13 bg-form-color rounded-xl text-white shrink-0 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)]"
+                >
+                    <SlidersHorizontal size={20} />
+                </button>
+            </div>
 
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 min-w-0">
-                <FilterSidebar
-                    currentType={currentType}
-                    pickedGenres={pickedGenres}
-                    toggleGenre={toggleGenre}
-                    typeHandler={typeHandler}
-                />
+                <div className="hidden lg:block">
+                    <FilterSidebar
+                        currentType={currentType}
+                        pickedGenres={pickedGenres}
+                        typeHandler={typeHandler}
+                        toggleGenre={toggleGenre}
+                    />
+                </div>
 
                 <div className="flex-1 min-w-0 flex flex-col">
                     {query.trim() === "" &&
@@ -215,6 +231,19 @@ export default function Search() {
                     )}
                 </div>
             </div>
+            <MobileDrawer
+                isOpen={isMobileFiltersOpen}
+                onClose={() => setIsMobileFiltersOpen(false)}
+                title="Фильтры"
+            >
+                <FilterSidebar
+                    isMobile={true}
+                    currentType={currentType}
+                    pickedGenres={pickedGenres}
+                    typeHandler={typeHandler}
+                    toggleGenre={toggleGenre}
+                />
+            </MobileDrawer>
         </div>
     );
 }

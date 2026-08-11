@@ -12,6 +12,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useUrlFilters } from "@/hooks/useUrlFilteres";
 import CardSceleton from "@/components/ui/sceletons/CardSceleton";
 import FilterSidebar from "@/components/filteres/FilterSidebar";
+import { SlidersHorizontal } from "lucide-react";
+import MobileDrawer from "@/components/ui/MobileDrawer";
 
 export default function Collection() {
     const searchParams = useSearchParams();
@@ -30,6 +32,8 @@ export default function Collection() {
         updateParams,
         toggleGenre,
     } = useUrlFilters();
+
+    const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
     const setCache = useSearchCacheStore((state) => state.setCache);
 
@@ -87,16 +91,12 @@ export default function Collection() {
     const criticalError = useCollectionStore((state) => state.criticalError);
 
     const filteredCollection = useMemo(() => {
-    return collectionArr.filter((item) => {
+        return collectionArr.filter((item) => {
             if (item.type !== currentType) return false;
 
             if (localSearch.trim() !== "") {
                 const title = item.title || "";
-                if (
-                    !title
-                        .toLowerCase()
-                        .includes(localSearch.toLowerCase())
-                )
+                if (!title.toLowerCase().includes(localSearch.toLowerCase()))
                     return false;
             }
 
@@ -108,10 +108,7 @@ export default function Collection() {
                 if (!hasAllGenres) return false;
             }
 
-            if (
-                currentStatus !== "all" &&
-                item.status !== currentStatus
-            )
+            if (currentStatus !== "all" && item.status !== currentStatus)
                 return false;
 
             return true;
@@ -142,18 +139,30 @@ export default function Collection() {
 
     return (
         <div className="flex flex-col gap-4 md:gap-10 w-full max-w-full">
-            <SearchInput value={localSearch} onChange={inputHandler} />
+            <div className="flex gap-3">
+                <div className="flex-1">
+                    <SearchInput value={localSearch} onChange={inputHandler} />
+                </div>
+                <button
+                    onClick={() => setIsMobileFiltersOpen(true)}
+                    className="lg:hidden flex items-center justify-center w-13 h-13 bg-form-color rounded-xl text-white shrink-0 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)]"
+                >
+                    <SlidersHorizontal size={20} />
+                </button>
+            </div>
 
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 min-w-0">
-                <FilterSidebar
-                    collectionPage={true}
-                    currentStatus={currentStatus}
-                    currentType={currentType}
-                    pickedGenres={pickedGenres}
-                    statusHandler={statusHandler}
-                    typeHandler={typeHandler}
-                    toggleGenre={toggleGenre}
-                />
+                <div className="hidden lg:block">
+                    <FilterSidebar
+                        collectionPage={true}
+                        currentStatus={currentStatus}
+                        currentType={currentType}
+                        pickedGenres={pickedGenres}
+                        statusHandler={statusHandler}
+                        typeHandler={typeHandler}
+                        toggleGenre={toggleGenre}
+                    />
+                </div>
 
                 <div className="flex-1 min-w-0 flex flex-col">
                     <AnimatePresence mode="wait">
@@ -234,7 +243,10 @@ export default function Collection() {
                                 <div className="w-full grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] xl:grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3 sm:gap-6 p-2 sm:p-6 justify-items-center">
                                     <AnimatePresence mode="popLayout">
                                         {filteredCollection.length === 0 && (
-                                            <p key="empty-filter" className="text-gray-500 text-lg sm:text-2xl col-span-full py-10 text-center">
+                                            <p
+                                                key="empty-filter"
+                                                className="text-gray-500 text-lg sm:text-2xl col-span-full py-10 text-center"
+                                            >
                                                 Ничего не найдено по выбранным
                                                 фильтрам.
                                             </p>
@@ -286,6 +298,22 @@ export default function Collection() {
                     </AnimatePresence>
                 </div>
             </div>
+            <MobileDrawer
+                isOpen={isMobileFiltersOpen}
+                onClose={() => setIsMobileFiltersOpen(false)}
+                title="Фильтры"
+            >
+                <FilterSidebar
+                    isMobile={true}
+                    collectionPage={true}
+                    currentStatus={currentStatus}
+                    currentType={currentType}
+                    pickedGenres={pickedGenres}
+                    statusHandler={statusHandler}
+                    typeHandler={typeHandler}
+                    toggleGenre={toggleGenre}
+                />
+            </MobileDrawer>
         </div>
     );
 }

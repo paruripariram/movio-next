@@ -11,6 +11,7 @@ interface FilterSidebarProps {
     statusHandler?: (value: string) => void;
     typeHandler: (value: string) => void;
     toggleGenre: (genreId: number, checked: boolean) => void;
+    isMobile?: boolean;
 }
 
 const togglerStatusOptions = [
@@ -38,13 +39,18 @@ export default function FilterSidebar({
     statusHandler,
     typeHandler,
     toggleGenre,
+    isMobile = false,
 }: FilterSidebarProps) {
     const genresMap = useGenresStore((state) => state.genresMap);
     const currentGenres =
         currentType === "movie" ? genresMap?.movieGenres : genresMap?.tvGenres;
 
     return (
-        <aside className="sticky top-10 bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-full lg:w-70 h-auto self-start rounded-2xl md:rounded-4xl shrink-0 p-4 sm:p-5">
+        <aside className={
+                isMobile
+                    ? "w-full text-white"
+                    : "sticky top-10 bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-full lg:w-70 h-auto self-start rounded-2xl md:rounded-4xl shrink-0 p-4 sm:p-5"
+            }>
             <div className="flex flex-col sm:flex-row lg:flex-col justify-center items-center gap-3 sm:gap-4">
                 {collectionPage && statusHandler && (
                     <div className="w-full sm:w-60">
