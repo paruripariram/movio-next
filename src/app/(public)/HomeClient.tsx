@@ -1,7 +1,7 @@
 "use client";
 
 import useRecommendation from "@/hooks/useRecommendation";
-import HorizontalCarouselSection from "@/components/HorizontalCarouselSection";
+import HorizontalCarouselSection from "@/components/media/HorizontalCarouselSection";
 import { SearchResult } from "@/types/tmdb";
 
 interface HomeProps {

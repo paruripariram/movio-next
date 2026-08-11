@@ -1,12 +1,12 @@
 "use client";
 
 import { AtSign, LockKeyhole, User } from "lucide-react";
-import AuthButton from "@/components/AuthButton";
-import AuthInput from "@/components/AuthInput";
+import AuthButton from "@/components/auth/AuthButton";
+import AuthInput from "@/components/auth/AuthInput";
 import useForm from "@/hooks/useForm";
 import type { authForm } from "@/types";
 import Link from "next/link";
-import GoogleButton from "@/components/GoogleButton";
+import GoogleButton from "@/components/auth/GoogleButton";
 import { APP_ROUTES } from "@/config/routes";
 import { handleError } from "@/helpers/errorHandler";
 import { registerAction } from "@/actions/authActions";

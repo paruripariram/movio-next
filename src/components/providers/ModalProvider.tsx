@@ -10,7 +10,7 @@ import {
     TVDetails,
     User,
 } from "@/types";
-import WatchedModal from "../WatchedModal";
+import WatchedModal from "../media/WatchedModal";
 import { AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";

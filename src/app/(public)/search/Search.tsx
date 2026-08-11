@@ -1,18 +1,18 @@
 "use client";
 
-import Card from "@/components/Card";
-import SearchInput from "@/components/SearchInput";
+import Card from "@/components/media/Card";
+import SearchInput from "@/components/ui/SearchInput";
 import useMovieSearch from "@/hooks/useMovieSearch";
-import Toggler from "@/components/Toggler";
+import Toggler from "@/components/ui/Toggler";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import GenreCheckbox from "@/components/GenreCheckbox";
+import GenreCheckbox from "@/components/filteres/GenreCheckbox";
 import { detailsRouter } from "@/helpers/detailsRouter";
 import { useEffect, useState } from "react";
 import { useGenresStore } from "@/store/genreStore";
 import { motion } from "framer-motion";
 import { useSearchCacheStore } from "@/store/searchCacheStore";
 import { useUrlFilters } from "@/hooks/useUrlFilteres";
-import CardSceleton from "@/components/CardSceleton";
+import CardSceleton from "@/components/ui/sceletons/CardSceleton";
 
 export default function Search() {
     const searchParams = useSearchParams();
@@ -105,11 +105,11 @@ export default function Search() {
     }, []);
 
     return (
-        <div className="flex flex-col gap-4 md:gap-10 w-full max-w-full overflow-x-hidden">
+        <div className="flex flex-col gap-4 md:gap-10 w-full max-w-full ">
             <SearchInput value={localSearch} onChange={inputHandler} />
 
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 min-w-0">
-                <aside className="bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-full lg:w-70 h-auto self-start rounded-2xl md:rounded-4xl shrink-0 p-4 sm:p-5">
+                <aside className="sticky top-10 bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-full lg:w-70 h-auto self-start rounded-2xl md:rounded-4xl shrink-0 p-4 sm:p-5">
                     <div className="flex justify-center">
                         <div className="w-full sm:w-60">
                             <Toggler

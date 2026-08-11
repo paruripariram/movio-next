@@ -1,8 +1,8 @@
 "use client";
 
-import BackButton from "@/components/BackButton";
-import CollectionButton from "@/components/CollectionButton";
-import Loader from "@/components/Loader";
+import BackButton from "@/components/ui/BackButton";
+import CollectionButton from "@/components/media/CollectionButton";
+import Loader from "@/components/ui/Loader";
 import { PLATFORMS } from "@/config/platforms";
 import { APP_ROUTES } from "@/config/routes";
 import useCollectionActions from "@/hooks/useCollectionActions";

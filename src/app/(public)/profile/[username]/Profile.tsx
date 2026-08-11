@@ -19,11 +19,11 @@ import {
 } from "lucide-react";
 import { useGenresStore } from "@/store/genreStore";
 import { getTopGenre } from "@/helpers/getTopGenre";
-import { GenrePieChart } from "@/components/GenrePieChart";
+import { GenrePieChart } from "@/components/profile/GenrePieChart";
 import { getRecentlyWatched } from "@/helpers/getRecentlyWatched";
-import HorizontalCarouselSection from "@/components/HorizontalCarouselSection";
+import HorizontalCarouselSection from "@/components/media/HorizontalCarouselSection";
 import { getPluralWord } from "@/helpers/pluralize";
-import ProfileSkeleton from "@/components/ProfileSceleton";
+import ProfileSkeleton from "@/components/ui/sceletons/ProfileSceleton";
 
 export default function Profile() {
     const user = useAuthStore((state) => state.user);
@@ -110,7 +110,7 @@ export default function Profile() {
     }, [collectionArr, genresMap]);
 
     if (isLoadingUser || (isLoadingCollection && collectionArr.length === 0)) {
-        return <ProfileSkeleton/>
+        return <ProfileSkeleton />;
     }
 
     return (
@@ -172,7 +172,6 @@ export default function Profile() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 relative">
-
                         <div className="bg-form-color shadow-lg rounded-3xl p-5 sm:p-6 min-h-45 relative flex flex-col justify-between gap-4 border border-white/5">
                             <div className="flex items-center justify-between gap-2">
                                 <div className="bg-primary/20 text-primary p-2.5 rounded-xl shrink-0">

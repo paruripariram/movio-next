@@ -2,19 +2,19 @@
 
 import { Bookmark, Check } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import Card from "@/components/Card";
+import Card from "@/components/media/Card";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { detailsRouter } from "@/helpers/detailsRouter";
 import { useCollectionStore } from "@/store/collectionStore";
 import { useAuthStore } from "@/store/authStore";
-import SearchInput from "@/components/SearchInput";
+import SearchInput from "@/components/ui/SearchInput";
 import { useSearchCacheStore } from "@/store/searchCacheStore";
 import { useGenresStore } from "@/store/genreStore";
 import { useEffect, useMemo, useState } from "react";
-import GenreCheckbox from "@/components/GenreCheckbox";
-import Toggler from "@/components/Toggler";
+import GenreCheckbox from "@/components/filteres/GenreCheckbox";
+import Toggler from "@/components/ui/Toggler";
 import { useUrlFilters } from "@/hooks/useUrlFilteres";
-import CardSceleton from "@/components/CardSceleton";
+import CardSceleton from "@/components/ui/sceletons/CardSceleton";
 
 export default function Collection() {
     const searchParams = useSearchParams();
@@ -189,11 +189,11 @@ export default function Collection() {
     ];
 
     return (
-        <div className="flex flex-col gap-4 md:gap-10 w-full max-w-full overflow-x-hidden">
+        <div className="flex flex-col gap-4 md:gap-10 w-full max-w-fullк">
             <SearchInput value={localSearch} onChange={inputHandler} />
 
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 min-w-0">
-                <aside className="bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-full lg:w-70 h-auto self-start rounded-2xl md:rounded-4xl shrink-0 p-4 sm:p-5">
+                <aside className="sticky top-10 bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-full lg:w-70 h-auto self-start rounded-2xl md:rounded-4xl shrink-0 p-4 sm:p-5">
                     <div className="flex flex-col sm:flex-row lg:flex-col justify-center items-center gap-3 sm:gap-4">
                         <div className="w-full sm:w-60">
                             <Toggler
@@ -258,33 +258,37 @@ export default function Collection() {
 
                                 <div className="w-full grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] xl:grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3 sm:gap-6 p-2 sm:p-6 justify-items-center">
                                     <AnimatePresence mode="popLayout">
-                                        {Array.from({ length: 20 }).map((item,index) => (
-                                            <motion.div
-                                                key={index}
-                                                layout="position"
-                                                className="w-full min-w-0 flex justify-center"
-                                                initial={{
-                                                    opacity: 0,
-                                                    scale: 0.9,
-                                                }}
-                                                animate={{
-                                                    opacity: 1,
-                                                    scale: 1,
-                                                }}
-                                                exit={{
-                                                    opacity: 0,
-                                                    scale: 0.8,
-                                                }}
-                                                transition={{
-                                                    type: "spring",
-                                                    stiffness: 300,
-                                                    damping: 40,
-                                                    opacity: { duration: 0.2 },
-                                                }}
-                                            >
-                                                <CardSceleton/>
-                                            </motion.div>
-                                        ))}
+                                        {Array.from({ length: 20 }).map(
+                                            (item, index) => (
+                                                <motion.div
+                                                    key={index}
+                                                    layout="position"
+                                                    className="w-full min-w-0 flex justify-center"
+                                                    initial={{
+                                                        opacity: 0,
+                                                        scale: 0.9,
+                                                    }}
+                                                    animate={{
+                                                        opacity: 1,
+                                                        scale: 1,
+                                                    }}
+                                                    exit={{
+                                                        opacity: 0,
+                                                        scale: 0.8,
+                                                    }}
+                                                    transition={{
+                                                        type: "spring",
+                                                        stiffness: 300,
+                                                        damping: 40,
+                                                        opacity: {
+                                                            duration: 0.2,
+                                                        },
+                                                    }}
+                                                >
+                                                    <CardSceleton />
+                                                </motion.div>
+                                            ),
+                                        )}
                                     </AnimatePresence>
                                 </div>
                             </motion.div>

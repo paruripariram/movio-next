@@ -42,6 +42,7 @@ export function useUrlFilters() {
                 : pickedGenres.filter((id) => id !== genreId);
             
             updateParams({ with_genres: newGenres.length > 0 ? newGenres.join(",") : null });
+            window.scrollTo({ top: 0, behavior: "smooth" });
         },
         [pickedGenres, updateParams]
     );

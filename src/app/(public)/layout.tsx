@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import { Toaster } from "sonner";
-import PageTransition from "@/components/PageTransition";
+import PageTransition from "@/components/layout/PageTransition";
 import { AppInitializer } from "@/components/providers/AppInitializer";
 import { SessionProvider } from "next-auth/react";
 import { ModalProvider } from "@/components/providers/ModalProvider";
