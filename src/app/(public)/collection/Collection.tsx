@@ -44,29 +44,6 @@ export default function Collection() {
         setLocalSearch(queryFromUrl);
     }
 
-    const currentGenresStr = JSON.stringify(pickedGenres);
-    const [activeFilters, setActiveFilters] = useState({
-        currentType,
-        localSearch,
-        currentStatus,
-        pickedGenresStr: currentGenresStr,
-    });
-
-    if (
-        !isNavigatingAway &&
-        (currentType !== activeFilters.currentType ||
-            localSearch !== activeFilters.localSearch ||
-            currentStatus !== activeFilters.currentStatus ||
-            currentGenresStr !== activeFilters.pickedGenresStr)
-    ) {
-        setActiveFilters({
-            currentType,
-            localSearch,
-            currentStatus,
-            pickedGenresStr: currentGenresStr,
-        });
-    }
-
     useEffect(() => {
         if (isNavigatingAway) return;
         const timer = setTimeout(() => {
@@ -110,40 +87,36 @@ export default function Collection() {
     const criticalError = useCollectionStore((state) => state.criticalError);
 
     const filteredCollection = useMemo(() => {
-        const genresList = JSON.parse(
-            activeFilters.pickedGenresStr,
-        ) as number[];
+    return collectionArr.filter((item) => {
+            if (item.type !== currentType) return false;
 
-        return collectionArr.filter((item) => {
-            if (item.type !== activeFilters.currentType) return false;
-
-            if (activeFilters.localSearch.trim() !== "") {
+            if (localSearch.trim() !== "") {
                 const title = item.title || "";
                 if (
                     !title
                         .toLowerCase()
-                        .includes(activeFilters.localSearch.toLowerCase())
+                        .includes(localSearch.toLowerCase())
                 )
                     return false;
             }
 
-            if (genresList.length > 0) {
+            if (pickedGenres.length > 0) {
                 const itemGenres = item.genre_ids || [];
-                const hasAllGenres = genresList.every((id) =>
+                const hasAllGenres = pickedGenres.every((id) =>
                     itemGenres.includes(id),
                 );
                 if (!hasAllGenres) return false;
             }
 
             if (
-                activeFilters.currentStatus !== "all" &&
-                item.status !== activeFilters.currentStatus
+                currentStatus !== "all" &&
+                item.status !== currentStatus
             )
                 return false;
 
             return true;
         });
-    }, [collectionArr, activeFilters]);
+    }, [collectionArr, currentType, localSearch, pickedGenres, currentStatus]);
 
     if (criticalError) throw criticalError;
 
