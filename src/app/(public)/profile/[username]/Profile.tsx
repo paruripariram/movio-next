@@ -23,7 +23,7 @@ import { GenrePieChart } from "@/components/profile/GenrePieChart";
 import { getRecentlyWatched } from "@/helpers/getRecentlyWatched";
 import HorizontalCarouselSection from "@/components/media/HorizontalCarouselSection";
 import { getPluralWord } from "@/helpers/pluralize";
-import ProfileSkeleton from "@/components/ui/sceletons/ProfileSceleton";
+import ProfileSkeleton from "@/components/ui/skeletons/ProfileSkeleton";
 
 export default function Profile() {
     const user = useAuthStore((state) => state.user);

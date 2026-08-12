@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { detailsRouter } from "@/helpers/detailsRouter";
 import Card from "./Card";
 import { collectionItem, SearchResult } from "@/types";
-import CardSkeleton from "../ui/sceletons/CardSceleton";
+import CardSkeleton from "../ui/skeletons/CardSkeleton";
 
 interface HorizontalCarouselSectionProps {
     data: SearchResult[] | collectionItem[];

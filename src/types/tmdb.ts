@@ -66,6 +66,7 @@ export type GenresMap = {
     movieGenres: Record<number, string>;
     tvGenres: Record<number, string>;
 };
+export type GenreStatus = "include" | "exclude" | "neutral";
 
 export type SearchResult = Movie | TVShow;
 

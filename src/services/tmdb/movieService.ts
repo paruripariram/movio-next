@@ -4,18 +4,20 @@ import type { Genre, SearchResult } from "@/types/tmdb";
 export const search = async ({
     query,
     type = "movie",
-    genres = "",
+    withGenres = "",
+    withoutGenres = "",
     page = 1,
     signal,
 }: {
     query: string;
     type?: "movie" | "tv";
-    genres?: string;
+    withGenres?: string;
+    withoutGenres?: string;
     page?: number;
     signal?: AbortSignal;
 }) => {
     const response = await tmdbApi.get(`/discover/${type}`, {
-        params: { with_text_query: query, with_genres: genres, page },
+        params: { with_text_query: query, with_genres: withGenres, without_genres: withoutGenres, page },
         signal,
     });
     return {

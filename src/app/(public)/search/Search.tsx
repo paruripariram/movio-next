@@ -8,8 +8,8 @@ import { detailsRouter } from "@/helpers/detailsRouter";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useSearchCacheStore } from "@/store/searchCacheStore";
-import { useUrlFilters } from "@/hooks/useUrlFilteres";
-import CardSceleton from "@/components/ui/sceletons/CardSceleton";
+import { useUrlFilters } from "@/hooks/useUrlFilters";
+import CardSceleton from "@/components/ui/skeletons/CardSkeleton";
 import FilterSidebar from "@/components/filteres/FilterSidebar";
 import { SlidersHorizontal } from "lucide-react";
 import MobileDrawer from "@/components/ui/MobileDrawer";
@@ -22,7 +22,10 @@ export default function Search() {
     const {
         query,
         type: currentType,
-        pickedGenres,
+        withGenres,
+        withoutGenres,
+        pickedWithGenres,
+        pickedWithoutGenres,
         updateParams,
         toggleGenre,
     } = useUrlFilters();
@@ -30,8 +33,6 @@ export default function Search() {
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
     const setCache = useSearchCacheStore((state) => state.setCache);
-
-    const withGenres = searchParams.get("with_genres") || "";
 
     useEffect(() => {
         if (!pathname.includes("/search")) return;
@@ -56,7 +57,12 @@ export default function Search() {
         hasSearched,
         isInitialLoading,
         page,
-    } = useMovieSearch(query, currentType as "movie" | "tv", withGenres);
+    } = useMovieSearch(
+        query,
+        currentType as "movie" | "tv",
+        withGenres,
+        withoutGenres,
+    );
     const isSearching = isLoading || isDebouncing || isInitialLoading;
 
     const [localSearch, setLocalSearch] = useState(
@@ -67,7 +73,9 @@ export default function Search() {
 
     if (query !== prevQuery) {
         setPrevQuery(query);
-        setLocalSearch(query);
+        if (localSearch !== query) {
+            setLocalSearch(query);
+        }
     }
 
     useEffect(() => {
@@ -87,7 +95,7 @@ export default function Search() {
     }
 
     function typeHandler(newType: string) {
-        updateParams({ type: newType, with_genres: null });
+        updateParams({ type: newType, with_genres: null, without_genres: null });
     }
 
     useEffect(() => {
@@ -96,9 +104,10 @@ export default function Search() {
             const timer = setTimeout(() => {
                 window.scrollTo({ top: savedScrollY, behavior: "instant" });
             }, 50);
+            setCache({ cachedScrollY: 0 })
             return () => clearTimeout(timer);
         }
-    }, []);
+    }, [setCache]);
 
     return (
         <div className="flex flex-col gap-4 md:gap-10 w-full max-w-full ">
@@ -118,7 +127,8 @@ export default function Search() {
                 <div className="hidden lg:block">
                     <FilterSidebar
                         currentType={currentType}
-                        pickedGenres={pickedGenres}
+                        pickedWithGenres={pickedWithGenres}
+                        pickedWithoutGenres={pickedWithoutGenres}
                         typeHandler={typeHandler}
                         toggleGenre={toggleGenre}
                     />
@@ -126,7 +136,7 @@ export default function Search() {
 
                 <div className="flex-1 min-w-0 flex flex-col">
                     {query.trim() === "" &&
-                        searchParams.get("with_genres") === "" && (
+                        pickedWithGenres.length === 0 && pickedWithoutGenres.length === 0 && (
                             <p className="text-gray-500 text-xl sm:text-3xl px-2 sm:px-6 mb-2 sm:mb-0">
                                 Популярное сейчас.
                             </p>
@@ -150,7 +160,9 @@ export default function Search() {
                             </div>
                         )}
 
-                        {(query.trim() !== "" || pickedGenres.length > 0) &&
+                        {(query.trim() !== "" ||
+                            pickedWithGenres.length > 0 ||
+                            pickedWithoutGenres.length > 0) &&
                             hasSearched &&
                             searchResults.length === 0 &&
                             !isDebouncing &&
@@ -239,7 +251,8 @@ export default function Search() {
                 <FilterSidebar
                     isMobile={true}
                     currentType={currentType}
-                    pickedGenres={pickedGenres}
+                    pickedWithGenres={pickedWithGenres}
+                    pickedWithoutGenres={pickedWithoutGenres}
                     typeHandler={typeHandler}
                     toggleGenre={toggleGenre}
                 />

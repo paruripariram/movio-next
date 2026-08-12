@@ -10,7 +10,8 @@ import { useSearchCacheStore } from "@/store/searchCacheStore";
 export default function useMovieSearch(
     searchQuery: string,
     type: "movie" | "tv",
-    genres: string,
+    withGenres: string,
+    withoutGenres: string,
 ) {
     const {
         cachedResults,
@@ -42,11 +43,12 @@ export default function useMovieSearch(
         const isFiltersChanged =
             searchQuery !== currentStore.lastQuery ||
             type !== currentStore.lastType ||
-            genres !== currentStore.lastGenres;
+            withGenres !== currentStore.lastWithGenres ||
+            withoutGenres !== currentStore.lastWithoutGenres;
 
         if (isFiltersChanged) {
-            const isIncomingPropsEmpty = searchQuery === "" && genres === "";
-            const hasAnyCachedFilters = currentStore.lastQuery !== "" || currentStore.lastGenres !== "";
+            const isIncomingPropsEmpty = searchQuery === "" && withGenres === "" && withoutGenres === "";
+            const hasAnyCachedFilters = currentStore.lastQuery !== "" || currentStore.lastWithGenres !== "" || currentStore.lastWithoutGenres !== "";
 
             if (isFirstRenderRef.current && isIncomingPropsEmpty && hasAnyCachedFilters) {
                 isFirstRenderRef.current = false;
@@ -63,7 +65,8 @@ export default function useMovieSearch(
                 cachedHasSearched: false,
                 lastQuery: searchQuery,
                 lastType: type,
-                lastGenres: genres,
+                lastWithGenres: withGenres,
+                lastWithoutGenres: withoutGenres,
             });
             setIsInitialLoading(true);
             prevPageRef.current = 1;
@@ -107,7 +110,8 @@ export default function useMovieSearch(
                     query,
                     page: cachedPage,
                     type,
-                    genres,
+                    withGenres,
+                    withoutGenres,
                     signal,
                 });
 
@@ -115,7 +119,8 @@ export default function useMovieSearch(
 
                 if (
                     searchQuery !== latestStore.lastQuery ||
-                    genres !== latestStore.lastGenres ||
+                    withGenres !== latestStore.lastWithGenres ||
+                    withoutGenres !== latestStore.lastWithoutGenres ||
                     type !== latestStore.lastType
                 ) {
                     return;
@@ -174,7 +179,8 @@ export default function useMovieSearch(
     }, [
         searchQuery,
         type,
-        genres,
+        withGenres,
+        withoutGenres,
         cachedPage,
         retryCount,
         setCache,

@@ -9,8 +9,8 @@ import { useAuthStore } from "@/store/authStore";
 import SearchInput from "@/components/ui/SearchInput";
 import { useSearchCacheStore } from "@/store/searchCacheStore";
 import { useEffect, useMemo, useState } from "react";
-import { useUrlFilters } from "@/hooks/useUrlFilteres";
-import CardSceleton from "@/components/ui/sceletons/CardSceleton";
+import { useUrlFilters } from "@/hooks/useUrlFilters";
+import CardSceleton from "@/components/ui/skeletons/CardSkeleton";
 import FilterSidebar from "@/components/filteres/FilterSidebar";
 import { SlidersHorizontal } from "lucide-react";
 import MobileDrawer from "@/components/ui/MobileDrawer";
@@ -28,7 +28,8 @@ export default function Collection() {
         query: queryFromUrl,
         type: currentType,
         status: currentStatus,
-        pickedGenres,
+        pickedWithGenres,
+        pickedWithoutGenres,
         updateParams,
         toggleGenre,
     } = useUrlFilters();
@@ -45,19 +46,20 @@ export default function Collection() {
 
     if (queryFromUrl !== prevQuery && !isNavigatingAway) {
         setPrevQuery(queryFromUrl);
-        setLocalSearch(queryFromUrl);
+        if (localSearch !== queryFromUrl) {
+            setLocalSearch(queryFromUrl);
+        }
     }
 
     useEffect(() => {
-        if (isNavigatingAway) return;
+        if (isNavigatingAway || localSearch === queryFromUrl) return;
         const timer = setTimeout(() => {
             updateParams({
                 with_text_query: localSearch.trim() !== "" ? localSearch : null,
             });
         }, 400);
         return () => clearTimeout(timer);
-        //eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [localSearch, isNavigatingAway]);
+    }, [localSearch, isNavigatingAway, queryFromUrl, updateParams]);
 
     useEffect(() => {
         if (isNavigatingAway) return;
@@ -76,7 +78,7 @@ export default function Collection() {
     }
 
     function typeHandler(newType: string) {
-        updateParams({ type: newType, with_genres: null });
+        updateParams({ type: newType, with_genres: null, without_genres: null });
     }
 
     function statusHandler(newStatus: string) {
@@ -100,12 +102,19 @@ export default function Collection() {
                     return false;
             }
 
-            if (pickedGenres.length > 0) {
+            if (pickedWithGenres.length > 0) {
                 const itemGenres = item.genre_ids || [];
-                const hasAllGenres = pickedGenres.every((id) =>
+                const hasAllGenres = pickedWithGenres.every((id) =>
                     itemGenres.includes(id),
                 );
                 if (!hasAllGenres) return false;
+            }
+            if (pickedWithoutGenres.length > 0) {
+                const itemGenres = item.genre_ids || [];
+                const hasExcludedGenre = pickedWithoutGenres.some((id) =>
+                    itemGenres.includes(id),
+                );
+                if (hasExcludedGenre) return false;
             }
 
             if (currentStatus !== "all" && item.status !== currentStatus)
@@ -113,7 +122,14 @@ export default function Collection() {
 
             return true;
         });
-    }, [collectionArr, currentType, localSearch, pickedGenres, currentStatus]);
+    }, [
+        collectionArr,
+        currentType,
+        localSearch,
+        pickedWithGenres,
+        pickedWithoutGenres,
+        currentStatus,
+    ]);
 
     if (criticalError) throw criticalError;
 
@@ -132,10 +148,11 @@ export default function Collection() {
                 const timer = setTimeout(() => {
                     window.scrollTo({ top: savedScrollY, behavior: "instant" });
                 }, 50);
+                setCache({ cachedCollectionScrollY: 0 });
                 return () => clearTimeout(timer);
             }
         }
-    }, [viewKey]);
+    }, [viewKey, setCache]);
 
     return (
         <div className="flex flex-col gap-4 md:gap-10 w-full max-w-full">
@@ -157,7 +174,8 @@ export default function Collection() {
                         collectionPage={true}
                         currentStatus={currentStatus}
                         currentType={currentType}
-                        pickedGenres={pickedGenres}
+                        pickedWithGenres={pickedWithGenres}
+                        pickedWithoutGenres={pickedWithoutGenres}
                         statusHandler={statusHandler}
                         typeHandler={typeHandler}
                         toggleGenre={toggleGenre}
@@ -308,7 +326,8 @@ export default function Collection() {
                     collectionPage={true}
                     currentStatus={currentStatus}
                     currentType={currentType}
-                    pickedGenres={pickedGenres}
+                    pickedWithGenres={pickedWithGenres}
+                    pickedWithoutGenres={pickedWithoutGenres}
                     statusHandler={statusHandler}
                     typeHandler={typeHandler}
                     toggleGenre={toggleGenre}

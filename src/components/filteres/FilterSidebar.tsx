@@ -2,15 +2,17 @@ import { Bookmark, Check } from "lucide-react";
 import Toggler from "../ui/Toggler";
 import { useGenresStore } from "@/store/genreStore";
 import GenreCheckbox from "./GenreCheckbox";
+import { GenreStatus } from "@/types/tmdb";
 
 interface FilterSidebarProps {
     collectionPage?: boolean;
     currentStatus?: string;
     currentType: string;
-    pickedGenres: number[];
+    pickedWithGenres: number[];
+    pickedWithoutGenres: number[];
     statusHandler?: (value: string) => void;
     typeHandler: (value: string) => void;
-    toggleGenre: (genreId: number, checked: boolean) => void;
+    toggleGenre: (genreId: number, nextStatus: GenreStatus) => void;
     isMobile?: boolean;
 }
 
@@ -35,7 +37,8 @@ export default function FilterSidebar({
     collectionPage = false,
     currentStatus = "all",
     currentType,
-    pickedGenres,
+    pickedWithGenres,
+    pickedWithoutGenres,
     statusHandler,
     typeHandler,
     toggleGenre,
@@ -45,12 +48,17 @@ export default function FilterSidebar({
     const currentGenres =
         currentType === "movie" ? genresMap?.movieGenres : genresMap?.tvGenres;
 
+    const withSet = new Set(pickedWithGenres);
+    const withoutSet = new Set(pickedWithoutGenres);
+
     return (
-        <aside className={
+        <aside
+            className={
                 isMobile
                     ? "w-full text-white"
                     : "sticky top-10 bg-form-color shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)] text-white w-full lg:w-70 h-auto self-start rounded-2xl md:rounded-4xl shrink-0 p-4 sm:p-5"
-            }>
+            }
+        >
             <div className="flex flex-col sm:flex-row lg:flex-col justify-center items-center gap-3 sm:gap-4">
                 {collectionPage && statusHandler && (
                     <div className="w-full sm:w-60">
@@ -77,7 +85,13 @@ export default function FilterSidebar({
                             key={id}
                             genreId={Number(id)}
                             name={name}
-                            checked={pickedGenres.includes(Number(id))}
+                            status={
+                                withSet.has(Number(id))
+                                    ? "include"
+                                    : withoutSet.has(Number(id))
+                                      ? "exclude"
+                                      : "neutral"
+                            }
                             onChange={toggleGenre}
                         />
                     ))}
