@@ -16,6 +16,7 @@ export interface MovieSearchFilters {
     releaseDateLte: string;
     voteAverageGte: string;
     voteAverageLte: string;
+    sortBy: string;
 }
 
 export default function useMovieSearch(filters: MovieSearchFilters) {
@@ -28,6 +29,7 @@ export default function useMovieSearch(filters: MovieSearchFilters) {
         releaseDateLte,
         voteAverageGte,
         voteAverageLte,
+        sortBy,
     } = filters;
     const {
         cachedResults,
@@ -64,11 +66,19 @@ export default function useMovieSearch(filters: MovieSearchFilters) {
             releaseDateGte !== currentStore.lastReleaseDateGte ||
             releaseDateLte !== currentStore.lastReleaseDateLte ||
             voteAverageGte !== currentStore.lastVoteAverageGte ||
-            voteAverageLte !== currentStore.lastVoteAverageLte;
+            voteAverageLte !== currentStore.lastVoteAverageLte ||
+            sortBy !== currentStore.lastSortBy;
 
         if (isFiltersChanged) {
             const isIncomingPropsEmpty =
-                searchQuery === "" && withGenres === "" && withoutGenres === "" && releaseDateGte === "" && releaseDateLte === "" && voteAverageGte === "" && voteAverageLte === "";
+                (searchQuery === "" &&
+                    withGenres === "" &&
+                    withoutGenres === "" &&
+                    releaseDateGte === "" &&
+                    releaseDateLte === "" &&
+                    voteAverageGte === "" &&
+                    voteAverageLte === "") ||
+                sortBy === "";
             const hasAnyCachedFilters =
                 currentStore.lastQuery !== "" ||
                 currentStore.lastWithGenres !== "" ||
@@ -76,7 +86,8 @@ export default function useMovieSearch(filters: MovieSearchFilters) {
                 currentStore.lastReleaseDateGte !== "" ||
                 currentStore.lastReleaseDateLte !== "" ||
                 currentStore.lastVoteAverageGte !== "" ||
-                currentStore.lastVoteAverageLte !== "";
+                currentStore.lastVoteAverageLte !== "" ||
+                currentStore.lastSortBy !== "";
 
             if (
                 isFirstRenderRef.current &&
@@ -103,6 +114,7 @@ export default function useMovieSearch(filters: MovieSearchFilters) {
                 lastReleaseDateLte: releaseDateLte,
                 lastVoteAverageGte: voteAverageGte,
                 lastVoteAverageLte: voteAverageLte,
+                lastSortBy: sortBy,
             });
             setIsInitialLoading(true);
             prevPageRef.current = 1;
@@ -152,6 +164,7 @@ export default function useMovieSearch(filters: MovieSearchFilters) {
                     releaseDateLte,
                     voteAverageGte,
                     voteAverageLte,
+                    sortBy,
                     signal,
                 });
 
@@ -165,6 +178,7 @@ export default function useMovieSearch(filters: MovieSearchFilters) {
                     releaseDateLte !== latestStore.lastReleaseDateLte ||
                     voteAverageGte !== latestStore.lastVoteAverageGte ||
                     voteAverageLte !== latestStore.lastVoteAverageLte ||
+                    sortBy !== latestStore.lastSortBy ||
                     type !== latestStore.lastType
                 ) {
                     return;
@@ -232,6 +246,7 @@ export default function useMovieSearch(filters: MovieSearchFilters) {
         releaseDateLte,
         voteAverageGte,
         voteAverageLte,
+        sortBy,
         cachedPage,
         retryCount,
         setCache,

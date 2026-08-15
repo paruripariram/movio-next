@@ -14,6 +14,7 @@ import CardSceleton from "@/components/ui/skeletons/CardSkeleton";
 import FilterSidebar from "@/components/filteres/FilterSidebar";
 import { SlidersHorizontal } from "lucide-react";
 import MobileDrawer from "@/components/ui/MobileDrawer";
+import { SELECT_CONFIGS } from "@/config/filters";
 
 export default function Collection() {
     const searchParams = useSearchParams();
@@ -34,11 +35,13 @@ export default function Collection() {
         releaseDateLte,
         voteAverageGte,
         voteAverageLte,
+        sortBy,
         updateParams,
         toggleGenre,
         onChangeSliderValue,
+        onChangeSelect,
         resetFilters,
-    } = useUrlFilters();
+    } = useUrlFilters(SELECT_CONFIGS.collectionSortBy.defaultValue);
 
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
@@ -103,7 +106,7 @@ export default function Collection() {
     const criticalError = useCollectionStore((state) => state.criticalError);
 
     const filteredCollection = useMemo(() => {
-        return collectionArr.filter((item) => {
+        const filtered = collectionArr.filter((item) => {
             if (item.type !== currentType) return false;
 
             if (localSearch.trim() !== "") {
@@ -152,6 +155,47 @@ export default function Collection() {
 
             return true;
         });
+        return filtered.sort((a, b) => {
+            if (sortBy === "addedAt.desc") {
+                const dateA = a.addedAt ? new Date(a.addedAt).getTime() : 0;
+                const dateB = b.addedAt ? new Date(b.addedAt).getTime() : 0;
+                return dateB - dateA;
+            }
+
+            if (sortBy === "vote_average.desc") {
+                return (b.vote_average || 0) - (a.vote_average || 0);
+            }
+
+            if (sortBy === "primary_release_date.desc") {
+                const dateA = a.release_date
+                    ? new Date(a.release_date).getTime()
+                    : 0;
+                const dateB = b.release_date
+                    ? new Date(b.release_date).getTime()
+                    : 0;
+                return dateB - dateA;
+            }
+
+            if (sortBy === "primary_release_date.asc") {
+                const dateA = a.release_date
+                    ? new Date(a.release_date).getTime()
+                    : 0;
+                const dateB = b.release_date
+                    ? new Date(b.release_date).getTime()
+                    : 0;
+                return dateA - dateB;
+            }
+
+            if (sortBy === "title.asc") {
+                const titleA = a.title || "";
+                const titleB = b.title || "";
+                return titleA.localeCompare(titleB, "ru", {
+                    sensitivity: "base",
+                });
+            }
+
+            return 0;
+        });
     }, [
         collectionArr,
         currentType,
@@ -162,6 +206,7 @@ export default function Collection() {
         releaseDateLte,
         voteAverageGte,
         voteAverageLte,
+        sortBy,
         currentStatus,
     ]);
 
@@ -214,10 +259,13 @@ export default function Collection() {
                         releaseDateLte={releaseDateLte}
                         voteAverageGte={voteAverageGte}
                         voteAverageLte={voteAverageLte}
+                        valueSortBy={sortBy}
                         statusHandler={statusHandler}
                         typeHandler={typeHandler}
                         toggleGenre={toggleGenre}
                         onChangeSliderValue={onChangeSliderValue}
+                        onValueChangeSelect={onChangeSelect}
+                        selectType="collectionSortBy"
                         resetFilters={resetFilters}
                     />
                 </div>
@@ -372,10 +420,13 @@ export default function Collection() {
                     releaseDateLte={releaseDateLte}
                     voteAverageGte={voteAverageGte}
                     voteAverageLte={voteAverageLte}
+                    valueSortBy={sortBy}
                     statusHandler={statusHandler}
                     typeHandler={typeHandler}
                     toggleGenre={toggleGenre}
                     onChangeSliderValue={onChangeSliderValue}
+                    onValueChangeSelect={onChangeSelect}
+                    selectType="collectionSortBy"
                     resetFilters={resetFilters}
                 />
             </MobileDrawer>

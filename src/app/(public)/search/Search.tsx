@@ -30,9 +30,11 @@ export default function Search() {
         releaseDateLte,
         voteAverageGte,
         voteAverageLte,
+        sortBy,
         updateParams,
         toggleGenre,
         onChangeSliderValue,
+        onChangeSelect,
         resetFilters,
     } = useUrlFilters();
 
@@ -72,6 +74,7 @@ export default function Search() {
         releaseDateLte,
         voteAverageGte,
         voteAverageLte,
+        sortBy,
     });
     const isSearching = isLoading || isDebouncing || isInitialLoading;
 
@@ -151,6 +154,9 @@ export default function Search() {
                         toggleGenre={toggleGenre}
                         onChangeSliderValue={onChangeSliderValue}
                         resetFilters={resetFilters}
+                        valueSortBy={sortBy}
+                        onValueChangeSelect={onChangeSelect}
+                        selectType="sortBy"
                     />
                 </div>
 
@@ -278,10 +284,13 @@ export default function Search() {
                     releaseDateLte={releaseDateLte}
                     voteAverageGte={voteAverageGte}
                     voteAverageLte={voteAverageLte}
+                    valueSortBy={sortBy}
+                    onValueChangeSelect={onChangeSelect}
                     typeHandler={typeHandler}
                     toggleGenre={toggleGenre}
                     onChangeSliderValue={onChangeSliderValue}
                     resetFilters={resetFilters}
+                    selectType="sortBy"
                 />
             </MobileDrawer>
         </div>

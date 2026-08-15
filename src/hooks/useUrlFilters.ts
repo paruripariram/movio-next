@@ -12,7 +12,7 @@ function parseNumericIds(rawParam: string | null): number[] {
         .filter((id) => Number.isInteger(id) && id > 0);
 }
 
-export function useUrlFilters() {
+export function useUrlFilters(defaultSort = "popularity.desc") {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
@@ -49,7 +49,10 @@ export function useUrlFilters() {
             "release_date.lte": null,
             "vote_average.gte": null,
             "vote_average.lte": null,
+            sort_by: null,
+            status: null,
         });
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }, [updateParams]);
 
     const { pickedWithGenres, pickedWithoutGenres } = useMemo(() => {
@@ -108,6 +111,19 @@ export function useUrlFilters() {
         [updateParams],
     );
 
+    const onChangeSelect = useCallback(
+        (type: string, value: string) => {
+            if (type === "sortBy") {
+                updateParams({
+                    sort_by: value === "popularity.desc" ? null : value,
+                });
+            }
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        },
+        [updateParams],
+    );
+
     return {
         query: searchParams.get("with_text_query") || "",
         type: searchParams.get("type") || "movie",
@@ -121,13 +137,15 @@ export function useUrlFilters() {
         voteAverageGte: searchParams.get("vote_average.gte") || "",
         voteAverageLte: searchParams.get("vote_average.lte") || "",
 
+        sortBy: searchParams.get("sort_by") || defaultSort,
+
         pickedWithGenres,
         pickedWithoutGenres,
 
         updateParams,
         toggleGenre,
         onChangeSliderValue,
-
+        onChangeSelect,
         resetFilters,
     };
 }

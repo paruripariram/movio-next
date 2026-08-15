@@ -10,6 +10,7 @@ export const search = async ({
     releaseDateLte = "",
     voteAverageGte = "",
     voteAverageLte = "",
+    sortBy = "popularity.desc",
     page = 1,
     signal,
 }: {
@@ -21,11 +22,19 @@ export const search = async ({
     releaseDateLte?: string;
     voteAverageGte?: string;
     voteAverageLte?: string;
+    sortBy?: string;
     page?: number;
     signal?: AbortSignal;
 }) => {
-    const dateGteKey = type === "tv" ? "first_air_date.gte" : "release_date.gte";
-    const dateLteKey = type === "tv" ? "first_air_date.lte" : "release_date.lte";
+    const dateGteKey =
+        type === "tv" ? "first_air_date.gte" : "release_date.gte";
+    const dateLteKey =
+        type === "tv" ? "first_air_date.lte" : "release_date.lte";
+    if (sortBy === "release_date.desc" && type === "tv") {
+        sortBy = "first_air_date.desc";
+    } else if (sortBy === "release_date.asc" && type === "tv") {
+        sortBy = "first_air_date.asc";
+    }
     const response = await tmdbApi.get(`/discover/${type}`, {
         params: {
             with_text_query: query,
@@ -35,6 +44,7 @@ export const search = async ({
             [dateLteKey]: releaseDateLte,
             "vote_average.gte": voteAverageGte,
             "vote_average.lte": voteAverageLte,
+            sort_by: sortBy,
             page,
         },
         signal,

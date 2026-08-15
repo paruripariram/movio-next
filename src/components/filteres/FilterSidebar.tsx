@@ -5,6 +5,7 @@ import GenreCheckbox from "./GenreCheckbox";
 import { GenreStatus } from "@/types/tmdb";
 import FilterSlider from "./FilterSlider";
 import { SLIDER_CONFIG } from "@/config/filters";
+import { FilterSelect } from "./FilterSelect";
 
 interface FilterSidebarProps {
     collectionPage?: boolean;
@@ -23,7 +24,10 @@ interface FilterSidebarProps {
         type: "release_date" | "vote_average",
         value: number[],
     ) => void;
+    onValueChangeSelect: (type: "sortBy", value: string) => void;
+    valueSortBy: string;
     resetFilters: () => void;
+    selectType: "sortBy" | "collectionSortBy"
     isMobile?: boolean;
 }
 
@@ -60,11 +64,14 @@ export default function FilterSidebar({
     releaseDateLte,
     voteAverageGte,
     voteAverageLte,
+    valueSortBy,
+    onValueChangeSelect,
     statusHandler,
     typeHandler,
     toggleGenre,
     onChangeSliderValue,
     resetFilters,
+    selectType,
     isMobile = false,
 }: FilterSidebarProps) {
     const genresMap = useGenresStore((state) => state.genresMap);
@@ -80,8 +87,12 @@ export default function FilterSidebar({
     ];
 
     const ratingValues: [number, number] = [
-        voteAverageGte ? Number(voteAverageGte) : SLIDER_CONFIG.vote_average.min,
-        voteAverageLte ? Number(voteAverageLte) : SLIDER_CONFIG.vote_average.max,
+        voteAverageGte
+            ? Number(voteAverageGte)
+            : SLIDER_CONFIG.vote_average.min,
+        voteAverageLte
+            ? Number(voteAverageLte)
+            : SLIDER_CONFIG.vote_average.max,
     ];
 
     return (
@@ -94,8 +105,14 @@ export default function FilterSidebar({
         >
             <div className="flex items-center justify-between">
                 {!isMobile && <h1 className="text-2xl font-bold">Фильтры</h1>}
-                <button onClick={resetFilters} className="text-md font-semibold bg-primary rounded-2xl px-3 py-2 hover:bg-bgcolor transition duration-300 cursor-pointer">Сбросить</button>
+                <button
+                    onClick={resetFilters}
+                    className="text-md font-semibold bg-primary rounded-2xl px-3 py-2 hover:bg-bgcolor transition duration-300 cursor-pointer"
+                >
+                    Сбросить
+                </button>
             </div>
+
 
             <div className="flex flex-col sm:flex-row lg:flex-col justify-center items-center gap-3 sm:gap-4">
                 {collectionPage && statusHandler && (
@@ -115,6 +132,16 @@ export default function FilterSidebar({
                     />
                 </div>
             </div>
+            
+            <div>
+                <FilterSelect
+                    type={selectType}
+                    value={valueSortBy}
+                    onValueChange={(value) =>
+                        onValueChangeSelect("sortBy", value)
+                    }
+                />
+            </div>
 
             <div className="flex flex-col sm:flex-row lg:flex-col justify-center items-center gap-3 sm:gap-4">
                 <div className="w-full sm:w-60">
@@ -122,7 +149,9 @@ export default function FilterSidebar({
                         key={`date-${dateValues.join(" - ")}`}
                         type="release_date"
                         value={dateValues}
-                        onValueCommit={(value) => onChangeSliderValue("release_date", value)}
+                        onValueCommit={(value) =>
+                            onChangeSliderValue("release_date", value)
+                        }
                     />
                 </div>
                 <div className="w-full sm:w-60">
@@ -130,7 +159,9 @@ export default function FilterSidebar({
                         key={`rating-${ratingValues.join(" - ")}`}
                         type="vote_average"
                         value={ratingValues}
-                        onValueCommit={(value) => onChangeSliderValue("vote_average", value)}
+                        onValueCommit={(value) =>
+                            onChangeSliderValue("vote_average", value)
+                        }
                     />
                 </div>
             </div>
