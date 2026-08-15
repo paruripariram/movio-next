@@ -108,13 +108,13 @@ export default function useRecommendation() {
                     search({
                         query: "",
                         type: "movie",
-                        genres: topMovieGenres,
+                        withGenres: topMovieGenres,
                         signal,
                     }),
                     search({
                         query: "",
                         type: "tv",
-                        genres: topTvGenres,
+                        withGenres: topTvGenres,
                         signal,
                     }),
                 ]);

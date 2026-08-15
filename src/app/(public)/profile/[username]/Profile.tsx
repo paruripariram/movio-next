@@ -164,7 +164,7 @@ export default function Profile() {
                         </div>
 
                         <button
-                            className="bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-2.5 px-6 rounded-xl w-full sm:w-auto self-start transition duration-200 text-sm"
+                            className="bg-red-600 hover:bg-red-900 active:scale-[0.98] text-white font-semibold py-2.5 px-6 rounded-xl w-full sm:w-auto self-start transition duration-200 text-sm cursor-pointer"
                             onClick={handleLogout}
                         >
                             Выйти из аккаунта
