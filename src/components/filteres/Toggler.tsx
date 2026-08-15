@@ -33,7 +33,7 @@ export default function Toggler({
                 <button
                     key={option.value}
                     onClick={() => optionHandler(option.value)}
-                    className={`cursor-pointer relative z-3 rounded-full flex-1 h-full flex items-center justify-center font-bold sm:font-extrabold text-xs sm:text-base transition-colors duration-300 ${
+                    className={`cursor-pointer relative z-3 rounded-full flex-1 h-full flex items-center justify-center font-bold sm:font-extrabold  transition-colors duration-300 ${
                         value === option.value
                             ? "text-primary"
                             : "text-gray-500"
