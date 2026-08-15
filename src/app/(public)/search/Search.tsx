@@ -26,8 +26,14 @@ export default function Search() {
         withoutGenres,
         pickedWithGenres,
         pickedWithoutGenres,
+        releaseDateGte,
+        releaseDateLte,
+        voteAverageGte,
+        voteAverageLte,
         updateParams,
         toggleGenre,
+        onChangeSliderValue,
+        resetFilters,
     } = useUrlFilters();
 
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
@@ -57,12 +63,16 @@ export default function Search() {
         hasSearched,
         isInitialLoading,
         page,
-    } = useMovieSearch(
-        query,
-        currentType as "movie" | "tv",
+    } = useMovieSearch({
+        searchQuery: query,
+        type: currentType as "movie" | "tv",
         withGenres,
         withoutGenres,
-    );
+        releaseDateGte,
+        releaseDateLte,
+        voteAverageGte,
+        voteAverageLte,
+    });
     const isSearching = isLoading || isDebouncing || isInitialLoading;
 
     const [localSearch, setLocalSearch] = useState(
@@ -95,7 +105,11 @@ export default function Search() {
     }
 
     function typeHandler(newType: string) {
-        updateParams({ type: newType, with_genres: null, without_genres: null });
+        updateParams({
+            type: newType,
+            with_genres: null,
+            without_genres: null,
+        });
     }
 
     useEffect(() => {
@@ -104,7 +118,7 @@ export default function Search() {
             const timer = setTimeout(() => {
                 window.scrollTo({ top: savedScrollY, behavior: "instant" });
             }, 50);
-            setCache({ cachedScrollY: 0 })
+            setCache({ cachedScrollY: 0 });
             return () => clearTimeout(timer);
         }
     }, [setCache]);
@@ -129,14 +143,21 @@ export default function Search() {
                         currentType={currentType}
                         pickedWithGenres={pickedWithGenres}
                         pickedWithoutGenres={pickedWithoutGenres}
+                        releaseDateGte={releaseDateGte}
+                        releaseDateLte={releaseDateLte}
+                        voteAverageGte={voteAverageGte}
+                        voteAverageLte={voteAverageLte}
                         typeHandler={typeHandler}
                         toggleGenre={toggleGenre}
+                        onChangeSliderValue={onChangeSliderValue}
+                        resetFilters={resetFilters}
                     />
                 </div>
 
                 <div className="flex-1 min-w-0 flex flex-col">
                     {query.trim() === "" &&
-                        pickedWithGenres.length === 0 && pickedWithoutGenres.length === 0 && (
+                        pickedWithGenres.length === 0 &&
+                        pickedWithoutGenres.length === 0 && (
                             <p className="text-gray-500 text-xl sm:text-3xl px-2 sm:px-6 mb-2 sm:mb-0">
                                 Популярное сейчас.
                             </p>
@@ -253,8 +274,14 @@ export default function Search() {
                     currentType={currentType}
                     pickedWithGenres={pickedWithGenres}
                     pickedWithoutGenres={pickedWithoutGenres}
+                    releaseDateGte={releaseDateGte}
+                    releaseDateLte={releaseDateLte}
+                    voteAverageGte={voteAverageGte}
+                    voteAverageLte={voteAverageLte}
                     typeHandler={typeHandler}
                     toggleGenre={toggleGenre}
+                    onChangeSliderValue={onChangeSliderValue}
+                    resetFilters={resetFilters}
                 />
             </MobileDrawer>
         </div>

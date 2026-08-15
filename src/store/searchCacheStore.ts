@@ -10,6 +10,10 @@ interface SearchCacheState {
     lastType: "movie" | "tv" | "";
     lastWithGenres: string;
     lastWithoutGenres: string;
+    lastReleaseDateGte: string,
+    lastReleaseDateLte: string,
+    lastVoteAverageGte: string,
+    lastVoteAverageLte: string
     cachedScrollY: number;
     cachedCollectionScrollY: number;
     setCache: (state: Partial<SearchCacheState>) => void;
@@ -25,6 +29,10 @@ export const useSearchCacheStore = create<SearchCacheState>((set) => ({
     lastType: "",
     lastWithGenres: "",
     lastWithoutGenres: "",
+    lastReleaseDateGte: "",
+    lastReleaseDateLte: "",
+    lastVoteAverageGte: "",
+    lastVoteAverageLte: "",
     cachedScrollY: 0,
     cachedCollectionScrollY: 0,
     setCache: (newState) => set((state) => ({ ...state, ...newState })),
@@ -38,6 +46,10 @@ export const useSearchCacheStore = create<SearchCacheState>((set) => ({
             lastType: "",
             lastWithGenres: "",
             lastWithoutGenres: "",
+            lastReleaseDateGte: "",
+            lastReleaseDateLte: "",
+            lastVoteAverageGte: "",
+            lastVoteAverageLte: "",
             cachedScrollY: 0,
             cachedCollectionScrollY: state.cachedCollectionScrollY,
         })),

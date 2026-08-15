@@ -7,12 +7,28 @@ import { search } from "@/services/tmdb/movieService";
 import { handleError } from "@/helpers/errorHandler";
 import { useSearchCacheStore } from "@/store/searchCacheStore";
 
-export default function useMovieSearch(
-    searchQuery: string,
-    type: "movie" | "tv",
-    withGenres: string,
-    withoutGenres: string,
-) {
+export interface MovieSearchFilters {
+    searchQuery: string;
+    type: "movie" | "tv";
+    withGenres: string;
+    withoutGenres: string;
+    releaseDateGte: string;
+    releaseDateLte: string;
+    voteAverageGte: string;
+    voteAverageLte: string;
+}
+
+export default function useMovieSearch(filters: MovieSearchFilters) {
+    const {
+        searchQuery,
+        type,
+        withGenres,
+        withoutGenres,
+        releaseDateGte,
+        releaseDateLte,
+        voteAverageGte,
+        voteAverageLte,
+    } = filters;
     const {
         cachedResults,
         cachedPage,
@@ -44,20 +60,36 @@ export default function useMovieSearch(
             searchQuery !== currentStore.lastQuery ||
             type !== currentStore.lastType ||
             withGenres !== currentStore.lastWithGenres ||
-            withoutGenres !== currentStore.lastWithoutGenres;
+            withoutGenres !== currentStore.lastWithoutGenres ||
+            releaseDateGte !== currentStore.lastReleaseDateGte ||
+            releaseDateLte !== currentStore.lastReleaseDateLte ||
+            voteAverageGte !== currentStore.lastVoteAverageGte ||
+            voteAverageLte !== currentStore.lastVoteAverageLte;
 
         if (isFiltersChanged) {
-            const isIncomingPropsEmpty = searchQuery === "" && withGenres === "" && withoutGenres === "";
-            const hasAnyCachedFilters = currentStore.lastQuery !== "" || currentStore.lastWithGenres !== "" || currentStore.lastWithoutGenres !== "";
+            const isIncomingPropsEmpty =
+                searchQuery === "" && withGenres === "" && withoutGenres === "" && releaseDateGte === "" && releaseDateLte === "" && voteAverageGte === "" && voteAverageLte === "";
+            const hasAnyCachedFilters =
+                currentStore.lastQuery !== "" ||
+                currentStore.lastWithGenres !== "" ||
+                currentStore.lastWithoutGenres !== "" ||
+                currentStore.lastReleaseDateGte !== "" ||
+                currentStore.lastReleaseDateLte !== "" ||
+                currentStore.lastVoteAverageGte !== "" ||
+                currentStore.lastVoteAverageLte !== "";
 
-            if (isFirstRenderRef.current && isIncomingPropsEmpty && hasAnyCachedFilters) {
+            if (
+                isFirstRenderRef.current &&
+                isIncomingPropsEmpty &&
+                hasAnyCachedFilters
+            ) {
                 isFirstRenderRef.current = false;
-                return; 
+                return;
             }
 
             isFirstRenderRef.current = false;
             isSearchChangeRef.current = searchQuery !== currentStore.lastQuery;
-            
+
             setCache({
                 cachedResults: [],
                 cachedPage: 1,
@@ -67,6 +99,10 @@ export default function useMovieSearch(
                 lastType: type,
                 lastWithGenres: withGenres,
                 lastWithoutGenres: withoutGenres,
+                lastReleaseDateGte: releaseDateGte,
+                lastReleaseDateLte: releaseDateLte,
+                lastVoteAverageGte: voteAverageGte,
+                lastVoteAverageLte: voteAverageLte,
             });
             setIsInitialLoading(true);
             prevPageRef.current = 1;
@@ -112,6 +148,10 @@ export default function useMovieSearch(
                     type,
                     withGenres,
                     withoutGenres,
+                    releaseDateGte,
+                    releaseDateLte,
+                    voteAverageGte,
+                    voteAverageLte,
                     signal,
                 });
 
@@ -121,6 +161,10 @@ export default function useMovieSearch(
                     searchQuery !== latestStore.lastQuery ||
                     withGenres !== latestStore.lastWithGenres ||
                     withoutGenres !== latestStore.lastWithoutGenres ||
+                    releaseDateGte !== latestStore.lastReleaseDateGte ||
+                    releaseDateLte !== latestStore.lastReleaseDateLte ||
+                    voteAverageGte !== latestStore.lastVoteAverageGte ||
+                    voteAverageLte !== latestStore.lastVoteAverageLte ||
                     type !== latestStore.lastType
                 ) {
                     return;
@@ -136,7 +180,10 @@ export default function useMovieSearch(
                         (item: SearchResult) => !seenIds.has(item.id),
                     );
                     setCache({
-                        cachedResults: [...latestStore.cachedResults, ...uniqueNewResults],
+                        cachedResults: [
+                            ...latestStore.cachedResults,
+                            ...uniqueNewResults,
+                        ],
                     });
                 }
                 setCache({
@@ -181,6 +228,10 @@ export default function useMovieSearch(
         type,
         withGenres,
         withoutGenres,
+        releaseDateGte,
+        releaseDateLte,
+        voteAverageGte,
+        voteAverageLte,
         cachedPage,
         retryCount,
         setCache,

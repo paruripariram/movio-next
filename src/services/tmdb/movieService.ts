@@ -1,4 +1,4 @@
-import {tmdbApi} from "./axios";
+import { tmdbApi } from "./axios";
 import type { Genre, SearchResult } from "@/types/tmdb";
 
 export const search = async ({
@@ -6,6 +6,10 @@ export const search = async ({
     type = "movie",
     withGenres = "",
     withoutGenres = "",
+    releaseDateGte = "",
+    releaseDateLte = "",
+    voteAverageGte = "",
+    voteAverageLte = "",
     page = 1,
     signal,
 }: {
@@ -13,11 +17,26 @@ export const search = async ({
     type?: "movie" | "tv";
     withGenres?: string;
     withoutGenres?: string;
+    releaseDateGte?: string;
+    releaseDateLte?: string;
+    voteAverageGte?: string;
+    voteAverageLte?: string;
     page?: number;
     signal?: AbortSignal;
 }) => {
+    const dateGteKey = type === "tv" ? "first_air_date.gte" : "release_date.gte";
+    const dateLteKey = type === "tv" ? "first_air_date.lte" : "release_date.lte";
     const response = await tmdbApi.get(`/discover/${type}`, {
-        params: { with_text_query: query, with_genres: withGenres, without_genres: withoutGenres, page },
+        params: {
+            with_text_query: query,
+            with_genres: withGenres,
+            without_genres: withoutGenres,
+            [dateGteKey]: releaseDateGte,
+            [dateLteKey]: releaseDateLte,
+            "vote_average.gte": voteAverageGte,
+            "vote_average.lte": voteAverageLte,
+            page,
+        },
         signal,
     });
     return {
@@ -65,7 +84,7 @@ export const getMediaDetails = async (
 };
 
 export const getNowPlaying = async () => {
-    const response = await tmdbApi.get("/movie/now_playing",{
+    const response = await tmdbApi.get("/movie/now_playing", {
         params: { page: 1 },
     });
     return {
@@ -75,4 +94,4 @@ export const getNowPlaying = async () => {
             media_type: "movie" as const,
         })),
     };
-}
+};

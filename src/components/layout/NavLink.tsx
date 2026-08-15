@@ -24,7 +24,7 @@ export default function NavMenuLink({ href, children, onClick }: NavMenuLinkProp
             href={href}
             onClick={onClick}
             className={`p-3 w-full flex gap-3 rounded-2xl items-center transition-all duration-300 ease-in-out hover:bg-bgcolor ${
-                isActive ? "text-primary bg-back-link-color font-semibold" : "text-gray-500"
+                isActive ? "text-primary bg-back-link-color" : "text-gray-500"
             }`}
         >
             {typeof children === "function"

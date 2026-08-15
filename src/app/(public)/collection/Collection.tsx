@@ -30,8 +30,14 @@ export default function Collection() {
         status: currentStatus,
         pickedWithGenres,
         pickedWithoutGenres,
+        releaseDateGte,
+        releaseDateLte,
+        voteAverageGte,
+        voteAverageLte,
         updateParams,
         toggleGenre,
+        onChangeSliderValue,
+        resetFilters,
     } = useUrlFilters();
 
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
@@ -78,7 +84,11 @@ export default function Collection() {
     }
 
     function typeHandler(newType: string) {
-        updateParams({ type: newType, with_genres: null, without_genres: null });
+        updateParams({
+            type: newType,
+            with_genres: null,
+            without_genres: null,
+        });
     }
 
     function statusHandler(newStatus: string) {
@@ -117,6 +127,26 @@ export default function Collection() {
                 if (hasExcludedGenre) return false;
             }
 
+            if (releaseDateGte && item.release_date) {
+                const itemYear = parseInt(item.release_date.split("-")[0]);
+                if (itemYear < parseInt(releaseDateGte, 10)) return false;
+            }
+
+            if (releaseDateLte && item.release_date) {
+                const itemYear = parseInt(item.release_date.split("-")[0]);
+                if (itemYear > parseInt(releaseDateLte, 10)) return false;
+            }
+
+            if (voteAverageGte && item.vote_average !== undefined) {
+                if (item.vote_average < parseFloat(voteAverageGte))
+                    return false;
+            }
+
+            if (voteAverageLte && item.vote_average !== undefined) {
+                if (item.vote_average > parseFloat(voteAverageLte))
+                    return false;
+            }
+
             if (currentStatus !== "all" && item.status !== currentStatus)
                 return false;
 
@@ -128,6 +158,10 @@ export default function Collection() {
         localSearch,
         pickedWithGenres,
         pickedWithoutGenres,
+        releaseDateGte,
+        releaseDateLte,
+        voteAverageGte,
+        voteAverageLte,
         currentStatus,
     ]);
 
@@ -162,7 +196,7 @@ export default function Collection() {
                 </div>
                 <button
                     onClick={() => setIsMobileFiltersOpen(true)}
-                    className="lg:hidden flex items-center justify-center w-13 h-13 bg-form-color rounded-xl text-white shrink-0 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)]"
+                    className="lg:hidden flex items-center justify-center w-13 h-13 md:w-21 md:h-21 bg-form-color rounded-xl text-white shrink-0 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.15)]"
                 >
                     <SlidersHorizontal size={20} />
                 </button>
@@ -176,9 +210,15 @@ export default function Collection() {
                         currentType={currentType}
                         pickedWithGenres={pickedWithGenres}
                         pickedWithoutGenres={pickedWithoutGenres}
+                        releaseDateGte={releaseDateGte}
+                        releaseDateLte={releaseDateLte}
+                        voteAverageGte={voteAverageGte}
+                        voteAverageLte={voteAverageLte}
                         statusHandler={statusHandler}
                         typeHandler={typeHandler}
                         toggleGenre={toggleGenre}
+                        onChangeSliderValue={onChangeSliderValue}
+                        resetFilters={resetFilters}
                     />
                 </div>
 
@@ -328,9 +368,15 @@ export default function Collection() {
                     currentType={currentType}
                     pickedWithGenres={pickedWithGenres}
                     pickedWithoutGenres={pickedWithoutGenres}
+                    releaseDateGte={releaseDateGte}
+                    releaseDateLte={releaseDateLte}
+                    voteAverageGte={voteAverageGte}
+                    voteAverageLte={voteAverageLte}
                     statusHandler={statusHandler}
                     typeHandler={typeHandler}
                     toggleGenre={toggleGenre}
+                    onChangeSliderValue={onChangeSliderValue}
+                    resetFilters={resetFilters}
                 />
             </MobileDrawer>
         </div>

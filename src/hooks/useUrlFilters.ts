@@ -1,3 +1,4 @@
+import { SLIDER_CONFIG } from "@/config/filters";
 import { GenreStatus } from "@/types";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useMemo, useCallback } from "react";
@@ -40,6 +41,17 @@ export function useUrlFilters() {
         [searchParams, pathname, router],
     );
 
+    const resetFilters = useCallback(() => {
+        updateParams({
+            with_genres: null,
+            without_genres: null,
+            "release_date.gte": null,
+            "release_date.lte": null,
+            "vote_average.gte": null,
+            "vote_average.lte": null,
+        });
+    }, [updateParams]);
+
     const { pickedWithGenres, pickedWithoutGenres } = useMemo(() => {
         const withGenres = searchParams.get("with_genres") || "";
         const withoutGenres = searchParams.get("without_genres") || "";
@@ -73,6 +85,29 @@ export function useUrlFilters() {
         [pickedWithGenres, pickedWithoutGenres, updateParams],
     );
 
+    const onChangeSliderValue = useCallback(
+        (type: "release_date" | "vote_average", value: number[]) => {
+            const [min, max] = value;
+            const config = SLIDER_CONFIG[type];
+
+            const isMinDefault = min === undefined || min <= config.min;
+            const isMaxDefault = max === undefined || max >= config.max;
+            if (type === "release_date") {
+                updateParams({
+                    "release_date.gte": isMinDefault ? null : `${min}-01-01`,
+                    "release_date.lte": isMaxDefault ? null : `${max}-12-31`,
+                });
+            } else if (type === "vote_average") {
+                updateParams({
+                    "vote_average.gte": isMinDefault ? null : min.toString(),
+                    "vote_average.lte": isMaxDefault ? null : max.toString(),
+                });
+            }
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        },
+        [updateParams],
+    );
+
     return {
         query: searchParams.get("with_text_query") || "",
         type: searchParams.get("type") || "movie",
@@ -81,11 +116,18 @@ export function useUrlFilters() {
         withGenres: searchParams.get("with_genres") || "",
         withoutGenres: searchParams.get("without_genres") || "",
 
+        releaseDateGte: searchParams.get("release_date.gte") || "",
+        releaseDateLte: searchParams.get("release_date.lte") || "",
+        voteAverageGte: searchParams.get("vote_average.gte") || "",
+        voteAverageLte: searchParams.get("vote_average.lte") || "",
+
         pickedWithGenres,
         pickedWithoutGenres,
 
         updateParams,
         toggleGenre,
-        searchParams,
+        onChangeSliderValue,
+
+        resetFilters,
     };
 }
