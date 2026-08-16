@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import { FrozenRoute } from "./FrozenRoute";
 
 interface PageTransitionProps {
@@ -12,7 +12,7 @@ interface PageTransitionProps {
 
 const SCROLL_KEY_PREFIX = "movio:scroll:";
 
-export default function PageTransition({
+function PageTransitionContent({
     children,
     className,
 }: PageTransitionProps) {
@@ -126,5 +126,13 @@ export default function PageTransition({
                 <FrozenRoute>{children}</FrozenRoute>
             </motion.div>
         </AnimatePresence>
+    );
+}
+
+export default function PageTransition(props: PageTransitionProps) {
+    return (
+        <Suspense fallback={null}>
+            <PageTransitionContent {...props} />
+        </Suspense>
     );
 }
