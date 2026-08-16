@@ -53,7 +53,7 @@ export default function HorizontalCarouselSection({
 
     return (
         <div className="relative group -mx-2 sm:-mx-4 px-2 sm:px-4">
-            <div className="flex items-center justify-between px-1 sm:px-2 mb-2 sm:mb-4">
+            <div className="flex items-center justify-between mb-2 sm:mb-4">
                 <h2 className="text-gray-400 text-lg sm:text-xl lg:text-2xl font-semibold">
                     {title}
                 </h2>

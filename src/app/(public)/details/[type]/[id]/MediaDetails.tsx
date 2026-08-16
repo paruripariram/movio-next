@@ -15,20 +15,17 @@ import { useRouter } from "next/navigation";
 type MediaDetailsProps = {
     details: MovieDetails | TVDetails;
     type: "movie" | "tv";
+    recommendationsSlot?: React.ReactNode;
 };
 
-export default function MediaDetails({ details, type }: MediaDetailsProps) {
+export default function MediaDetails({
+    details,
+    type,
+    recommendationsSlot,
+}: MediaDetailsProps) {
     const { user, isLoadingUser } = useAuthStore();
     const router = useRouter();
     const { status, platform } = useCollectionActions(type, details, user);
-
-    const handleBack = () => {
-        if (typeof window !== "undefined" && window.history.length > 1) {
-            router.back();
-        } else {
-            router.push(APP_ROUTES.HOME.path);
-        }
-    };
 
     const backdropPath = details.backdrop_path
         ? `https://image.tmdb.org/t/p/w1920/${details.backdrop_path}`
@@ -73,10 +70,7 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
     return (
         <div className="flex flex-col min-h-screen w-full min-w-0">
             <div className="relative -mt-4 -mx-4 sm:-mt-6 sm:-mx-6 md:-mt-8 md:-mx-8 lg:-mt-10 lg:-mx-10 xl:-mt-12 xl:-mx-12 2xl:-mt-16 2xl:-mx-16 overflow-hidden h-90 sm:h-105 lg:h-120 shrink-0 bg-back-link-color">
-                <div
-                    className="absolute z-30 top-4 left-4 sm:top-6 sm:left-6 md:left-8 lg:left-10 xl:left-12 2xl:left-16 cursor-pointer"
-                    onClick={handleBack}
-                >
+                <div className="absolute z-30 top-4 left-4 sm:top-6 sm:left-6 md:left-8 lg:left-10 xl:left-12 2xl:left-16 cursor-pointer">
                     <BackButton />
                 </div>
 
@@ -236,7 +230,11 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                         {details.genres.map((genre) => (
                             <span
                                 key={genre.id}
-                                onClick={()=>router.replace(`${APP_ROUTES.SEARCH.path}?type=${type}&with_genres=${genre.id}`)}
+                                onClick={() =>
+                                    router.replace(
+                                        `${APP_ROUTES.SEARCH.path}?type=${type}&with_genres=${genre.id}`,
+                                    )
+                                }
                                 className="bg-primary/10 text-primary font-semibold px-3 py-1 rounded-full text-xs sm:text-sm cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-glow"
                             >
                                 {genre.name.charAt(0).toUpperCase() +
@@ -327,6 +325,7 @@ export default function MediaDetails({ details, type }: MediaDetailsProps) {
                         </div>
                     </div>
                 )}
+                {recommendationsSlot}
             </div>
         </div>
     );

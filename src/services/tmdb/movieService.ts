@@ -105,3 +105,16 @@ export const getNowPlaying = async () => {
         })),
     };
 };
+
+export const getMediaRecommendations = async (type: "movie" | "tv", id: string) => {
+    const response = await tmdbApi.get(`/${type}/${id}/recommendations`, {
+        params: { page: 1 },
+    });
+    return {
+        ...response.data,
+        results: (response.data.results as SearchResult[]).map((item) => ({
+            ...item,
+            media_type: type,
+        })),
+    };
+};
