@@ -10,18 +10,20 @@ interface TogglerProps {
     options: TogglerOption[];
     value: string;
     optionHandler: (value: string) => void;
+    className?: string;
 }
 
 export default function Toggler({
     options,
     value,
     optionHandler,
+    className="bg-bgcolor"
 }: TogglerProps) {
     const activeIndex = options.findIndex((opt) => opt.value === value);
     const sliderWidth = 100 / options.length;
 
     return (
-        <div className="flex items-center justify-between h-9 sm:h-10 bg-bgcolor rounded-full relative">
+        <div className={`flex items-center justify-between h-9 sm:h-10 rounded-full relative ${className}`}>
             <div
                 className="absolute h-full bg-back-link-color rounded-full z-2 transition-transform duration-300 ease-in-out"
                 style={{

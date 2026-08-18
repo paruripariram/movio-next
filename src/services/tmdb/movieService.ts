@@ -106,7 +106,10 @@ export const getNowPlaying = async () => {
     };
 };
 
-export const getMediaRecommendations = async (type: "movie" | "tv", id: string) => {
+export const getMediaRecommendations = async (
+    type: "movie" | "tv",
+    id: string,
+) => {
     const response = await tmdbApi.get(`/${type}/${id}/recommendations`, {
         params: { page: 1 },
     });
@@ -117,4 +120,11 @@ export const getMediaRecommendations = async (type: "movie" | "tv", id: string) 
             media_type: type,
         })),
     };
+};
+
+export const getPersonFullData = async (personId: string) => {
+    const response = await tmdbApi.get(`/person/${personId}`, {
+        params: { append_to_response: "combined_credits" },
+    });
+    return response.data;
 };

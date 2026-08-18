@@ -1,14 +1,14 @@
 import { collectionItem } from "@/types";
-import { MovieDetails, SearchResult, TVDetails } from "@/types/tmdb";
+import { MovieDetails, PersonCreditItem, SearchResult, TVDetails } from "@/types/tmdb";
 import { create } from "zustand";
 
 interface ModalState {
-    item: collectionItem | MovieDetails | TVDetails | SearchResult | null;
+    item: collectionItem | MovieDetails | TVDetails | SearchResult | PersonCreditItem | null;
     isOpen: boolean;
     mediaType: "movie" | "tv" | null;
     closeModal: () => void;
     openModal: (
-        item: collectionItem | MovieDetails | TVDetails | SearchResult,
+        item: collectionItem | MovieDetails | TVDetails | SearchResult | PersonCreditItem,
         mediaType: "movie" | "tv",
     ) => void;
 }

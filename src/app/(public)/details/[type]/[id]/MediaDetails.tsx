@@ -11,6 +11,7 @@ import type { MovieDetails, TVDetails } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type MediaDetailsProps = {
     details: MovieDetails | TVDetails;
@@ -296,11 +297,12 @@ export default function MediaDetails({
                         <h3 className="text-xl sm:text-2xl font-bold text-white">
                             В главных ролях
                         </h3>
-                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-3 w-full min-w-0 scrollbar-thin scrollbar-thumb-white/10">
+                        <div className="flex gap-3 sm:gap-4 overflow-x-auto p-3 w-full min-w-0 scrollbar-thin scrollbar-thumb-white/10">
                             {details.credits.cast.slice(0, 10).map((actor) => (
-                                <div
+                                <Link
+                                href={APP_ROUTES.PERSON.path(actor.id)}
                                     key={actor.id}
-                                    className="shrink-0 w-28 sm:w-36 lg:w-40 text-center flex flex-col items-center gap-1.5 sm:gap-2"
+                                    className="shrink-0 w-28 sm:w-36 lg:w-40 text-center flex flex-col items-center gap-1.5 sm:gap-2 hover:scale-105 transition duration-200 cursor-pointer"
                                 >
                                     <div className="relative w-28 h-28 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden bg-white/10">
                                         <Image
@@ -320,7 +322,7 @@ export default function MediaDetails({
                                     <span className="text-xs sm:text-sm text-gray-400 line-clamp-1">
                                         {actor.character}
                                     </span>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     </div>

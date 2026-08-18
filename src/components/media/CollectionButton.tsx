@@ -4,12 +4,12 @@ import { APP_ROUTES } from "@/config/routes";
 import useCollectionActions from "@/hooks/useCollectionActions";
 import { useAuthStore } from "@/store/authStore";
 import { useWatchedModalStore } from "@/store/watchedModalStore";
-import { collectionItem, MovieDetails, SearchResult, TVDetails } from "@/types";
+import { collectionItem, MovieDetails, PersonCreditItem, SearchResult, TVDetails } from "@/types";
 import { Bookmark, Check, Trash2, LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface BaseProps {
-    item: MovieDetails | TVDetails | collectionItem | SearchResult;
+    item: MovieDetails | TVDetails | collectionItem | SearchResult | PersonCreditItem;
     mediaType: "movie" | "tv";
 }
 

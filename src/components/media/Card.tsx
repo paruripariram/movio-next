@@ -1,6 +1,6 @@
 "use client";
 
-import type { collectionItem, SearchResult } from "@/types";
+import type { PersonCreditItem, SearchResult } from "@/types/tmdb";
 import { Bookmark, Check } from "lucide-react";
 import Image from "next/image";
 import { PLATFORMS } from "@/config/platforms";
@@ -9,9 +9,10 @@ import { useGenresStore } from "@/store/genreStore";
 import CollectionButton from "./CollectionButton";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuthStore } from "@/store/authStore";
+import { collectionItem } from "@/types";
 
 interface CardProps {
-    item: SearchResult | collectionItem;
+    item: SearchResult | collectionItem | PersonCreditItem;
     onClick?: () => void;
     className?: string;
 }
@@ -20,25 +21,37 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
     const { user } = useAuthStore();
     const collectionArr = useCollectionStore((state) => state.collectionArr);
     const genresMap = useGenresStore((state) => state.genresMap);
+
     const mediaType =
-        "type" in item ? item.type : "title" in item ? "movie" : "tv";
+        "media_type" in item && item.media_type
+            ? item.media_type
+            : "type" in item && item.type
+            ? item.type
+            : "title" in item
+            ? "movie"
+            : "tv";
+
     const statusInCollection = collectionArr.find(
         (collectionItem) =>
-            collectionItem.id === item.id && collectionItem.type === mediaType,
+            collectionItem.id === item.id && collectionItem.type === mediaType
     )?.status;
     const platformInCollection = collectionArr.find(
         (collectionItem) =>
-            collectionItem.id === item.id && collectionItem.type === mediaType,
+            collectionItem.id === item.id && collectionItem.type === mediaType
     )?.platform;
 
-    const title = ("title" in item ? item.title : item.name) || "Untitled";
+    const title =
+        ("title" in item ? item.title : "name" in item ? item.name : "") ||
+        "Untitled";
+
     const posterUrl = item.poster_path;
     const imageSrc = posterUrl
         ? `https://image.tmdb.org/t/p/w500${posterUrl}`
         : "/noPoster.webp";
+    
     const voteAverage = item.vote_average;
 
-    const resolvedGenres = item.genre_ids
+    const resolvedGenres = (item.genre_ids || [])
         .map((id) => genresMap.movieGenres[id] || genresMap.tvGenres[id])
         .filter((name): name is string => Boolean(name));
 
@@ -69,9 +82,10 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                 onError={(e) => (e.currentTarget.src = "/noPoster.webp")}
             />
 
-            {/* Бэйдж рейтинга */}
             <span className="absolute top-2.5 right-2.5 sm:top-5 sm:right-5 px-2 py-0.5 sm:w-15 sm:h-10 rounded-xl sm:rounded-4xl sm:p-2 flex items-center justify-center font-bold text-xs sm:text-base text-primary bg-back-link-color/80 backdrop-blur-xs z-10">
-                {voteAverage !== null && voteAverage?.toFixed(1)}
+                {voteAverage !== undefined && voteAverage !== null
+                    ? voteAverage.toFixed(1)
+                    : "NR"}
             </span>
 
             <div className="z-10 flex flex-col mt-auto w-full p-2.5 sm:p-5 bg-linear-to-t from-back-link-color via-back-link-color/80 to-transparent">
@@ -91,8 +105,7 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                                 <Image
                                     src={
                                         PLATFORMS.find(
-                                            (p) =>
-                                                p.id === platformInCollection,
+                                            (p) => p.id === platformInCollection
                                         )?.logoUrl ||
                                         PLATFORMS.find((p) => p.id === "other")
                                             ?.logoUrl ||
@@ -100,8 +113,7 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                                     }
                                     alt={
                                         PLATFORMS.find(
-                                            (p) =>
-                                                p.id === platformInCollection,
+                                            (p) => p.id === platformInCollection
                                         )?.name || "source"
                                     }
                                     width={32}
@@ -114,7 +126,7 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                                     type="remove"
                                     variant="icon"
                                     item={item}
-                                    mediaType={mediaType}
+                                    mediaType={mediaType as "movie" | "tv"}
                                 />
                             </span>
                         </motion.div>
@@ -138,7 +150,7 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                                     type="watched"
                                     variant="icon"
                                     item={item}
-                                    mediaType={mediaType}
+                                    mediaType={mediaType as "movie" | "tv"}
                                 />
                             </span>
                             <span className="opacity-0 scale-90 pointer-events-none transition-all duration-300 ease-out group-hover/card:opacity-100 group-hover/card:scale-100 group-hover/card:pointer-events-auto">
@@ -146,7 +158,7 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                                     type="remove"
                                     variant="icon"
                                     item={item}
-                                    mediaType={mediaType}
+                                    mediaType={mediaType as "movie" | "tv"}
                                 />
                             </span>
                         </motion.div>
@@ -167,7 +179,7 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                                     type="wishlist"
                                     variant="icon"
                                     item={item}
-                                    mediaType={mediaType}
+                                    mediaType={mediaType as "movie" | "tv"}
                                 />
                             </span>
                             <span className="opacity-0 scale-90 pointer-events-none transition-all duration-300 ease-out group-hover/card:opacity-100 group-hover/card:scale-100 group-hover/card:pointer-events-auto">
@@ -175,7 +187,7 @@ export default function Card({ item, onClick, className = "" }: CardProps) {
                                     type="watched"
                                     variant="icon"
                                     item={item}
-                                    mediaType={mediaType}
+                                    mediaType={mediaType as "movie" | "tv"}
                                 />
                             </span>
                         </motion.div>

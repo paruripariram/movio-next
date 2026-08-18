@@ -200,3 +200,50 @@ export interface MovieDetails {
         crew: CrewMember[];
     };
 }
+
+export interface MovieCredit extends Partial<Movie> {
+    id: number;
+    media_type: "movie";
+    title: string;
+    poster_path: string | null;
+    character?: string;
+    job?: string;
+    department?: string;
+    credit_id?: string;
+}
+
+
+export interface TVCredit extends Partial<TVShow> {
+    id: number;
+    media_type: "tv";
+    name: string;
+    poster_path: string | null;
+    character?: string;
+    job?: string;
+    department?: string;
+    credit_id?: string;
+}
+
+export type PersonCreditItem = MovieCredit | TVCredit;
+
+export interface PersonDetails {
+    adult: boolean;
+    also_known_as: string[];
+    biography: string;
+    birthday: string | null;
+    deathday: string | null;
+    gender: number;
+    homepage: string | null;
+    id: number;
+    imdb_id: string;
+    known_for_department: string;
+    name: string;
+    place_of_birth: string | null;
+    popularity: number;
+    profile_path: string | null;
+}
+
+export interface PersonProps {
+    person: PersonDetails;
+    credits: PersonCreditItem[];
+}

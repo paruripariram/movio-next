@@ -11,4 +11,7 @@ export const APP_ROUTES = {
         path: (type: "movie" | "tv" | "person", id: number) =>
             `/details/${type}/${id}`,
     },
+    PERSON: {
+        path: (id: number) => `/person/${id}`
+    }
 } as const;

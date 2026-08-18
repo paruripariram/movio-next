@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type {
     collectionItem,
     MovieDetails,
+    PersonCreditItem,
     SearchResult,
     TVDetails,
     User,
@@ -17,7 +18,13 @@ import { handleError } from "@/helpers/errorHandler";
 
 export default function useCollectionActions(
     type: "movie" | "tv",
-    details: MovieDetails | TVDetails | collectionItem | SearchResult | null,
+    details:
+        | MovieDetails
+        | TVDetails
+        | collectionItem
+        | SearchResult
+        | PersonCreditItem
+        | null,
     user: User | null,
 ) {
     type CollectionStatus = "watched" | "wishlist";
@@ -71,13 +78,13 @@ export default function useCollectionActions(
                       ? details.name
                       : "",
             genre_ids:
-                "genres" in details
+                "genres" in details && details.genres
                     ? details.genres.map((genre) => genre.id)
-                    : details && "genre_ids" in details
+                    : "genre_ids" in details && details.genre_ids
                       ? details.genre_ids
                       : [],
             poster_path: details.poster_path,
-            vote_average: details.vote_average,
+            vote_average: details.vote_average ?? 0,
             release_date:
                 ("release_date" in details ? details.release_date : null) ??
                 ("first_air_date" in details ? details.first_air_date : null) ??
