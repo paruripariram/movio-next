@@ -6,6 +6,7 @@ import { useWatchedModalStore } from "@/store/watchedModalStore";
 import {
     collectionItem,
     MovieDetails,
+    PersonCreditItem,
     SearchResult,
     TVDetails,
     User,
@@ -41,7 +42,7 @@ export function ModalProvider() {
 }
 
 interface ActiveWatchedModalProps {
-    item: collectionItem | MovieDetails | TVDetails | SearchResult;
+    item: collectionItem | MovieDetails | TVDetails | SearchResult | PersonCreditItem;
     mediaType: "movie" | "tv";
     user: User;
     onClose: () => void;
