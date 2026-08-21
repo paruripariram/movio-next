@@ -13,5 +13,7 @@ export const APP_ROUTES = {
     },
     PERSON: {
         path: (id: number) => `/person/${id}`
-    }
+    },
+    SELECTIONS: { path: "/selections", title: "Подборки" },
+    SELECTION: { path: (id: string) => `/selections/${id}` }
 } as const;

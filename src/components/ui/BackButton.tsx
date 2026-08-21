@@ -1,3 +1,5 @@
+"use client"
+
 import { APP_ROUTES } from "@/config/routes";
 import { ArrowBigLeft } from "lucide-react";
 import { useRouter } from "next/navigation";

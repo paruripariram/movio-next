@@ -1,7 +1,8 @@
 import { search } from "@/services/tmdb/movieService";
 import { unstable_cache } from "next/cache";
-import { FEATURED_SELECTIONS } from "@/config/SelectionsConfig";
+import { FEATURED_SELECTIONS } from "@/config/selectionsConfig";
 import HorizontalCarouselSection from "../media/HorizontalCarouselSection";
+import Link from "next/link";
 
 const getCachedSelections = unstable_cache(
     async () => {
@@ -24,15 +25,17 @@ const getCachedSelections = unstable_cache(
 export default async function SelectionsRows() {
     const selections = await getCachedSelections();
     return (
-        <section className="py-12 space-y-12">
-            <h2 className="text-3xl font-black text-white mb-2">
-                Специально для вас
-            </h2>
-            <p className="text-gray-400">
-                Уникальные подборки фильмов под любое настроение
-            </p>
+        <section className="py-12">
+            <div className="mb-10">
+                <h2 className="text-3xl font-black text-white mb-2">
+                    Специально для вас
+                </h2>
+                <p className="text-gray-400">
+                    Уникальные подборки фильмов под любое настроение
+                </p>
+            </div>
 
-            <div className="space-y-10">
+            <div className="space-y-10 mb-12">
                 {selections.map((selection) => (
                     <div
                         key={selection.id}
@@ -44,6 +47,15 @@ export default async function SelectionsRows() {
                         />
                     </div>
                 ))}
+            </div>
+
+            <div className="flex justify-center px-4">
+                <Link
+                    href="/selections"
+                    className="bg-primary text-white h-12 px-8 rounded-xl flex items-center justify-center cursor-pointer shadow-glow hover:shadow-glow-bold transition-all duration-300 w-full sm:w-auto font-medium"
+                >
+                    Смотреть все подборки
+                </Link>
             </div>
         </section>
     );

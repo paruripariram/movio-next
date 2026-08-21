@@ -23,6 +23,7 @@ export interface SellectionConfig {
   isFeatured: boolean;
   coverBg: string;
   params: SellectionSearchParams;
+  backdropUrl?: string;
 }
 
 export const FEATURED_SELECTIONS: SellectionConfig[] = [
@@ -44,6 +45,7 @@ export const FEATURED_SELECTIONS: SellectionConfig[] = [
       sortBy: 'vote_count.desc',
       page: 1,
     },
+    backdropUrl: '/selections/mindfucks.webp',
   },
   {
     id: 'neon-cyberpunk',
@@ -63,6 +65,7 @@ export const FEATURED_SELECTIONS: SellectionConfig[] = [
       sortBy: 'popularity.desc',
       page: 1,
     },
+    backdropUrl: '/selections/neon-cyberpunk.webp',
   },
   {
     id: 'after-work-chill',
@@ -81,6 +84,7 @@ export const FEATURED_SELECTIONS: SellectionConfig[] = [
       sortBy: 'popularity.desc',
       page: 1,
     },
+    backdropUrl: '/selections/after-work-chill.webp',
   },
   {
     id: 'one-location',
@@ -100,6 +104,7 @@ export const FEATURED_SELECTIONS: SellectionConfig[] = [
       sortBy: 'vote_count.desc',
       page: 1,
     },
+    backdropUrl: '/selections/one-location.webp',
   },
   {
     id: 'cozy-rainy-day',
@@ -118,6 +123,7 @@ export const FEATURED_SELECTIONS: SellectionConfig[] = [
       sortBy: 'popularity.desc',
       page: 1,
     },
+    backdropUrl: '/selections/cozy-rainy-day.webp',
   },
 
   //
@@ -139,6 +145,7 @@ export const FEATURED_SELECTIONS: SellectionConfig[] = [
       sortBy: 'vote_count.desc',
       page: 1,
     },
+    backdropUrl: '/selections/smart-horror.webp',
   },
   {
     id: 'visual-masterpieces',
@@ -157,6 +164,7 @@ export const FEATURED_SELECTIONS: SellectionConfig[] = [
       sortBy: 'vote_count.desc',
       page: 1,
     },
+    backdropUrl: '/selections/visual-masterpieces.webp',
   },
   {
     id: 'black-humor',
@@ -175,5 +183,6 @@ export const FEATURED_SELECTIONS: SellectionConfig[] = [
       sortBy: 'popularity.desc',
       page: 1,
     },
+    backdropUrl: '/selections/black-humor.webp',
   },
 ];
