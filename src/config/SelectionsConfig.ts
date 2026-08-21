@@ -1,5 +1,5 @@
 // Тип твоих параметров поиска/фильтрации
-export interface SellectionSearchParams {
+export interface SelectionSearchParams {
   query: string;
     type?: "movie" | "tv";
     withGenres?: string;
@@ -12,7 +12,7 @@ export interface SellectionSearchParams {
     page?: number;
 }
 
-export interface SellectionConfig {
+export interface SelectionConfig {
   id: string;
   slug: string;
   title: string;
@@ -22,11 +22,11 @@ export interface SellectionConfig {
   badge?: string;
   isFeatured: boolean;
   coverBg: string;
-  params: SellectionSearchParams;
+  params: SelectionSearchParams;
   backdropUrl?: string;
 }
 
-export const FEATURED_SELECTIONS: SellectionConfig[] = [
+export const FEATURED_SELECTIONS: SelectionConfig[] = [
   {
     id: 'mindfucks',
     slug: 'mind-bending-movies',
