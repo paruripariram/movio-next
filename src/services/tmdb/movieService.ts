@@ -1,5 +1,6 @@
+import { handleError } from "@/helpers/errorHandler";
 import { tmdbApi } from "./axios";
-import type { Genre, SearchResult } from "@/types/tmdb";
+import type { Genre, MovieDetails, SearchResult, TVDetails } from "@/types/tmdb";
 
 export const search = async ({
     query,
@@ -127,4 +128,31 @@ export const getPersonFullData = async (personId: string) => {
         params: { append_to_response: "combined_credits" },
     });
     return response.data;
+};
+
+export const getSelectionData = async (movieIds: string[]) => {
+  try {
+    const promises = movieIds.map((id) =>
+      getMediaDetails(id, "movie").catch((err) => {
+        console.warn(`[TMDB] Не удалось загрузить фильм ID ${id}:`, err);
+        return null;
+      })
+    );
+    
+    const results = await Promise.all(promises);
+
+    return results.filter(Boolean).map((movie: MovieDetails | TVDetails) => ({
+      id: movie.id,
+      title: "title" in movie ? movie.title : movie.name,
+      poster_path: movie.poster_path,
+      backdrop_path: movie.backdrop_path,
+      vote_average: movie.vote_average,
+      release_date: "release_date" in movie ? movie.release_date : movie.first_air_date || '',
+      media_type: "title" in movie ? "movie" : "tv",
+      genres: movie.genres ? movie.genres.slice(0, 2) : [],
+    })) as unknown as SearchResult[];
+  } catch (error) {
+    handleError(error, 'Ошибка при загрузке подборки:');
+    return [];
+  }
 };

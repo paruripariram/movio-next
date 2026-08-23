@@ -1,4 +1,4 @@
-import { search } from "@/services/tmdb/movieService";
+import { getSelectionData } from "@/services/tmdb/movieService";
 import { unstable_cache } from "next/cache";
 import { FEATURED_SELECTIONS } from "@/config/selectionsConfig";
 import HorizontalCarouselSection from "../media/HorizontalCarouselSection";
@@ -9,16 +9,16 @@ const getCachedSelections = unstable_cache(
         const featuredOnly = FEATURED_SELECTIONS.filter((s) => s.isFeatured);
         const selectionsWithData = await Promise.all(
             featuredOnly.map(async (selection) => {
-                const data = await search(selection.params);
+                const data = await getSelectionData(selection.movieIds);
                 return {
                     ...selection,
-                    movies: data.results,
+                    movies: data,
                 };
             }),
         );
         return selectionsWithData;
     },
-    ["selections-featured"],
+    ["selections-featured-v3"],
     { revalidate: 14400 },
 );
 

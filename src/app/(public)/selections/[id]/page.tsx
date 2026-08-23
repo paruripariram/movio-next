@@ -3,9 +3,8 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import BackButton from "@/components/ui/BackButton";
 import { FEATURED_SELECTIONS } from "@/config/selectionsConfig";
-import { search } from "@/services/tmdb/movieService";
+import { getSelectionData } from "@/services/tmdb/movieService";
 import SelectionGrid from "./SelectionGrid";
-import { SearchResult } from "@/types";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -30,9 +29,8 @@ export default async function SelectionDetailPage({ params }: PageProps) {
 
     if (!selection) notFound();
 
-    const moviesData = await search(selection.params);
-    const movies: SearchResult[] = moviesData?.results || [];
-    const defaultType = (selection.params.type as "movie" | "tv") || "movie";
+    const movies = await getSelectionData(selection.movieIds);
+
 
     const backdropPath = selection.backdropUrl || "/noPoster.webp";
 
@@ -75,7 +73,7 @@ export default async function SelectionDetailPage({ params }: PageProps) {
 
             <div className="flex flex-col gap-6 pt-6 pb-12 w-full min-w-0">
                 {movies.length > 0 ? (
-                    <SelectionGrid items={movies} defaultType={defaultType} />
+                    <SelectionGrid items={movies} defaultType={"movie"} />
                 ) : (
                     <div className="text-center py-20 text-gray-500">
                         Фильмы не найдены
