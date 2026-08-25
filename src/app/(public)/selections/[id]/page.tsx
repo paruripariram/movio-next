@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import { Suspense } from "react";
 import BackButton from "@/components/ui/BackButton";
 import { FEATURED_SELECTIONS } from "@/config/selectionsConfig";
 import { getSelectionData } from "@/services/tmdb/movieService";
@@ -23,14 +24,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: `${selection.title} — Подборка`, description: selection.description };
 }
 
+async function SelectionMoviesList({ movieIds }: { movieIds: string[] }) {
+    const movies = await getSelectionData(movieIds);
+
+    if (!movies || movies.length === 0) {
+        return (
+            <div className="text-center py-20 text-gray-500">
+                Фильмы не найдены
+            </div>
+        );
+    }
+
+    return <SelectionGrid items={movies} defaultType="movie" />;
+}
+
 export default async function SelectionDetailPage({ params }: PageProps) {
     const { id } = await params;
     const selection = getSelection(id);
 
     if (!selection) notFound();
-
-    const movies = await getSelectionData(selection.movieIds);
-
 
     const backdropPath = selection.backdropUrl || "/noPoster.webp";
 
@@ -72,13 +84,17 @@ export default async function SelectionDetailPage({ params }: PageProps) {
             </div>
 
             <div className="flex flex-col gap-6 pt-6 pb-12 w-full min-w-0">
-                {movies.length > 0 ? (
-                    <SelectionGrid items={movies} defaultType={"movie"} />
-                ) : (
-                    <div className="text-center py-20 text-gray-500">
-                        Фильмы не найдены
-                    </div>
-                )}
+                <Suspense
+                    fallback={
+                        <SelectionGrid
+                            items={[]}
+                            defaultType="movie"
+                            isLoading={true}
+                        />
+                    }
+                >
+                    <SelectionMoviesList movieIds={selection.movieIds} />
+                </Suspense>
             </div>
         </div>
     );
