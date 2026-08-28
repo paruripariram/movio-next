@@ -3,7 +3,6 @@ import CardSkeleton from "@/components/ui/skeletons/CardSkeleton";
 export default function PersonLoading() {
     return (
         <div className="flex flex-col gap-6 w-full animate-pulse">
-            {/* Скелетон профиля актера */}
             <div className="flex gap-6 p-6 bg-zinc-900 rounded-2xl">
                 <div className="w-48 h-72 bg-zinc-800 rounded-xl" />
                 <div className="flex-1 space-y-4">
@@ -13,7 +12,6 @@ export default function PersonLoading() {
                 </div>
             </div>
 
-            {/* Скелетон сетки его фильмов */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {Array.from({ length: 8 }).map((_, i) => (
                     <CardSkeleton key={i} />
