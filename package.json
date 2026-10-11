@@ -10,6 +10,7 @@
     "postinstall": "prisma skills sync || exit 0"
   },
   "dependencies": {
+    "@prisma/orm-postgres": "^8.0.0-rc.17",
     "axios": "^1.17.0",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",

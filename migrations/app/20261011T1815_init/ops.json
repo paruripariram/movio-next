@@ -1,0 +1,865 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.collection",
+    "label": "Create table \"collection\"",
+    "summary": "Creates table \"collection\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "collection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"collection\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"collection\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"collection\"",
+        "sql": "CREATE TABLE \"public\".\"collection\" (\n  \"added_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"movie_id\" int4 NOT NULL,\n  \"platform\" text,\n  \"status\" text NOT NULL,\n  \"user_id\" text NOT NULL,\n  \"wayched_at\" timestamptz,\n  PRIMARY KEY (\"user_id\", \"movie_id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"collection\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"collection\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.friendships",
+    "label": "Create table \"friendships\"",
+    "summary": "Creates table \"friendships\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "friendships"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"friendships\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"friendships\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"friendships\"",
+        "sql": "CREATE TABLE \"public\".\"friendships\" (\n  \"friend_id\" text NOT NULL,\n  \"status\" text NOT NULL,\n  \"user_id\" text NOT NULL,\n  PRIMARY KEY (\"user_id\", \"friend_id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"friendships\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"friendships\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.genres",
+    "label": "Create table \"genres\"",
+    "summary": "Creates table \"genres\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "genres"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"genres\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"genres\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"genres\"",
+        "sql": "CREATE TABLE \"public\".\"genres\" (\n  \"id\" int4 NOT NULL,\n  \"name\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"genres\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"genres\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.movie_genre",
+    "label": "Create table \"movie_genre\"",
+    "summary": "Creates table \"movie_genre\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "movie_genre"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"movie_genre\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_genre\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"movie_genre\"",
+        "sql": "CREATE TABLE \"public\".\"movie_genre\" (\n  \"genre_id\" int4 NOT NULL,\n  \"movie_id\" int4 NOT NULL,\n  PRIMARY KEY (\"movie_id\", \"genre_id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"movie_genre\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_genre\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.movies",
+    "label": "Create table \"movies\"",
+    "summary": "Creates table \"movies\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "movies"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"movies\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movies\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"movies\"",
+        "sql": "CREATE TABLE \"public\".\"movies\" (\n  \"poster_path\" text,\n  \"release_date\" timestamptz,\n  \"title\" text NOT NULL,\n  \"tmdb_id\" int4 NOT NULL,\n  \"type\" text NOT NULL,\n  PRIMARY KEY (\"tmdb_id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"movies\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movies\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.users",
+    "label": "Create table \"users\"",
+    "summary": "Creates table \"users\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"users\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"users\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"users\"",
+        "sql": "CREATE TABLE \"public\".\"users\" (\n  \"creates_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"username\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"users\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"users\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.genres.genres_name_key",
+    "label": "Add unique constraint on \"genres\" (name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "genres_name_key",
+        "table": "genres"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"genres_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "genres_name_key",
+          "public",
+          "\"public\".\"genres\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"genres_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"genres\" ADD CONSTRAINT \"genres_name_key\" UNIQUE (\"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"genres_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "genres_name_key",
+          "public",
+          "\"public\".\"genres\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.users.users_email_key",
+    "label": "Add unique constraint on \"users\" (email)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "users_email_key",
+        "table": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"users_email_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_email_key",
+          "public",
+          "\"public\".\"users\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"users_email_key\"",
+        "sql": "ALTER TABLE \"public\".\"users\" ADD CONSTRAINT \"users_email_key\" UNIQUE (\"email\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"users_email_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_email_key",
+          "public",
+          "\"public\".\"users\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.users.users_username_key",
+    "label": "Add unique constraint on \"users\" (username)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "users_username_key",
+        "table": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"users_username_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_username_key",
+          "public",
+          "\"public\".\"users\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"users_username_key\"",
+        "sql": "ALTER TABLE \"public\".\"users\" ADD CONSTRAINT \"users_username_key\" UNIQUE (\"username\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"users_username_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_username_key",
+          "public",
+          "\"public\".\"users\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.collection.collection_movie_id_idx_b2c3efa2",
+    "label": "Create index \"collection_movie_id_idx_b2c3efa2\" on \"collection\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "collection_movie_id_idx_b2c3efa2",
+        "table": "collection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"collection_movie_id_idx_b2c3efa2\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"collection_movie_id_idx_b2c3efa2\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"collection_movie_id_idx_b2c3efa2\"",
+        "sql": "CREATE INDEX \"collection_movie_id_idx_b2c3efa2\" ON \"public\".\"collection\" (\"movie_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"collection_movie_id_idx_b2c3efa2\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"collection_movie_id_idx_b2c3efa2\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.collection.collection_user_id_idx_6c952402",
+    "label": "Create index \"collection_user_id_idx_6c952402\" on \"collection\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "collection_user_id_idx_6c952402",
+        "table": "collection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"collection_user_id_idx_6c952402\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"collection_user_id_idx_6c952402\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"collection_user_id_idx_6c952402\"",
+        "sql": "CREATE INDEX \"collection_user_id_idx_6c952402\" ON \"public\".\"collection\" (\"user_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"collection_user_id_idx_6c952402\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"collection_user_id_idx_6c952402\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.friendships.friendships_friend_id_idx_c4c059a1",
+    "label": "Create index \"friendships_friend_id_idx_c4c059a1\" on \"friendships\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "friendships_friend_id_idx_c4c059a1",
+        "table": "friendships"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"friendships_friend_id_idx_c4c059a1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"friendships_friend_id_idx_c4c059a1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"friendships_friend_id_idx_c4c059a1\"",
+        "sql": "CREATE INDEX \"friendships_friend_id_idx_c4c059a1\" ON \"public\".\"friendships\" (\"friend_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"friendships_friend_id_idx_c4c059a1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"friendships_friend_id_idx_c4c059a1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.friendships.friendships_user_id_idx_6c952402",
+    "label": "Create index \"friendships_user_id_idx_6c952402\" on \"friendships\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "friendships_user_id_idx_6c952402",
+        "table": "friendships"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"friendships_user_id_idx_6c952402\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"friendships_user_id_idx_6c952402\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"friendships_user_id_idx_6c952402\"",
+        "sql": "CREATE INDEX \"friendships_user_id_idx_6c952402\" ON \"public\".\"friendships\" (\"user_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"friendships_user_id_idx_6c952402\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"friendships_user_id_idx_6c952402\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.movie_genre.movie_genre_genre_id_idx_44287509",
+    "label": "Create index \"movie_genre_genre_id_idx_44287509\" on \"movie_genre\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "movie_genre_genre_id_idx_44287509",
+        "table": "movie_genre"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"movie_genre_genre_id_idx_44287509\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_genre_genre_id_idx_44287509\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"movie_genre_genre_id_idx_44287509\"",
+        "sql": "CREATE INDEX \"movie_genre_genre_id_idx_44287509\" ON \"public\".\"movie_genre\" (\"genre_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"movie_genre_genre_id_idx_44287509\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_genre_genre_id_idx_44287509\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.movie_genre.movie_genre_movie_id_idx_b2c3efa2",
+    "label": "Create index \"movie_genre_movie_id_idx_b2c3efa2\" on \"movie_genre\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "movie_genre_movie_id_idx_b2c3efa2",
+        "table": "movie_genre"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"movie_genre_movie_id_idx_b2c3efa2\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_genre_movie_id_idx_b2c3efa2\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"movie_genre_movie_id_idx_b2c3efa2\"",
+        "sql": "CREATE INDEX \"movie_genre_movie_id_idx_b2c3efa2\" ON \"public\".\"movie_genre\" (\"movie_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"movie_genre_movie_id_idx_b2c3efa2\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_genre_movie_id_idx_b2c3efa2\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.collection.collection_user_id_fkey",
+    "label": "Add foreign key \"collection_user_id_fkey\" on \"collection\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "collection_user_id_fkey",
+        "table": "collection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"collection_user_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "collection_user_id_fkey",
+          "public",
+          "\"public\".\"collection\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"collection_user_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"collection\"\nADD CONSTRAINT \"collection_user_id_fkey\"\nFOREIGN KEY (\"user_id\")\nREFERENCES \"public\".\"users\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"collection_user_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "collection_user_id_fkey",
+          "public",
+          "\"public\".\"collection\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.collection.collection_movie_id_fkey",
+    "label": "Add foreign key \"collection_movie_id_fkey\" on \"collection\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "collection_movie_id_fkey",
+        "table": "collection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"collection_movie_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "collection_movie_id_fkey",
+          "public",
+          "\"public\".\"collection\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"collection_movie_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"collection\"\nADD CONSTRAINT \"collection_movie_id_fkey\"\nFOREIGN KEY (\"movie_id\")\nREFERENCES \"public\".\"movies\" (\"tmdb_id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"collection_movie_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "collection_movie_id_fkey",
+          "public",
+          "\"public\".\"collection\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.friendships.friendships_user_id_fkey",
+    "label": "Add foreign key \"friendships_user_id_fkey\" on \"friendships\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "friendships_user_id_fkey",
+        "table": "friendships"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"friendships_user_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "friendships_user_id_fkey",
+          "public",
+          "\"public\".\"friendships\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"friendships_user_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"friendships\"\nADD CONSTRAINT \"friendships_user_id_fkey\"\nFOREIGN KEY (\"user_id\")\nREFERENCES \"public\".\"users\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"friendships_user_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "friendships_user_id_fkey",
+          "public",
+          "\"public\".\"friendships\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.friendships.friendships_friend_id_fkey",
+    "label": "Add foreign key \"friendships_friend_id_fkey\" on \"friendships\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "friendships_friend_id_fkey",
+        "table": "friendships"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"friendships_friend_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "friendships_friend_id_fkey",
+          "public",
+          "\"public\".\"friendships\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"friendships_friend_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"friendships\"\nADD CONSTRAINT \"friendships_friend_id_fkey\"\nFOREIGN KEY (\"friend_id\")\nREFERENCES \"public\".\"users\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"friendships_friend_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "friendships_friend_id_fkey",
+          "public",
+          "\"public\".\"friendships\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.movie_genre.movie_genre_movie_id_fkey",
+    "label": "Add foreign key \"movie_genre_movie_id_fkey\" on \"movie_genre\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "movie_genre_movie_id_fkey",
+        "table": "movie_genre"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"movie_genre_movie_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "movie_genre_movie_id_fkey",
+          "public",
+          "\"public\".\"movie_genre\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"movie_genre_movie_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"movie_genre\"\nADD CONSTRAINT \"movie_genre_movie_id_fkey\"\nFOREIGN KEY (\"movie_id\")\nREFERENCES \"public\".\"movies\" (\"tmdb_id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"movie_genre_movie_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "movie_genre_movie_id_fkey",
+          "public",
+          "\"public\".\"movie_genre\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.movie_genre.movie_genre_genre_id_fkey",
+    "label": "Add foreign key \"movie_genre_genre_id_fkey\" on \"movie_genre\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "movie_genre_genre_id_fkey",
+        "table": "movie_genre"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"movie_genre_genre_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "movie_genre_genre_id_fkey",
+          "public",
+          "\"public\".\"movie_genre\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"movie_genre_genre_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"movie_genre\"\nADD CONSTRAINT \"movie_genre_genre_id_fkey\"\nFOREIGN KEY (\"genre_id\")\nREFERENCES \"public\".\"genres\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"movie_genre_genre_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "movie_genre_genre_id_fkey",
+          "public",
+          "\"public\".\"movie_genre\""
+        ]
+      }
+    ]
+  }
+]
