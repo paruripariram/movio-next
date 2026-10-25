@@ -1,74 +1,74 @@
 // use prisma-8
-
 model User {
-    id        String   @id @default(uuid())
-    email     String   @unique
-    username  String   @unique
-    createdAt DateTime @default(now()) @map("creates_at")
+  id                  String       @id @default(uuid())
+  email               String       @unique
+  username            String       @unique
+  createdAt           DateTime     @default(now()) @map("created_at")
 
-    collections         Collection[]
-    sentFriendships     Friendship[] @relation("UserSent")
-    receivedFriendships Friendship[] @relation("UserReceived")
+  collections         Collection[]
+  sentFriendships     Friendship[] @relation("UserSent")
+  receivedFriendships Friendship[] @relation("UserReceived")
 
-    @@map("users")
+  @@map("users")
 }
 
 model Movie {
-    tmdbId      Int       @id @map("tmdb_id")
-    type        String
-    title       String
-    posterPath  String?   @map("poster_path")
-    releaseDate DateTime? @map("release_date")
+  tmdbId      Int          @id @map("tmdb_id")
+  type        String
+  title       String
+  posterPath  String?      @map("poster_path")
+  releaseDate DateTime?    @map("release_date")
+  voteAverage Float?       @map("vote_average")
 
-    collections Collection[]
-    genres      MovieGenre[]
+  collections Collection[]
+  genres      MovieGenre[]
 
-    @@map("movies")
+  @@map("movies")
 }
 
 model Genre {
-    id   Int    @id
-    name String @unique
+  id     Int          @id
+  name   String       @unique
 
-    movies MovieGenre[]
+  movies MovieGenre[]
 
-    @@map("genres")
+  @@map("genres")
 }
 
 model Collection {
-    userId    String    @map("user_id")
-    movieId   Int       @map("movie_id")
-    status    String
-    platform  String?
-    addedAt   DateTime  @default(now()) @map("added_at")
-    watchedAt DateTime? @map("wayched_at")
+  userId    String    @map("user_id")
+  movieId   Int       @map("movie_id")
+  status    String
+  platform  String?
+  addedAt   DateTime  @default(now()) @map("added_at")
+  watchedAt DateTime? @map("watched_at")
 
-    user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-    movie Movie @relation(fields: [movieId], references: [tmdbId], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie     Movie     @relation(fields: [movieId], references: [tmdbId], onDelete: Cascade)
 
-    @@id([userId, movieId])
-    @@map("collection")
+  @@id([userId, movieId])
+  @@map("collection")
 }
 
 model MovieGenre {
-    movieId Int @map("movie_id")
-    genreId Int @map("genre_id")
+  movieId Int   @map("movie_id")
+  genreId Int   @map("genre_id")
 
-    movie Movie @relation(fields: [movieId], references: [tmdbId], onDelete: Cascade)
-    genre Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
+  movie   Movie @relation(fields: [movieId], references: [tmdbId], onDelete: Cascade)
+  genre   Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
 
-    @@id([movieId, genreId])
-    @@map("movie_genre")
+  @@id([movieId, genreId])
+  @@map("movie_genre")
 }
 
 model Friendship {
-    userId   String @map("user_id")
-    friendId String @map("friend_id")
-    status   String
+  userId   String @map("user_id")
+  friendId String @map("friend_id")
+  status   String
 
-    user User @relation("UserSent", fields: [userId], references: [id], onDelete: Cascade)
-    friend User @relation("UserReceived", fields: [friendId], references: [id], onDelete: Cascade)
+  user     User   @relation("UserSent", fields: [userId], references: [id], onDelete: Cascade)
+  friend   User   @relation("UserReceived", fields: [friendId], references: [id], onDelete: Cascade)
 
-    @@id([userId, friendId])
-    @@map("friendships")
+  @@id([userId, friendId])
+  @@map("friendships")
 }

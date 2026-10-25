@@ -1,0 +1,212 @@
+[
+  {
+    "id": "dropColumn.collection.wayched_at",
+    "label": "Drop column \"wayched_at\" from \"collection\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "wayched_at",
+        "table": "collection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"wayched_at\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "collection",
+          "wayched_at"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"wayched_at\"",
+        "sql": "ALTER TABLE \"public\".\"collection\" DROP COLUMN \"wayched_at\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"wayched_at\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "collection",
+          "wayched_at"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.users.creates_at",
+    "label": "Drop column \"creates_at\" from \"users\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "creates_at",
+        "table": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"creates_at\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "users",
+          "creates_at"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"creates_at\"",
+        "sql": "ALTER TABLE \"public\".\"users\" DROP COLUMN \"creates_at\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"creates_at\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "users",
+          "creates_at"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.collection.watched_at",
+    "label": "Add column \"watched_at\" to \"collection\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "watched_at",
+        "table": "collection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"watched_at\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "collection",
+          "watched_at"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"watched_at\"",
+        "sql": "ALTER TABLE \"public\".\"collection\" ADD COLUMN \"watched_at\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"watched_at\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "collection",
+          "watched_at"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.movies.vote_average",
+    "label": "Add column \"vote_average\" to \"movies\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "vote_average",
+        "table": "movies"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"vote_average\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "movies",
+          "vote_average"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"vote_average\"",
+        "sql": "ALTER TABLE \"public\".\"movies\" ADD COLUMN \"vote_average\" float8"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"vote_average\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "movies",
+          "vote_average"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.users.created_at",
+    "label": "Add column \"created_at\" to \"users\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "created_at",
+        "table": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"created_at\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "users",
+          "created_at"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"created_at\"",
+        "sql": "ALTER TABLE \"public\".\"users\" ADD COLUMN \"created_at\" timestamptz DEFAULT (now()) NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"created_at\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "users",
+          "created_at"
+        ]
+      }
+    ]
+  }
+]

@@ -18,7 +18,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'d10b4ef5586cbb73255a3f627e97e64bd349edd54cf889bc6273a1f40eb84d86'>;
+  StorageHashBase<'6085dfbbe6c5faf94812ffe00f9feb229aacd1c397b9e3d1797688c52b4271be'>;
 export type ExecutionHash =
   ExecutionHashBase<'1bfbead68824d3eecf53b68a537ba1a0d81e3115b9d89ed236818049b7a89f8d'>;
 export type ProfileHash =
@@ -257,6 +257,7 @@ export type FieldOutputTypes = {
       readonly title: CodecTypes['pg/text@1']['output'];
       readonly tmdbId: CodecTypes['pg/int4@1']['output'];
       readonly type: CodecTypes['pg/text@1']['output'];
+      readonly voteAverage: CodecTypes['pg/float8@1']['output'] | null;
     };
     readonly MovieGenre: {
       readonly genreId: CodecTypes['pg/int4@1']['output'];
@@ -295,6 +296,7 @@ export type FieldInputTypes = {
       readonly title: CodecTypes['pg/text@1']['input'];
       readonly tmdbId: CodecTypes['pg/int4@1']['input'];
       readonly type: CodecTypes['pg/text@1']['input'];
+      readonly voteAverage: CodecTypes['pg/float8@1']['input'] | null;
     };
     readonly MovieGenre: {
       readonly genreId: CodecTypes['pg/int4@1']['input'];
@@ -316,7 +318,7 @@ export type StorageColumnTypes = {
       readonly platform: CodecTypes['pg/text@1']['output'] | null;
       readonly status: CodecTypes['pg/text@1']['output'];
       readonly user_id: CodecTypes['pg/text@1']['output'];
-      readonly wayched_at: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly watched_at: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     };
     readonly friendships: {
       readonly friend_id: CodecTypes['pg/text@1']['output'];
@@ -337,9 +339,10 @@ export type StorageColumnTypes = {
       readonly title: CodecTypes['pg/text@1']['output'];
       readonly tmdb_id: CodecTypes['pg/int4@1']['output'];
       readonly type: CodecTypes['pg/text@1']['output'];
+      readonly vote_average: CodecTypes['pg/float8@1']['output'] | null;
     };
     readonly users: {
-      readonly creates_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly email: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly username: CodecTypes['pg/text@1']['output'];
@@ -354,7 +357,7 @@ export type StorageColumnInputTypes = {
       readonly platform: CodecTypes['pg/text@1']['input'] | null;
       readonly status: CodecTypes['pg/text@1']['input'];
       readonly user_id: CodecTypes['pg/text@1']['input'];
-      readonly wayched_at: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly watched_at: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
     };
     readonly friendships: {
       readonly friend_id: CodecTypes['pg/text@1']['input'];
@@ -375,9 +378,10 @@ export type StorageColumnInputTypes = {
       readonly title: CodecTypes['pg/text@1']['input'];
       readonly tmdb_id: CodecTypes['pg/int4@1']['input'];
       readonly type: CodecTypes['pg/text@1']['input'];
+      readonly vote_average: CodecTypes['pg/float8@1']['input'] | null;
     };
     readonly users: {
-      readonly creates_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly email: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly username: CodecTypes['pg/text@1']['input'];
@@ -417,6 +421,7 @@ export namespace Models {
     title: CodecTypes['pg/text@1']['output'];
     tmdbId: CodecTypes['pg/int4@1']['output'];
     type: CodecTypes['pg/text@1']['output'];
+    voteAverage: CodecTypes['pg/float8@1']['output'] | null;
     collections: public_Collection[];
     genres: public_MovieGenre[];
     readonly [RelationKeys]?: 'collections' | 'genres';
@@ -502,7 +507,7 @@ type ContractBase = Omit<
                   readonly nullable: false;
                   readonly many: false;
                 };
-                readonly wayched_at: {
+                readonly watched_at: {
                   readonly dataType: 'pg/timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: true;
@@ -726,6 +731,12 @@ type ContractBase = Omit<
                   readonly nullable: false;
                   readonly many: false;
                 };
+                readonly vote_average: {
+                  readonly dataType: 'pg/float8';
+                  readonly codecId: 'pg/float8@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
               };
               primaryKey: { readonly columns: readonly ['tmdb_id'] };
               uniques: readonly [];
@@ -734,7 +745,7 @@ type ContractBase = Omit<
             };
             readonly users: {
               columns: {
-                readonly creates_at: {
+                readonly created_at: {
                   readonly dataType: 'pg/timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
@@ -864,7 +875,7 @@ type ContractBase = Omit<
                 readonly platform: { readonly column: 'platform' };
                 readonly status: { readonly column: 'status' };
                 readonly userId: { readonly column: 'user_id' };
-                readonly watchedAt: { readonly column: 'wayched_at' };
+                readonly watchedAt: { readonly column: 'watched_at' };
               };
             };
           };
@@ -971,6 +982,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly voteAverage: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/float8@1' };
+              };
             };
             readonly relations: {
               readonly collections: {
@@ -1005,6 +1020,7 @@ type ContractBase = Omit<
                 readonly title: { readonly column: 'title' };
                 readonly tmdbId: { readonly column: 'tmdb_id' };
                 readonly type: { readonly column: 'type' };
+                readonly voteAverage: { readonly column: 'vote_average' };
               };
             };
           };
@@ -1115,7 +1131,7 @@ type ContractBase = Omit<
               readonly table: 'users';
               readonly namespaceId: 'public';
               readonly fields: {
-                readonly createdAt: { readonly column: 'creates_at' };
+                readonly createdAt: { readonly column: 'created_at' };
                 readonly email: { readonly column: 'email' };
                 readonly id: { readonly column: 'id' };
                 readonly username: { readonly column: 'username' };

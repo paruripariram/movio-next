@@ -13,8 +13,9 @@ import {
     addToCollection,
     checkMediaStatus,
     removeFromCollection,
-} from "@/services/database/firebase/collectionService";
+} from "@/services/db/collection.service";
 import { handleError } from "@/helpers/errorHandler";
+import { useCollectionStore } from "@/store/collectionStore";
 
 export default function useCollectionActions(
     type: "movie" | "tv",
@@ -33,6 +34,9 @@ export default function useCollectionActions(
     const [error, setError] = useState<string | null>(null);
     const [platform, setPlatform] = useState("");
 
+    const upsertLocalItem = useCollectionStore((state) => state.upsertLocalItem);
+    const removeLocalItem = useCollectionStore((state) => state.removeLocalItem);
+
     const userId = user?.id;
     const mediaId = details?.id;
 
@@ -41,16 +45,24 @@ export default function useCollectionActions(
             return;
         }
 
-        const unsubscribe = checkMediaStatus(userId, type, mediaId, (data) => {
+        let isCanceled = false;
+
+        checkMediaStatus(userId, type, mediaId).then((data) => {
+            if (isCanceled) return;
             if (data) {
                 setStatus(data.status);
                 setPlatform(data.platform || "");
-            } else {
+            }else{
                 setStatus(null);
                 setPlatform("");
             }
-        });
-        return () => unsubscribe();
+        }).catch((error) => {
+            if (isCanceled) return;
+            handleError(error, "Error checking media status:");
+        })
+        return () => {
+            isCanceled = true;
+        };
     }, [userId, mediaId, type]);
 
     const handleAddToCollection = async (
@@ -98,6 +110,7 @@ export default function useCollectionActions(
 
         try {
             await addToCollection(user.id, type, details.id, movieData);
+            upsertLocalItem(movieData);
             return true;
         } catch (error) {
             handleError(error, "Error adding to collection:", {
@@ -124,6 +137,7 @@ export default function useCollectionActions(
 
         try {
             await removeFromCollection(user.id, type, details.id);
+            removeLocalItem(details.id, type);
             return true;
         } catch (error) {
             handleError(error, "Error removing from collection:", {

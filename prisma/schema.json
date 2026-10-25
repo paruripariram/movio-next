@@ -130,7 +130,7 @@
                   "column": "user_id"
                 },
                 "watchedAt": {
-                  "column": "wayched_at"
+                  "column": "watched_at"
                 }
               },
               "namespaceId": "public",
@@ -294,6 +294,13 @@
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
+              },
+              "voteAverage": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
               }
             },
             "relations": {
@@ -344,6 +351,9 @@
                 },
                 "type": {
                   "column": "type"
+                },
+                "voteAverage": {
+                  "column": "vote_average"
                 }
               },
               "namespaceId": "public",
@@ -495,7 +505,7 @@
             "storage": {
               "fields": {
                 "createdAt": {
-                  "column": "creates_at"
+                  "column": "created_at"
                 },
                 "email": {
                   "column": "email"
@@ -551,7 +561,7 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
-                "wayched_at": {
+                "watched_at": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "dataType": "pg/timestamptz",
                   "nullable": true
@@ -846,6 +856,11 @@
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
+                },
+                "vote_average": {
+                  "codecId": "pg/float8@1",
+                  "dataType": "pg/float8",
+                  "nullable": true
                 }
               },
               "foreignKeys": [],
@@ -859,7 +874,7 @@
             },
             "users": {
               "columns": {
-                "creates_at": {
+                "created_at": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "dataType": "pg/timestamptz",
                   "default": {
@@ -910,7 +925,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "d10b4ef5586cbb73255a3f627e97e64bd349edd54cf889bc6273a1f40eb84d86"
+    "storageHash": "6085dfbbe6c5faf94812ffe00f9feb229aacd1c397b9e3d1797688c52b4271be"
   },
   "execution": {
     "executionHash": "1bfbead68824d3eecf53b68a537ba1a0d81e3115b9d89ed236818049b7a89f8d",
