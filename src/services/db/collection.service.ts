@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import type { collectionItem } from "@/types";
 import 'temporal-polyfill/global';
+import { getMovieGenres, getTvGenres } from "@/services/tmdb/movieService";
 
 type MediaStatus = {
     status: "watched" | "wishlist";
@@ -90,7 +91,19 @@ export async function addToCollection(
         });
 
         if(movieData.genre_ids && movieData.genre_ids.length > 0) {
+            const [movieGenres, tvGenres] = await Promise.all([
+                            getMovieGenres(),
+                            getTvGenres(),
+                        ]);
             for(const genreId of movieData.genre_ids) {
+                const existingGenre = await db.orm.public.Genre.where({id: genreId}).all();
+                if(existingGenre.length === 0) {
+                    const genreName = (type === "movie" ? movieGenres[genreId] : tvGenres[genreId]) || "Неизвестно";
+                    await db.orm.public.Genre.create({
+                        id: genreId,
+                        name: genreName,
+                    })
+                }
                 await db.orm.public.MovieGenre.create({
                     movieId: mediaId,
                     genreId: genreId,
