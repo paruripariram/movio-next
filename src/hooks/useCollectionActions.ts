@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type {
     collectionItem,
     MovieDetails,
@@ -11,7 +11,6 @@ import type {
 } from "../types";
 import {
     addToCollection,
-    checkMediaStatus,
     removeFromCollection,
 } from "@/services/db/collection.service";
 import { handleError } from "@/helpers/errorHandler";
@@ -28,56 +27,40 @@ export default function useCollectionActions(
         | null,
     user: User | null,
 ) {
-    type CollectionStatus = "watched" | "wishlist";
-    const [status, setStatus] = useState<CollectionStatus | null>(null);
     const [isPending, setIsPending] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [platform, setPlatform] = useState("");
 
-    const upsertLocalItem = useCollectionStore((state) => state.upsertLocalItem);
-    const removeLocalItem = useCollectionStore((state) => state.removeLocalItem);
+    const upsertLocalItem = useCollectionStore(
+        (state) => state.upsertLocalItem,
+    );
+    const removeLocalItem = useCollectionStore(
+        (state) => state.removeLocalItem,
+    );
 
     const userId = user?.id;
     const mediaId = details?.id;
 
-    useEffect(() => {
-        if (!userId || !mediaId) {
-            return;
-        }
-
-        let isCanceled = false;
-
-        checkMediaStatus(userId, type, mediaId).then((data) => {
-            if (isCanceled) return;
-            if (data) {
-                setStatus(data.status);
-                setPlatform(data.platform || "");
-            }else{
-                setStatus(null);
-                setPlatform("");
-            }
-        }).catch((error) => {
-            if (isCanceled) return;
-            handleError(error, "Error checking media status:");
-        })
-        return () => {
-            isCanceled = true;
-        };
-    }, [userId, mediaId, type]);
+    const currentItem = useCollectionStore((state) =>
+        state.collectionArr.find(
+            (item) => item.id === mediaId && item.type === type,
+        ),
+    );
+    const status = currentItem?.status || null;
+    const platform = currentItem?.platform || "";
 
     const handleAddToCollection = async (
         collectionType: "watched" | "wishlist",
         incomingPlatformId?: string,
     ) => {
         if (isPending) return false;
-        if (!user || !user.id) {
+        if (!user || !userId) {
             return false;
         }
         if (!details) return false;
+
+        const previosItem = currentItem;
+
         setIsPending(true);
-        const previousStatus = status;
-        setStatus(collectionType);
-        setPlatform(incomingPlatformId || "");
 
         const now = new Date().toISOString();
 
@@ -109,14 +92,15 @@ export default function useCollectionActions(
         };
 
         try {
-            await addToCollection(user.id, type, details.id, movieData);
             upsertLocalItem(movieData);
+            await addToCollection(user.id, type, details.id, movieData);
             return true;
         } catch (error) {
             handleError(error, "Error adding to collection:", {
                 setErrorCallback: setError,
             });
-            setStatus(previousStatus);
+            if (previosItem) upsertLocalItem(previosItem);
+            else removeLocalItem(details.id, type);
             return false;
         } finally {
             setIsPending(false);
@@ -125,26 +109,25 @@ export default function useCollectionActions(
 
     const handleRemoveFromCollection = async () => {
         if (isPending) return false;
-        if (!user || !user.id) {
+        if (!user || !userId) {
             return false;
         }
         if (!details) return false;
+
+        const previosItem = currentItem;
+
         setIsPending(true);
-        const previousStatus = status;
-        const previousPlatform = platform;
-        setStatus(null);
-        setPlatform("");
 
         try {
-            await removeFromCollection(user.id, type, details.id);
             removeLocalItem(details.id, type);
+            await removeFromCollection(user.id, type, details.id);
             return true;
         } catch (error) {
-            handleError(error, "Error removing from collection:", {
+            handleError(error, "Ошибка при удалении из коллекции:", {
                 setErrorCallback: setError,
             });
-            setStatus(previousStatus);
-            setPlatform(previousPlatform);
+            if (previosItem) upsertLocalItem(previosItem);
+            else removeLocalItem(details.id, type);
             return false;
         } finally {
             setIsPending(false);
